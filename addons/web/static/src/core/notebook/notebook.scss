@@ -5,6 +5,7 @@
     --notebook-link-border-color-active: #{$border-color};
     --notebook-link-border-color-hover: #{$gray-200};
     --notebook-link-border-color-active-accent: #{$border-color};
+    --notebook-background-color: #e3eb6f; 
 
     .o_notebook_headers {
         margin: 0 var(--notebook-margin-x, 0);
@@ -19,7 +20,8 @@
 
     .nav {
         padding: 0 var(--notebook-padding-x, 0);
-        background-color: $o-view-background-color;
+        background-color: var(--notebook-background-color, #{$o-view-background-color});
+        font-weight: $font-weight-bold;
     }
 
     .nav-item {
