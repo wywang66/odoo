@@ -5,12 +5,14 @@
 # Translators:
 # Nuno Silva <nuno.silva@arxi.pt>, 2023
 # Martin Trigaux, 2023
-# Manuela Silva <mmsrs@sky.com>, 2023
-# Wil Odoo, 2023
 # Daniel Reis, 2023
-# Rita Bastos, 2024
 # NumerSpiral HBG, 2024
 # Arxi, 2024
+# Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2024
+# Peter Lawrence Romão <peterromao@yahoo.co.uk>, 2024
+# Manuela Silva <mmsrs@sky.com>, 2024
+# Wil Odoo, 2024
+# Rita Bastos, 2024
 # 
 msgid ""
 msgstr ""
@@ -18,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-29 10:46+0000\n"
 "PO-Revision-Date: 2023-10-26 23:09+0000\n"
-"Last-Translator: Arxi, 2024\n"
+"Last-Translator: Rita Bastos, 2024\n"
 "Language-Team: Portuguese (https://app.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1037,6 +1039,15 @@ msgstr ""
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#, python-format
+msgid "Add to Favorites"
+msgstr "Adicionar aos Favoritos"
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/views/fields/x2many/x2many_field.js:0
 #, python-format
 msgid "Add: %s"
@@ -1061,7 +1072,7 @@ msgstr "Adotar a Sua Assinatura"
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
 msgid "Africa"
-msgstr ""
+msgstr "África"
 
 #. module: web
 #. odoo-javascript
@@ -1288,7 +1299,7 @@ msgstr ""
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
 msgid "Asia"
-msgstr ""
+msgstr "Ásia"
 
 #. module: web
 #. odoo-javascript
@@ -2293,7 +2304,7 @@ msgstr "Data & Hora"
 #: code:addons/web/static/src/views/fields/datetime/datetime_field.js:0
 #, python-format
 msgid "Date Range"
-msgstr ""
+msgstr "Intervalo de Datas"
 
 #. module: web
 #. odoo-javascript
@@ -3500,7 +3511,7 @@ msgstr ""
 #: code:addons/web/static/src/views/fields/datetime/datetime_field.js:0
 #: code:addons/web/static/src/views/fields/datetime/datetime_field.js:0
 #, python-format
-msgid "ISO-formatted date (e.g. \"2018-12-31\") or \"today\"."
+msgid "ISO-formatted date (e.g. \"2018-12-31\") or \"%s\"."
 msgstr ""
 
 #. module: web
@@ -4751,7 +4762,7 @@ msgstr "Seguinte"
 #: code:addons/web/static/src/core/file_viewer/file_viewer.xml:0
 #, python-format
 msgid "Next (Right-Arrow)"
-msgstr ""
+msgstr "Seguinte (Seta p/ Direita)"
 
 #. module: web
 #. odoo-javascript
@@ -4987,6 +4998,13 @@ msgstr ""
 #: code:addons/web/static/src/views/fields/statusbar/statusbar_field.js:0
 #, python-format
 msgid "Not active state, click to change it"
+msgstr ""
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/views/fields/many2many_binary/many2many_binary_field.js:0
+#, python-format
+msgid "Number of files"
 msgstr ""
 
 #. module: web
@@ -5627,7 +5645,7 @@ msgstr "Anterior"
 #: code:addons/web/static/src/core/file_viewer/file_viewer.xml:0
 #, python-format
 msgid "Previous (Left-Arrow)"
-msgstr ""
+msgstr "Anterior (Seta p/ Esquerda)"
 
 #. module: web
 #. odoo-javascript
@@ -5707,6 +5725,13 @@ msgstr ""
 #: code:addons/web/static/src/views/fields/progress_bar/progress_bar_field.js:0
 #, python-format
 msgid "Progress Bar"
+msgstr ""
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/views/view_components/column_progress.xml:0
+#, python-format
+msgid "Progress bar"
 msgstr ""
 
 #. module: web
@@ -5992,6 +6017,15 @@ msgstr ""
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#, python-format
+msgid "Remove from Favorites"
+msgstr "Remova dos Favoritos"
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/views/calendar/filter_panel/calendar_filter_panel.xml:0
 #: code:addons/web/static/src/views/calendar/filter_panel/calendar_filter_panel.xml:0
 #, python-format
@@ -6209,6 +6243,13 @@ msgstr "Guardar e Nova"
 #, python-format
 msgid "Save as:"
 msgstr ""
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/search/custom_favorite_item/custom_favorite_item.xml:0
+#, python-format
+msgid "Save current search"
+msgstr "Guardar Procura Atual"
 
 #. module: web
 #. odoo-javascript
@@ -7199,7 +7240,7 @@ msgstr "Ativar/desativar menu"
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
 msgid "Tokyo"
-msgstr ""
+msgstr "Tóquio"
 
 #. module: web
 #. odoo-javascript
@@ -7715,7 +7756,7 @@ msgstr ""
 #: code:addons/web/static/src/core/file_viewer/file_viewer.xml:0
 #, python-format
 msgid "Viewer"
-msgstr ""
+msgstr "Visualizador"
 
 #. module: web
 #. odoo-javascript
@@ -21917,7 +21958,7 @@ msgstr ""
 #: code:addons/web/static/src/views/calendar/calendar_common/calendar_common_popover.js:0
 #, python-format
 msgid "minutes"
-msgstr ""
+msgstr "minutos"
 
 #. module: web
 #. odoo-javascript
@@ -23971,7 +24012,7 @@ msgstr ""
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
 msgid "password"
-msgstr ""
+msgstr "palavra-passe"
 
 #. module: web
 #. odoo-javascript

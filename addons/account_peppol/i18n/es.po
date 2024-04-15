@@ -53,7 +53,7 @@ msgid ""
 "<span class=\"text-info\" invisible=\"not account_peppol_edi_mode == 'demo'\"> (Demo)</span>\n"
 "                                        <span class=\"text-info\" invisible=\"not account_peppol_edi_mode == 'test'\"> (Test)</span>"
 msgstr ""
-"<span class=\"text-info\" invisible=\"not account_peppol_edi_mode == 'demo'\"> (Demonstración)</span>\n"
+"<span class=\"text-info\" invisible=\"not account_peppol_edi_mode == 'demo'\"> (Demostración)</span>\n"
 "                                        <span class=\"text-info\" invisible=\"not account_peppol_edi_mode == 'test'\"> (Prueba)</span>"
 
 #. module: account_peppol
@@ -190,7 +190,7 @@ msgstr "Cancelada"
 #: code:addons/account_peppol/models/account_move.py:0
 #, python-format
 msgid "Cannot cancel an entry that has already been sent to PEPPOL"
-msgstr "No se puede cancelar un asiento que ya se envió a PEPPOL"
+msgstr "No se puede cancelar un asiento que ya ha sido enviado a PEPPOL"
 
 #. module: account_peppol
 #. odoo-python
@@ -317,7 +317,7 @@ msgid ""
 "communication with the Peppol network."
 msgstr ""
 "El envío y recepción de facturas está simulado mientras se encuentra en modo"
-" demo. No habrá comunicación con la red Peppol."
+" de demostración. No habrá comunicación con la red Peppol."
 
 #. module: account_peppol
 #: model_terms:ir.ui.view,arch_db:account_peppol.res_config_settings_view_form
@@ -592,6 +592,13 @@ msgstr ""
 msgid "Please fill in the EAS code and the Participant ID code."
 msgstr ""
 "Complete el código EAS y el código de identificación del participante."
+
+#. module: account_peppol
+#. odoo-python
+#: code:addons/account_peppol/models/res_company.py:0
+#, python-format
+msgid "Please install the phonenumbers library."
+msgstr "Instale la biblioteca de números de teléfono."
 
 #. module: account_peppol
 #. odoo-python
@@ -907,7 +914,7 @@ msgstr "Verifique el número de teléfono"
 #: model:ir.model.fields,field_description:account_peppol.field_account_move_send__peppol_warning
 #: model:ir.model.fields,field_description:account_peppol.field_res_config_settings__account_peppol_endpoint_warning
 msgid "Warning"
-msgstr "Alerta"
+msgstr "Advertencia"
 
 #. module: account_peppol
 #: model_terms:ir.ui.view,arch_db:account_peppol.res_config_settings_view_form

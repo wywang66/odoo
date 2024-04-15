@@ -603,6 +603,45 @@ QUnit.module("Views", (hooks) => {
         }
     );
 
+    QUnit.test("empty group when grouped by date", async (assert) => {
+        serverData.models.partner.records[0].date = "2017-01-08";
+        serverData.models.partner.records[1].date = "2017-02-09";
+        serverData.models.partner.records[2].date = "2017-02-08";
+        serverData.models.partner.records[3].date = "2017-02-10";
+
+        const kanban = await makeView({
+            type: "kanban",
+            resModel: "partner",
+            serverData,
+            arch: `<kanban>
+                <field name="bar"/>
+                <field name="date" allow_group_range_value="true"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <field name="name"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>`,
+            groupBy: ["date:month"],
+        });
+
+        assert.deepEqual(getNodesTextContent(target.querySelectorAll(".o_kanban_header")), [
+            "January 2017",
+            "February 2017",
+        ]);
+
+        serverData.models.partner.records.shift(); // remove only record of the first group
+        await reload(kanban, { groupBy: ["date:month"] });
+        assert.deepEqual(getNodesTextContent(target.querySelectorAll(".o_kanban_header")), [
+            "January 2017",
+            "February 2017",
+        ]);
+        assert.containsNone(getColumn(target, 0), ".o_kanban_record");
+        assert.containsN(getColumn(target, 1), ".o_kanban_record", 3);
+    });
+
     QUnit.test(
         "Ensure float fields are formatted properly without using a widget",
         async (assert) => {
@@ -10417,6 +10456,123 @@ QUnit.module("Views", (hooks) => {
         assert.verifySteps(["web_read_group", "read_progress_bar", "web_search_read"]);
     });
 
+    QUnit.test(
+        "progress bar with aggregates: activate bars (grouped by boolean)",
+        async (assert) => {
+            serverData.models.partner.records = [
+                { foo: "yop", bar: true, int_field: 1 },
+                { foo: "yop", bar: true, int_field: 2 },
+                { foo: "blip", bar: true, int_field: 4 },
+                { foo: "gnap", bar: true, int_field: 8 },
+            ];
+
+            await makeView({
+                type: "kanban",
+                resModel: "partner",
+                serverData,
+                arch: `
+                    <kanban>
+                        <progressbar field="foo" colors='{"yop": "success", "gnap": "warning", "blip": "danger"}' sum_field="int_field"/>
+                        <templates><t t-name="kanban-box">
+                            <div>
+                                <field name="foo"/>
+                            </div>
+                        </t></templates>
+                    </kanban>`,
+                groupBy: ["bar"],
+            });
+
+            assert.deepEqual(getTooltips(target, 0), ["2 yop", "1 gnap", "1 blip"]);
+            assert.deepEqual(getCounters(target), ["15"]);
+
+            await click(getProgressBars(target, 0)[0]);
+            assert.deepEqual(getCounters(target), ["3"]);
+
+            await click(getProgressBars(target, 0)[2]);
+            assert.deepEqual(getCounters(target), ["4"]);
+
+            await click(getProgressBars(target, 0)[2]);
+            assert.deepEqual(getCounters(target), ["15"]);
+        }
+    );
+
+    QUnit.test(
+        "progress bar with aggregates: activate bars (grouped by many2one)",
+        async (assert) => {
+            serverData.models.partner.records = [
+                { foo: "yop", product_id: 3, int_field: 1 },
+                { foo: "yop", product_id: 3, int_field: 2 },
+                { foo: "blip", product_id: 3, int_field: 4 },
+                { foo: "gnap", product_id: 3, int_field: 8 },
+            ];
+
+            await makeView({
+                type: "kanban",
+                resModel: "partner",
+                serverData,
+                arch: `
+                    <kanban>
+                        <progressbar field="foo" colors='{"yop": "success", "gnap": "warning", "blip": "danger"}' sum_field="int_field"/>
+                        <templates><t t-name="kanban-box">
+                            <div>
+                                <field name="foo"/>
+                            </div>
+                        </t></templates>
+                    </kanban>`,
+                groupBy: ["product_id"],
+            });
+
+            assert.deepEqual(getTooltips(target, 0), ["2 yop", "1 gnap", "1 blip"]);
+            assert.deepEqual(getCounters(target), ["15"]);
+
+            await click(getProgressBars(target, 0)[0]);
+            assert.deepEqual(getCounters(target), ["3"]);
+
+            await click(getProgressBars(target, 0)[2]);
+            assert.deepEqual(getCounters(target), ["4"]);
+
+            await click(getProgressBars(target, 0)[2]);
+            assert.deepEqual(getCounters(target), ["15"]);
+        }
+    );
+
+    QUnit.test("progress bar with aggregates: activate bars (grouped by date)", async (assert) => {
+        serverData.models.partner.records = [
+            { foo: "yop", date: "2023-10-08", int_field: 1 },
+            { foo: "yop", date: "2023-10-08", int_field: 2 },
+            { foo: "blip", date: "2023-10-08", int_field: 4 },
+            { foo: "gnap", date: "2023-10-08", int_field: 8 },
+        ];
+
+        await makeView({
+            type: "kanban",
+            resModel: "partner",
+            serverData,
+            arch: `
+                <kanban>
+                    <progressbar field="foo" colors='{"yop": "success", "gnap": "warning", "blip": "danger"}' sum_field="int_field"/>
+                    <templates><t t-name="kanban-box">
+                        <div>
+                            <field name="foo"/>
+                        </div>
+                    </t></templates>
+                </kanban>`,
+            groupBy: ["date:week"],
+        });
+
+        assert.deepEqual(getTooltips(target, 0), ["2 yop", "1 gnap", "1 blip"]);
+        assert.deepEqual(getCounters(target), ["15"]);
+
+        await click(getProgressBars(target, 0)[0]);
+        assert.deepEqual(getCounters(target), ["3"]);
+
+        await click(getProgressBars(target, 0)[2]);
+        assert.deepEqual(getCounters(target), ["4"]);
+
+        await click(getProgressBars(target, 0)[2]);
+        assert.deepEqual(getCounters(target), ["15"]);
+    });
+
     QUnit.test("load more should load correct records after drag&drop event", async (assert) => {
         // Add a sequence number and initialize
         serverData.models.partner.records.forEach((el, i) => (el.sequence = i));
@@ -10799,12 +10955,12 @@ QUnit.module("Views", (hooks) => {
         });
         assert.containsOnce(
             target,
-            'img[data-src*="/web/image"][data-src$="&id=1&unique="]',
+            'img[data-src*="/web/image"][data-src$="&id=1"]',
             "image url should contain id of set partner_id"
         );
         assert.containsOnce(
             target,
-            'img[data-src*="/web/image"][data-src$="&id=&unique="]',
+            'img[data-src*="/web/image"][data-src$="&id="]',
             "image url should contain an empty id if partner_id is not set"
         );
     });
@@ -13944,7 +14100,7 @@ QUnit.module("Views", (hooks) => {
     });
 
     QUnit.test("scroll on group unfold and progressbar click", async (assert) => {
-        assert.expect(7);
+        assert.expect(15);
 
         await makeView({
             type: "kanban",
@@ -13959,17 +14115,21 @@ QUnit.module("Views", (hooks) => {
                 </kanban>`,
             groupBy: ["product_id"],
             async mockRPC(route, args, performRPC) {
+                assert.step(args.method);
                 if (args.method === "web_read_group") {
                     const result = await performRPC(route, args);
                     if (result.groups.length) {
                         result.groups[0].__fold = false;
-                        result.groups[1].__fold = true;
+                        if (result.groups[1]) {
+                            result.groups[1].__fold = true;
+                        }
                     }
                     return result;
                 }
             },
         });
 
+        assert.verifySteps(["get_views", "web_read_group", "read_progress_bar", "web_search_read"]);
         const content = target.querySelector(".o_content");
         content.scrollTo = (params) => {
             assert.step("scrolled");
@@ -13977,12 +14137,12 @@ QUnit.module("Views", (hooks) => {
         };
 
         await click(getProgressBars(target, 0)[0]);
-        assert.verifySteps(["scrolled"]);
+        assert.verifySteps(["web_read_group", "web_search_read", "scrolled"]);
 
         const column1 = getColumn(target, 1);
         assert.hasClass(column1, "o_column_folded");
         await click(column1);
-        assert.verifySteps(["scrolled"]);
+        assert.verifySteps(["web_search_read", "scrolled"]);
     });
 
     QUnit.test(

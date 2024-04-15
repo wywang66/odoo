@@ -2123,7 +2123,7 @@ msgstr "Acción"
 #: model:ir.model.fields,field_description:account.field_res_company__message_needaction
 #: model:ir.model.fields,field_description:account.field_res_partner_bank__message_needaction
 msgid "Action Needed"
-msgstr "Acción requerida"
+msgstr "Se requiere una acción"
 
 #. module: account
 #: model:ir.ui.menu,name:account.menu_finance_entries_actions
@@ -4109,7 +4109,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account.field_account_account_tag__color
 #: model:ir.model.fields,field_description:account.field_account_journal__color
 msgid "Color Index"
-msgstr "Índice de colores"
+msgstr "Índice de color"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_report__column_ids
@@ -7000,11 +7000,11 @@ msgid ""
 "allowed as value in case the carryover destination requires more complex "
 "logic."
 msgstr ""
-"Fórmula en el formulario line_code.expression_label. Esto le permite "
-"establecer el objetivo del traspaso para esta expresión  (en una expresión "
-"con etiqueta _carryover_*), si es diferente de la línea padre. También se "
-"permite \"custom\" como valor en caso de que el traspaso destino necesite "
-"más lógica compleja."
+"La fórmula en el formulario line_code.expression_label. Permite establecer "
+"el objetivo del traspaso para esta expresión (en una expresión con etiqueta "
+"_carryover_*) si es distinta a la línea principal. El valor \"custom\" "
+"también es válido en caso de que el destino del traspaso necesite una lógica"
+" más compleja."
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_group_form
@@ -7243,7 +7243,7 @@ msgstr "Comparación de crecimiento"
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_cash_rounding__rounding_method__half-up
 msgid "HALF-UP"
-msgstr "MITAD ARRIBA"
+msgstr "HACIA ARRIBA"
 
 #. module: account
 #: model:ir.model,name:account.model_ir_http
@@ -8337,7 +8337,7 @@ msgstr "Estadísticas de facturas"
 #: code:addons/account/wizard/account_move_send.py:0
 #, python-format
 msgid "Invoices are being sent in the background."
-msgstr "Se están enviando facturas en segundo plano"
+msgstr "Se están enviando facturas en segundo plano."
 
 #. module: account
 #. odoo-python
@@ -9780,6 +9780,13 @@ msgid "Never"
 msgstr "Nunca"
 
 #. module: account
+#. odoo-python
+#: code:addons/account/models/account_tax.py:0
+#, python-format
+msgid "New"
+msgstr "Nuevo"
+
+#. module: account
 #: model:ir.model.fields,field_description:account.field_account_setup_bank_manual_config__new_journal_name
 msgid "New Journal Name"
 msgstr "Nuevo nombre de diario"
@@ -9852,7 +9859,7 @@ msgstr "No"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_search
 msgid "No Bank Matching"
-msgstr "No hay conciliación bancaria"
+msgstr "Sin conciliación bancaria"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_move_line_filter
@@ -10761,22 +10768,22 @@ msgstr "Pago por transferencia interna emparejada"
 #: model:ir.model.fields,field_description:account.field_account_group__parent_id
 #: model:ir.model.fields,field_description:account.field_account_root__parent_id
 msgid "Parent"
-msgstr "Padre"
+msgstr "Principal"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_report_line__parent_id
 msgid "Parent Line"
-msgstr "Línea padre"
+msgstr "Línea principal"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_group__parent_path
 msgid "Parent Path"
-msgstr "Ruta padre"
+msgstr "Ruta principal"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_report_line__report_id
 msgid "Parent Report"
-msgstr "Reporte padre"
+msgstr "Reporte principal"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
@@ -11303,6 +11310,17 @@ msgstr "Por favor, defina una línea de método de pago en su pago. "
 
 #. module: account
 #. odoo-python
+#: code:addons/account/models/account_payment.py:0
+#, python-format
+msgid ""
+"The selected payment method is not available for this payment, please select"
+" the payment method again."
+msgstr ""
+"El método de pago seleccionado no está disponible para este pago, elija "
+"otro."
+
+#. module: account
+#. odoo-python
 #: code:addons/account/models/company.py:0
 #, python-format
 msgid ""
@@ -11778,13 +11796,13 @@ msgstr "Recibido"
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__partner_bank_id
 #: model:ir.model.fields,field_description:account.field_account_move__partner_bank_id
 msgid "Recipient Bank"
-msgstr "Banco destinatario"
+msgstr "Banco receptor"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment__partner_bank_id
 #: model:ir.model.fields,field_description:account.field_account_payment_register__partner_bank_id
 msgid "Recipient Bank Account"
-msgstr "Cuenta bancaria destinataria"
+msgstr "Cuenta bancaria receptora"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_move_send__mail_partner_ids
@@ -11967,6 +11985,14 @@ msgstr ""
 #: model:ir.model,name:account.model_account_resequence_wizard
 msgid "Remake the sequence of Journal Entries."
 msgstr "Haga de nuevo la secuencia de asientos contables."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/account_tax.py:0
+#: code:addons/account/models/account_tax.py:0
+#, python-format
+msgid "Removed"
+msgstr "Eliminado"
 
 #. module: account
 #: model:account.account,name:account.1_expense_rent
@@ -16983,6 +17009,13 @@ msgstr ""
 
 #. module: account
 #. odoo-python
+#: code:addons/account/models/account_account.py:0
+#, python-format
+msgid "You cannot create recursive groups."
+msgstr "No puede crear grupos recursivos."
+
+#. module: account
+#. odoo-python
 #: code:addons/account/models/account_move_line.py:0
 #, python-format
 msgid ""
@@ -17011,6 +17044,28 @@ msgid ""
 msgstr ""
 "No puede eliminar este asiento pues ya consumió un número de secuencia y no "
 "es el último de la cadena. Debe revertirlo en su lugar."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/ir_actions_report.py:0
+#, python-format
+msgid ""
+"You cannot delete this report (%s), it is used by the accounting PDF "
+"generation engine."
+msgstr ""
+"No puede eliminar este reporte (%s). El motor de generación de PDF de "
+"contabilidad lo utiliza."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/account_account_tag.py:0
+#, python-format
+msgid ""
+"You cannot delete this account tag (%s), it is used on the chart of account "
+"definition."
+msgstr ""
+"No puede eliminar esta etiqueta de cuenta (%s), se utiliza en la definición "
+"del plan de cuentas."
 
 #. module: account
 #. odoo-python
@@ -17574,7 +17629,7 @@ msgstr "Por ejemplo, comisiones bancarias"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_payment_form
 msgid "e.g. Cash"
-msgstr "por ejemplo, efectivo"
+msgstr "Por ejemplo, Efectivo"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_form
@@ -17610,7 +17665,7 @@ msgstr "por ejemplo, términos de pago: 30 días después de la fecha de factura
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_journal_form
 msgid "e.g. domain.com"
-msgstr "por ejemplo: dominio.com"
+msgstr "Por ejemplo, dominio.com"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_move_send_form

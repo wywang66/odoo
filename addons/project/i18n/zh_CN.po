@@ -759,7 +759,7 @@ msgstr "添加有关此任务的详细信息..."
 #. module: project
 #: model:ir.model.fields,help:project.field_project_share_wizard__note
 msgid "Add extra content to display in the email"
-msgstr "添加额外内容以显示在电邮中"
+msgstr "添加额外内容以显示在电子邮件中"
 
 #. module: project
 #. odoo-javascript
@@ -2442,7 +2442,7 @@ msgstr "和这个项目相关的内部邮件。收件会自动同步为任务（
 #: code:addons/project/static/src/project_sharing/components/chatter/chatter_messages.xml:0
 #, python-format
 msgid "Internal notes are only displayed to internal users."
-msgstr "内部注释仅向内部用户显示."
+msgstr "内部说明仅向内部用户显示."
 
 #. module: project
 #. odoo-python

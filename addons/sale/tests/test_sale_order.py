@@ -1,16 +1,17 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from datetime import timedelta
+from unittest.mock import patch
+
 from freezegun import freeze_time
 
 from odoo import fields
-from odoo.fields import Command
 from odoo.exceptions import AccessError, UserError, ValidationError
-from odoo.tests import tagged, Form
-from odoo.tools import float_compare
+from odoo.fields import Command
+from odoo.tests import Form, tagged
 
-from odoo.addons.sale.tests.common import SaleCommon
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.sale.tests.common import SaleCommon
 
 
 @tagged('post_install', '-at_install')
@@ -445,6 +446,36 @@ class TestSaleOrder(SaleCommon):
 
         self.assertFalse(public_user.has_group('sale.group_auto_done_setting'))
         self.assertTrue(self.sale_order.locked)
+
+    def test_generate_account_analytic_when_confirm_so(self):
+        """ Test generate account analytic when SO with expense product is confirmed """
+        restaurant_expenses_product = self.env['product.product'].create({
+            'name': 'Restaurant Expenses',
+            'type': 'service',
+            'expense_policy': 'sales_price',
+            'list_price': 14.0,
+            'standard_price': 10.0,
+        })
+        sale_order = self.env['sale.order'].with_user(self.sale_user).create({
+            'partner_id': self.partner.id,
+            'order_line': [Command.create({
+                'product_id': restaurant_expenses_product.id,
+                'product_uom_qty': 1,
+            })],
+        })
+        self.assertFalse(sale_order.analytic_account_id)
+        sale_order.action_confirm()
+        self.assertTrue(sale_order.analytic_account_id, "An analytic account should be generated")
+
+    def test_so_discount_is_not_reset(self):
+        """ Discounts should not be recomputed on order confirmation """
+        with patch(
+            'odoo.addons.sale.models.sale_order_line.SaleOrderLine'
+            '._compute_discount'
+        ) as patched:
+            self.sale_order.action_confirm()
+            self.sale_order.order_line.flush_recordset(['discount'])
+            patched.assert_not_called()
 
 
 @tagged('post_install', '-at_install')

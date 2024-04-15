@@ -422,6 +422,11 @@ msgid "<span class=\"d-block w-75 py-2\">Header Color</span>"
 msgstr "<span class=\"d-block w-75 py-2\">لون الترويسة</span>"
 
 #. module: mail
+#: model_terms:ir.ui.view,arch_db:mail.mail_alias_domain_view_form
+msgid "<span class=\"me-1 oe_inline\">@</span>"
+msgstr "<span class=\"me-1 oe_inline\">@</span>"
+
+#. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.res_config_settings_view_form
 msgid "<span class=\"me-1\">@</span>"
 msgstr "<span class=\"me-1\">@</span>"
@@ -538,16 +543,6 @@ msgstr ""
 " اللقب. "
 
 #. module: mail
-#: model:ir.model.constraint,message:mail.constraint_bus_presence_partner_or_guest_exists
-msgid "A bus presence must have a user or a guest."
-msgstr "يجب أن يكون لظهور المستخدم مستخدم أو زائر. "
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_discuss_channel_member_partner_or_guest_exists
-msgid "A channel member must be a partner or a guest."
-msgstr "يجب أن يكون عضو القناة شريكاً أو ضيفاً. "
-
-#. module: mail
 #. odoo-python
 #: code:addons/mail/models/discuss/discuss_channel.py:0
 #, python-format
@@ -565,11 +560,6 @@ msgstr ""
 "لا يجب إنشاء دردشة بها أكثر من شخصين 2. قم بإنشاء مجموعة عوضاً عن ذلك. "
 
 #. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_message_reaction_partner_or_guest_exists
-msgid "A message reaction must be from a partner or from a guest."
-msgstr "يجب أن يكون تعبير الرسالة من شريك أو من ضيف. "
-
-#. module: mail
 #. odoo-python
 #: code:addons/mail/models/ir_actions_server.py:0
 #, python-format
@@ -584,11 +574,6 @@ msgid ""
 msgstr ""
 "يتطلب مفتاح Google API صالح لتمكين ترجمة الرسائل.  "
 "https://cloud.google.com/translate/docs/setup"
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_res_users_settings_volumes_partner_or_guest_exists
-msgid "A volume setting must have a partner or a guest."
-msgstr "يجب أن يكون لإعدادات الصوت شريك أو زائر. "
 
 #. module: mail
 #. odoo-javascript
@@ -715,11 +700,6 @@ msgstr "الأنشطة"
 #: model_terms:ir.ui.view,arch_db:mail.mail_activity_plan_view_form
 msgid "Activities To Generate"
 msgstr "الأنشطة لإنشائها "
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_activity_check_res_id_is_set
-msgid "Activities have to be linked to records with a not null res_id."
-msgstr "يجب أن تكون الأنشطة مربوطة بسجلات مع res_id غير فارغ. "
 
 #. module: mail
 #. odoo-javascript
@@ -1635,11 +1615,6 @@ msgstr ""
 "ارتدادًا آخر أو ببساطة استخدم النطاق المستعار الآخر. "
 
 #. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_alias_domain_bounce_email_uniques
-msgid "Bounce emails should be unique"
-msgstr "يجب أن تكون رسائل البريد الإلكتروني المرتدة فريدة من نوعها "
-
-#. module: mail
 #. odoo-python
 #: code:addons/mail/models/mail_alias_domain.py:0
 #, python-format
@@ -1853,11 +1828,6 @@ msgid ""
 msgstr ""
 "الاسم المستعار Catchall %(catchall)s مستخدم بالفعل لمجال آخر بنفس الاسم. "
 "استخدم جامعًا آخر أو ببساطة استخدم النطاق المستعار الآخر. "
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_alias_domain_catchall_email_uniques
-msgid "Catchall emails should be unique"
-msgstr "يجب أن تكون رسائل البريد الإلكتروني الجماعية فريدة من نوعها "
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_mail__email_cc
@@ -2114,6 +2084,13 @@ msgstr "تعليق"
 #: model:ir.model.fields,field_description:mail.field_mail_alias_domain__company_ids
 msgid "Companies"
 msgstr "الشركات"
+
+#. module: mail
+#: model:ir.model.fields,help:mail.field_mail_alias_domain__company_ids
+msgid "Companies using this domain as default for sending mails"
+msgstr ""
+"الشركات التي تستخدم هذا النطاق كالنطاق الافتراضي لإرسال رسائل البريد "
+"الإلكتروني "
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity_plan__company_id
@@ -2553,11 +2530,6 @@ msgid "Custom channel name"
 msgstr "اسم القناة المخصص"
 
 #. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_notification_notification_partner_required
-msgid "Customer is required for inbox / email notification"
-msgstr "العميل مطلوب لإشعار صندوق الوارد / البريد الإلكتروني "
-
-#. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.res_config_settings_view_form
 msgid "Customize the look and feel of automated emails"
 msgstr "قم بتخصيص مظهر وأداء رسائل البريد الإلكتروني المؤتمتة الخاصة بك "
@@ -2696,6 +2668,17 @@ msgstr "المستخدم الافتراضي"
 #: model:ir.model.fields,field_description:mail.field_mail_alias_mixin_optional__alias_defaults
 msgid "Default Values"
 msgstr "القيم الافتراضية"
+
+#. module: mail
+#: model:ir.model.fields,help:mail.field_mail_alias_domain__default_from
+msgid ""
+"Default from when it does not match outgoing server filters. Can be either a"
+" local-part e.g. 'notifications' either a complete email address e.g. "
+"'notifications@example.com' to override all outgoing emails."
+msgstr ""
+"الافتراضي عندما لا يطابق فلاتر خادم البريد الصادر. إما أن يكون جزءاً محلياً "
+"(مثال: \"الإشعارات\") أو عنوان بريد إلكتروني كامل (مثال: "
+"\"notifications@example.com\") لتجاوز كافة رسائل البريد الإلكتروني الصادرة. "
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_template__use_default_to
@@ -2998,6 +2981,11 @@ msgstr "اسم المستند"
 #: model_terms:ir.ui.view,arch_db:mail.message_activity_assigned
 msgid "Document: \""
 msgstr "المستند: \" "
+
+#. module: mail
+#: model_terms:ir.ui.view,arch_db:mail.mail_alias_domain_view_form
+msgid "Domain"
+msgstr "النطاق"
 
 #. module: mail
 #. odoo-javascript
@@ -3304,11 +3292,6 @@ msgid "Email Thread"
 msgstr "المحادثة البريدية"
 
 #. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_blacklist_unique_email
-msgid "Email address already exists!"
-msgstr "عنوان البريد الإكتروني هذا موجود بالفعل! "
-
-#. module: mail
 #: model:ir.model.fields,help:mail.field_mail_compose_message__email_from
 #: model:ir.model.fields,help:mail.field_mail_mail__email_from
 #: model:ir.model.fields,help:mail.field_mail_message__email_from
@@ -3367,6 +3350,15 @@ msgstr "نسخة البريد الإلكتروني "
 #: model:ir.model,name:mail.model_mail_compose_message
 msgid "Email composition wizard"
 msgstr "معالج تأليف رسالة بريد إلكتروني"
+
+#. module: mail
+#: model:ir.model.fields,help:mail.field_mail_alias__alias_domain
+#: model:ir.model.fields,help:mail.field_mail_alias_domain__name
+#: model:ir.model.fields,help:mail.field_mail_alias_mixin__alias_domain
+#: model:ir.model.fields,help:mail.field_mail_alias_mixin_optional__alias_domain
+#: model:ir.model.fields,help:mail.field_res_company__alias_domain_name
+msgid "Email domain e.g. 'example.com' in 'odoo@example.com'"
+msgstr "نطاق البريد الإلكتروني مثال: 'example.com' في 'odoo@example.com' "
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.view_mail_form
@@ -3496,11 +3488,6 @@ msgid ""
 "Error without exception. Probably due to sending an email without computed "
 "recipients."
 msgstr "خطأ دون استثناء. قد يكون بسبب إرسال رسالة دون تحديد المستلمين. "
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_followers_mail_followers_res_partner_res_model_id_uniq
-msgid "Error, a partner cannot follow twice the same object."
-msgstr "خطأ، لا يمكن لشريك أن يتابع نفس الكائن مرتين. "
 
 #. module: mail
 #: model:ir.model.fields.selection,name:mail.selection__mail_alias__alias_contact__everyone
@@ -4001,14 +3988,6 @@ msgstr "تجميع حسب"
 #: model_terms:ir.ui.view,arch_db:mail.discuss_channel_view_form
 msgid "Group Name"
 msgstr "اسم المجموعة"
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_discuss_channel_group_public_id_check
-msgid ""
-"Group authorization and group auto-subscription are only supported on "
-"channels."
-msgstr ""
-"خاصيتي التفويض الجماعي والاشتراك التلقائي الجماعي مدعومتان في القنوات فقط. "
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.view_email_template_search
@@ -5307,6 +5286,24 @@ msgid "Local-part based incoming detection"
 msgstr "الكشف عن الوارد على أساس الجزء المحلي"
 
 #. module: mail
+#: model:ir.model.fields,help:mail.field_mail_alias_domain__catchall_alias
+msgid ""
+"Local-part of email used for Reply-To to catch answers e.g. 'catchall' in "
+"'catchall@example.com'"
+msgstr ""
+"الجزء العام من البريد الإلكتروني المستخدَم لـ \"الرد على\" لتجميع الإجابات. "
+"مثال: 'catchall' في 'catchall@example.com' "
+
+#. module: mail
+#: model:ir.model.fields,help:mail.field_mail_alias_domain__bounce_alias
+msgid ""
+"Local-part of email used for Return-Path used when emails bounce e.g. "
+"'bounce' in 'bounce@example.com'"
+msgstr ""
+"الجزء المحلي من البريد الإلكتروني الذي يُستخدَم \"لمسار العودة\" عندما ترتد "
+"رسائل البريد الإلكتروني  مثال: 'bounce' في 'bounce@example.com' "
+
+#. module: mail
 #. odoo-javascript
 #: code:addons/mail/static/src/core/common/composer.js:0
 #: model_terms:ir.ui.view,arch_db:mail.email_compose_message_wizard_form
@@ -5724,7 +5721,7 @@ msgstr "الإشارات فقط "
 #. module: mail
 #: model:ir.model,name:mail.model_base_partner_merge_automatic_wizard
 msgid "Merge Partner Wizard"
-msgstr "معالج دمج الشريك"
+msgstr "معالج دمج الوكيل "
 
 #. module: mail
 #. odoo-python
@@ -6660,11 +6657,6 @@ msgstr "يسمح للمشرفين فقط بتصدير رسالة البريد"
 #, python-format
 msgid "Only custom models can be modified."
 msgstr "يمكن تعديل النماذج المخصصة فقط. "
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_res_users_notification_type
-msgid "Only internal user can receive notifications in Odoo"
-msgstr "وحدهم المستخدمون الداخليون يمكنهم استلام الإشعارات في أودو "
 
 #. module: mail
 #. odoo-python
@@ -7910,6 +7902,13 @@ msgid "Save as a new template"
 msgstr "حفظ كقالب جديد"
 
 #. module: mail
+#. odoo-javascript
+#: code:addons/mail/static/src/core/common/composer.js:0
+#, python-format
+msgid "Save editing"
+msgstr ""
+
+#. module: mail
 #: model:ir.model,name:mail.model_discuss_gif_favorite
 msgid "Save favorite GIF from Tenor API"
 msgstr "حفظ الـ GIF المفضل من الواجهة البرمجية لـ API "
@@ -9032,16 +9031,6 @@ msgid "The avatar has been updated!"
 msgstr "لقد تم تحديث الصورة الرمزية! "
 
 #. module: mail
-#: model:ir.model.constraint,message:mail.constraint_discuss_channel_uuid_unique
-msgid "The channel UUID must be unique"
-msgstr "يجب أن يكون المعرف الفريد عالمياً (UUID) فريداً "
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_discuss_channel_channel_type_not_null
-msgid "The channel type cannot be empty"
-msgstr "لا يمكن أن يكون نوع القناة فارغاً "
-
-#. module: mail
 #: model:ir.model.fields,help:mail.field_mail_template__can_write
 msgid "The current user can edit the template."
 msgstr "بوسع المستخدم الحالي تحرير القالب "
@@ -9057,11 +9046,6 @@ msgstr "مدة الرسالة الصوتية هي دقيقة واحدة فقط �
 #: model_terms:ir.ui.view,arch_db:mail.mail_bounce_catchall
 msgid "The email sent to"
 msgstr "البريد الإلكتروني المرسل إلى"
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_mail_partner_device_endpoint_unique
-msgid "The endpoint must be unique !"
-msgstr "يجب أن تكون نقطة الانتهاء فريدة! "
 
 #. module: mail
 #. odoo-python
@@ -9207,11 +9191,6 @@ msgstr ""
 #, python-format
 msgid "There are no messages in this conversation."
 msgstr "لا توجد رسائل في هذه المحادثة. "
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_discuss_channel_rtc_session_channel_member_unique
-msgid "There can only be one rtc session per channel member"
-msgstr "يمكن أن تكون هناك جلسة RTC واحدة فقط لكل عضو قناة "
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.message_origin_link
@@ -9683,6 +9662,13 @@ msgstr "وحدة التأخير"
 
 #. module: mail
 #. odoo-python
+#: code:addons/mail/models/mail_tracking_value.py:0
+#, python-format
+msgid "Unknown"
+msgstr "غير معروف"
+
+#. module: mail
+#. odoo-python
 #: code:addons/mail/models/mail_notification.py:0
 #: model:ir.model.fields.selection,name:mail.selection__mail_mail__failure_type__unknown
 #: model:ir.model.fields.selection,name:mail.selection__mail_notification__failure_type__unknown
@@ -9891,6 +9877,11 @@ msgid "Use the push to talk feature"
 msgstr "استخدام خاصية الضغط للتحدث "
 
 #. module: mail
+#: model_terms:ir.ui.view,arch_db:mail.mail_alias_domain_view_form
+msgid "Used In"
+msgstr "مستخدم في"
+
+#. module: mail
 #: model:ir.model.fields,help:mail.field_mail_compose_message__res_domain_user_id
 msgid "Used as context used to evaluate composer domain"
 msgstr "يُستخدم كسياق يتم استخدامه لتقييم نطاق المُنشئ"
@@ -10005,11 +9996,6 @@ msgstr "المستخدم غير متصل الآن"
 #, python-format
 msgid "User is online"
 msgstr "المستخدم متصل الآن"
-
-#. module: mail
-#: model:ir.model.constraint,message:mail.constraint_discuss_gif_favorite_user_gif_favorite
-msgid "User should not have duplicated favorite GIF"
-msgstr "يجب ألا يكون للمستخدم GIF مفضل مكرر "
 
 #. module: mail
 #. odoo-python
@@ -10636,6 +10622,13 @@ msgid "Your name"
 msgstr "اسمك"
 
 #. module: mail
+#. odoo-javascript
+#: code:addons/mail/static/src/core/web/recipient_list.js:0
+#, python-format
+msgid "[%(name)s] (no email address)"
+msgstr "[%(name)s] (لا يوجد عنوان بريد إلكتروني) "
+
+#. module: mail
 #. odoo-python
 #: code:addons/mail/models/mail_alias.py:0
 #, python-format
@@ -10835,6 +10828,26 @@ msgstr "مثال: \"البريد الإلكتروني للترحيب\" "
 #: model_terms:ir.ui.view,arch_db:mail.mail_compose_message_view_form_template_save
 msgid "e.g. \"Welcome to MyCompany\" or \"Nice to meet you, {{ object.name }}\""
 msgstr "مثال: \"مرحباً بك في شركتي\" أو \"يسرنا التعرف عليك، {{ object.name }}\" "
+
+#. module: mail
+#: model_terms:ir.ui.view,arch_db:mail.mail_alias_domain_view_form
+msgid "e.g. \"bounce\""
+msgstr "مثال: \"مرتدة\" "
+
+#. module: mail
+#: model_terms:ir.ui.view,arch_db:mail.mail_alias_domain_view_form
+msgid "e.g. \"catchall\""
+msgstr "مثال: \"catchall\" "
+
+#. module: mail
+#: model_terms:ir.ui.view,arch_db:mail.mail_alias_domain_view_form
+msgid "e.g. \"mycompany.com\""
+msgstr "مثال: \"mycompany.com\" "
+
+#. module: mail
+#: model_terms:ir.ui.view,arch_db:mail.mail_alias_domain_view_form
+msgid "e.g. \"notifications\""
+msgstr "مثال: \"الإشعارات\" "
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.res_config_settings_view_form
