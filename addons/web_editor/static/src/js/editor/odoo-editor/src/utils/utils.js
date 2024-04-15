@@ -926,11 +926,36 @@ export function isSelectionInSelectors(selector) {
     return false;
 }
 
+export function getOffsetAndCharSize(nodeValue, offset, direction) {
+    //We get the correct offset which corresponds to this offset
+    // If direction is left it means we are coming from the right and
+    // we want to get the end offset of the first element to the left
+    // Example with LEFT direction:
+    // <p>a \uD83D[offset]\uDE0D b</p> -> <p>a \uD83D\uDE0D[offset] b</p> and
+    // size = 2 so delete backward will delete the whole emoji.
+    // Example with Right direction:
+    // <p>a \uD83D[offset]\uDE0D b</p> -> <p>a [offset]\uD83D\uDE0D b</p> and
+    // size = 2 so delete forward will delete the whole emoji.
+    const splittedNodeValue = [...nodeValue];
+    let charSize = 1;
+    let newOffset = offset;
+    let currentSize = 0;
+    for (const item of splittedNodeValue) {
+        currentSize += item.length;
+        if (currentSize >= offset) {
+            newOffset = direction == DIRECTIONS.LEFT ? currentSize : currentSize - item.length;
+            charSize = item.length;
+            break;
+        }
+    }
+    return [newOffset, charSize];
+}
+
 //------------------------------------------------------------------------------
 // Format utils
 //------------------------------------------------------------------------------
 
-const formatsSpecs = {
+export const formatsSpecs = {
     italic: {
         tagName: 'em',
         isFormatted: isItalic,
@@ -1094,8 +1119,12 @@ export const formatSelection = (editor, formatName, {applyStyle, formatProps} = 
         // Remove the format on all inline ancestors until a block or an element
         // with a class that is not related to font size (in case the formatting
         // comes from the class).
-        while (parentNode && (!isBlock(parentNode) && (parentNode.classList.length === 0 ||
-                [...parentNode.classList].every(cls => FONT_SIZE_CLASSES.includes(cls))))) {
+        while (
+            parentNode && !isBlock(parentNode) &&
+            !isUnbreakable(parentNode) && !isUnbreakable(currentNode) &&
+            (parentNode.classList.length === 0 ||
+                [...parentNode.classList].every(cls => FONT_SIZE_CLASSES.includes(cls)))
+        ) {
             const isUselessZws = parentNode.tagName === 'SPAN' &&
                 parentNode.hasAttribute('data-oe-zws-empty-inline') &&
                 parentNode.getAttributeNames().length === 1;
@@ -2028,6 +2057,9 @@ export function splitAroundUntil(elements, limitAncestor) {
 }
 
 export function insertText(sel, content) {
+    if (!content) {
+        return;
+    }
     if (sel.anchorNode.nodeType === Node.TEXT_NODE) {
         const pos = [sel.anchorNode.parentElement, splitTextNode(sel.anchorNode, sel.anchorOffset)];
         setSelection(...pos, ...pos, false);
@@ -2107,7 +2139,7 @@ export function setTagName(el, newTagName) {
         return el;
     }
     const n = document.createElement(newTagName);
-    if (paragraphRelatedElements.includes(el.nodeName)) {
+    if (el.nodeName !== 'LI') {
         const attributes = el.attributes;
         for (const attr of attributes) {
             n.setAttribute(attr.name, attr.value);
@@ -2763,10 +2795,25 @@ export function pxToFloat(sizeString) {
     return parseFloat(sizeString.replace('px', ''));
 }
 
+/**
+ * Returns position of a range in form of object (end
+ * position of a range in case of non-collapsed range).
+ *
+ * @param {HTMLElement} el element for which range postion will be calculated
+ * @param {Document} document
+ * @param {Object} [options]
+ * @param {Number} [options.marginRight] right margin to be considered
+ * @param {Number} [options.marginBottom] bottom margin to be considered
+ * @param {Number} [options.marginTop] top margin to be considered
+ * @param {Number} [options.marginLeft] left margin to be considered
+ * @param {Function} [options.getContextFromParentRect] to get context rect from parent
+ * @returns {Object | undefined}
+ */
 export function getRangePosition(el, document, options = {}) {
     const selection = document.getSelection();
     if (!selection.rangeCount) return;
     const range = selection.getRangeAt(0);
+    const isRtl = options.direction === 'rtl';
 
     const marginRight = options.marginRight || 20;
     const marginBottom = options.marginBottom || 20;
@@ -2794,6 +2841,18 @@ export function getRangePosition(el, document, options = {}) {
         clonedRange.detach();
     }
 
+    if (isRtl) {
+        // To handle the RTL case we shift the elelement to the left by its size
+        // and handle it the same as left.
+        offset.right = offset.left - el.offsetWidth;
+        const leftMove = Math.max(0, offset.right + el.offsetWidth + marginLeft - window.innerWidth);
+        if (leftMove && offset.right - leftMove > marginRight) {
+            offset.right -= leftMove;
+        } else if (offset.right - leftMove < marginRight) {
+            offset.right = marginRight;
+        }
+    }
+
     const leftMove = Math.max(0, offset.left + el.offsetWidth + marginRight - window.innerWidth);
     if (leftMove && offset.left - leftMove > marginLeft) {
         offset.left -= leftMove;
@@ -2804,6 +2863,9 @@ export function getRangePosition(el, document, options = {}) {
     if (options.parentContextRect) {
         offset.left += options.parentContextRect.left;
         offset.top += options.parentContextRect.top;
+        if (isRtl) {
+            offset.right += options.parentContextRect.left;
+        }
     }
 
     if (
@@ -2818,6 +2880,13 @@ export function getRangePosition(el, document, options = {}) {
     if (offset) {
         offset.top += window.scrollY;
         offset.left += window.scrollX;
+        if (isRtl) {
+            offset.right += window.scrollX;
+        }
+    }
+    if (isRtl) {
+        // Get the actual right value.
+        offset.right = window.innerWidth - offset.right - el.offsetWidth;
     }
 
     return offset;

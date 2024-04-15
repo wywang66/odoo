@@ -17,26 +17,27 @@
 # Lluís Dalmau <lluis.dalmau@guifi.net>, 2023
 # Martin Trigaux, 2023
 # Cristian Cruz, 2023
-# Josep Anton Belchi, 2023
 # Carles Antoli <carlesantoli@hotmail.com>, 2023
 # Quim - eccit <quim@eccit.com>, 2023
 # marcescu, 2023
 # RGB Consulting <odoo@rgbconsulting.com>, 2023
 # Harcogourmet, 2023
 # Jonatan Gk, 2023
-# Manel Fernandez Ramirez <manelfera@outlook.com>, 2023
 # Arnau Ros, 2023
 # Óscar Fonseca <tecnico@pyming.com>, 2023
 # jabiri7, 2023
 # Ivan Espinola, 2023
+# Manel Fernandez Ramirez <manelfera@outlook.com>, 2024
+# Josep Anton Belchi, 2024
+# Santiago Payà <santiagopim@gmail.com>, 2024
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-05 12:32+0000\n"
+"POT-Creation-Date: 2024-01-29 10:46+0000\n"
 "PO-Revision-Date: 2023-10-26 23:09+0000\n"
-"Last-Translator: Ivan Espinola, 2023\n"
+"Last-Translator: Santiago Payà <santiagopim@gmail.com>, 2024\n"
 "Language-Team: Catalan (https://app.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1071,6 +1072,15 @@ msgstr ""
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#, python-format
+msgid "Add to Favorites"
+msgstr "Afegir als favorits"
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/views/fields/x2many/x2many_field.js:0
 #, python-format
 msgid "Add: %s"
@@ -1506,6 +1516,15 @@ msgstr "Blau"
 #: code:addons/web/static/src/views/fields/boolean_icon/boolean_icon_field.js:0
 #, python-format
 msgid "Boolean Icon"
+msgstr ""
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/views/fields/statusbar/statusbar_field.js:0
+#, python-format
+msgid ""
+"Boolean field from the model used in the relation, which indicates whether "
+"the state is folded or not."
 msgstr ""
 
 #. module: web
@@ -3427,6 +3446,16 @@ msgstr "Text de capçalera mostrat a dalt de tots els informes."
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/model/relational_model/record.js:0
+#, python-format
+msgid ""
+"Heads up! Your recent changes are too large to save automatically. Please "
+"click the <i class=\"fa fa-cloud-upload fa-fw\"></i> button now to ensure "
+"your work is saved before you exit this tab."
+msgstr ""
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/views/fields/many2many_tags/many2many_tags_field.xml:0
 #, python-format
 msgid "Hide in kanban"
@@ -3528,7 +3557,7 @@ msgstr "ILY"
 #: code:addons/web/static/src/views/fields/datetime/datetime_field.js:0
 #: code:addons/web/static/src/views/fields/datetime/datetime_field.js:0
 #, python-format
-msgid "ISO-formatted date (e.g. \"2018-12-31\") or \"today\"."
+msgid "ISO-formatted date (e.g. \"2018-12-31\") or \"%s\"."
 msgstr ""
 
 #. module: web
@@ -5024,6 +5053,13 @@ msgstr "Estat no actiu, fes clic per canviar-ho"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/fields/many2many_binary/many2many_binary_field.js:0
+#, python-format
+msgid "Number of files"
+msgstr ""
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
@@ -5139,8 +5175,8 @@ msgid ""
 "Odoo Push notifications have been blocked. Go to your browser settings to "
 "allow them."
 msgstr ""
-"S' han bloquejat les notificacions Odoo Push. Aneu al vostre arranjament del"
-" navegador per a permetre- los."
+"S' han bloquejat les notificacions Odoo Push. Aneu a la configuració del "
+"navegador per a permetre'ls."
 
 #. module: web
 #. odoo-javascript
@@ -5752,6 +5788,13 @@ msgstr "Barra de progrés"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/view_components/column_progress.xml:0
+#, python-format
+msgid "Progress bar"
+msgstr "Barra de progrès"
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/views/fields/properties/properties_field.js:0
 #, python-format
 msgid "Properties"
@@ -5900,9 +5943,7 @@ msgstr ""
 #, python-format
 msgid ""
 "Ready to make your record disappear into thin air? Are you sure?\n"
-"\n"
 "It will be gone forever!\n"
-"\n"
 "\n"
 "Think twice before you click that 'Delete' button!"
 msgstr ""
@@ -6032,6 +6073,15 @@ msgstr "Esborrar propietat"
 #, python-format
 msgid "Remove field"
 msgstr "Elimina el camp"
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#, python-format
+msgid "Remove from Favorites"
+msgstr "Eliminar de favorits"
 
 #. module: web
 #. odoo-javascript
@@ -6252,6 +6302,13 @@ msgstr "Desar i nou"
 #, python-format
 msgid "Save as:"
 msgstr "Desar com:"
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/search/custom_favorite_item/custom_favorite_item.xml:0
+#, python-format
+msgid "Save current search"
+msgstr "Desar la cerca actual"
 
 #. module: web
 #. odoo-javascript
@@ -7024,6 +7081,16 @@ msgstr ""
 #: code:addons/web/static/src/core/utils/files.js:0
 #, python-format
 msgid "The selected file (%sB) is over the maximum allowed file size (%sB)."
+msgstr ""
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/core/errors/scss_error_dialog.js:0
+#, python-format
+msgid ""
+"The style compilation failed. This is an administrator or developer error "
+"that must be fixed for the entire database before continuing working. See "
+"browser console or server logs for details."
 msgstr ""
 
 #. module: web
@@ -21715,7 +21782,7 @@ msgstr "meló"
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
 msgid "memo"
-msgstr "memoràndum"
+msgstr "Anotació"
 
 #. module: web
 #. odoo-javascript

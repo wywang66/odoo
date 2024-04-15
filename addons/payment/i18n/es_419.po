@@ -1309,7 +1309,7 @@ msgstr "Métodos de pago"
 #: code:addons/payment/static/src/js/payment_form.js:0
 #, python-format
 msgid "Payment processing failed"
-msgstr "Fallo al procesar el pago"
+msgstr "Error al procesar el pago"
 
 #. module: payment
 #: model_terms:ir.ui.view,arch_db:payment.payment_provider_form
@@ -2191,6 +2191,8 @@ msgid ""
 "You cannot change the company of a payment provider with existing "
 "transactions."
 msgstr ""
+"No puede comprar la empresa de un proveedor de pago con transacciones "
+"existentes."
 
 #. module: payment
 #. odoo-python
@@ -2246,7 +2248,7 @@ msgstr ""
 #: model_terms:payment.provider,auth_msg:payment.payment_provider_xendit
 #, python-format
 msgid "Your payment has been authorized."
-msgstr "Se ha autorizado su pago."
+msgstr "Se autorizó su pago."
 
 #. module: payment
 #. odoo-python
@@ -2269,7 +2271,7 @@ msgstr "Se ha autorizado su pago."
 #: model_terms:payment.provider,cancel_msg:payment.payment_provider_xendit
 #, python-format
 msgid "Your payment has been cancelled."
-msgstr "Se ha cancelado su pago."
+msgstr "Se canceló su pago."
 
 #. module: payment
 #. odoo-python

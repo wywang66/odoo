@@ -246,7 +246,7 @@ class AccountEdiFormat(models.Model):
             message.append(_("- Street2 should be min 3 and max 100 characters"))
         if not re.match("^.{3,100}$", partner.city or ""):
             message.append(_("- City required min 3 and max 100 characters"))
-        if not re.match("^.{3,50}$", partner.state_id.name or ""):
+        if partner.country_id.code == "IN" and not re.match("^.{3,50}$", partner.state_id.name or ""):
             message.append(_("- State required min 3 and max 50 characters"))
         if partner.country_id.code == "IN" and not re.match("^[0-9]{6,}$", partner.zip or ""):
             message.append(_("- Zip code required 6 digits"))
@@ -583,6 +583,9 @@ class AccountEdiFormat(models.Model):
                     for gst in ["cgst", "sgst", "igst"]:
                         if any(tag in tags for tag in self.env.ref("l10n_in.tax_tag_%s"%(gst))):
                             line_code = gst
+                        # need to separate rc tax value so it's not pass to other values
+                        if any(tag in tags for tag in self.env.ref("l10n_in.tax_tag_%s_rc" % (gst))):
+                            line_code = gst + '_rc'
             return {
                 "tax": tax,
                 "base_product_id": invl.product_id,

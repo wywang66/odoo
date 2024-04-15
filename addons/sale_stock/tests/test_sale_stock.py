@@ -1,12 +1,14 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from datetime import datetime, timedelta
 
-from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import ValuationReconciliationTestCommon
-from odoo.addons.sale.tests.common import TestSaleCommon
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
-from odoo import Command
+
+from odoo.addons.sale.tests.common import TestSaleCommon
+from odoo.addons.stock_account.tests.test_anglo_saxon_valuation_reconciliation_common import (
+    ValuationReconciliationTestCommon,
+)
 
 
 @tagged('post_install', '-at_install')
@@ -1677,6 +1679,34 @@ class TestSaleStock(TestSaleCommon, ValuationReconciliationTestCommon):
         return_picking_2 = self.env['stock.picking'].browse(res['res_id'])
         return_picking_2.button_validate()
         self.assertEqual(return_wizard.product_return_moves.quantity, 1)
+
+    def test_2_steps_decrease_sol_qty_to_zero(self):
+        """
+        2 steps delivery, 'cancel next move' enabled
+        SO with one product
+        On the SO, cancel the qty of the product
+        On each picking, the SM should be canceled
+        """
+        warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
+
+        warehouse.delivery_steps = 'pick_ship'
+        warehouse.delivery_route_id.rule_ids.propagate_cancel = True
+
+        so = self.env['sale.order'].create({
+            'partner_id': self.partner_a.id,
+            'order_line': [(0, 0, {
+                'name': self.product_a.name,
+                'product_id': self.product_a.id,
+                'product_uom_qty': 1,
+                'product_uom': self.product_a.uom_id.id,
+                'price_unit': self.product_a.list_price,
+            })],
+        })
+        so.action_confirm()
+
+        so.order_line.product_uom_qty = 0
+
+        self.assertEqual(so.picking_ids.move_ids.mapped('state'), ['cancel', 'cancel'])
 
     def test_2_steps_fixed_procurement_propagation_with_backorder(self):
         """

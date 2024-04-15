@@ -134,7 +134,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:payment.method_form
 #: model_terms:ir.ui.view,arch_db:payment.token_form
 msgid "<span><i class=\"fa fa-lock\"/> Secured by</span>"
-msgstr ""
+msgstr "<span><i class=\"fa fa-lock\"/> 保安由</span>"
 
 #. module: payment
 #: model_terms:ir.ui.view,arch_db:payment.payment_provider_onboarding_wizard_form
@@ -2108,7 +2108,7 @@ msgstr "Xendit"
 msgid ""
 "You cannot change the company of a payment provider with existing "
 "transactions."
-msgstr ""
+msgstr "你不可更改現有交易的付款服務商公司。"
 
 #. module: payment
 #. odoo-python

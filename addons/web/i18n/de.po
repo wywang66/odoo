@@ -3,7 +3,8 @@
 # 	* web
 # 
 # Translators:
-# Wil Odoo, 2023
+# Martin Trigaux, 2024
+# Wil Odoo, 2024
 # Larissa Manderfeld, 2024
 # 
 msgid ""
@@ -1048,6 +1049,15 @@ msgstr "Qweb-Richtlinienkontext hinzufügen"
 #, python-format
 msgid "Add start date"
 msgstr "Startdatum hinzufügen"
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#, python-format
+msgid "Add to Favorites"
+msgstr "Zu Favoriten hinzufügen"
 
 #. module: web
 #. odoo-javascript
@@ -3561,8 +3571,8 @@ msgstr "ILD"
 #: code:addons/web/static/src/views/fields/datetime/datetime_field.js:0
 #: code:addons/web/static/src/views/fields/datetime/datetime_field.js:0
 #, python-format
-msgid "ISO-formatted date (e.g. \"2018-12-31\") or \"today\"."
-msgstr "ISO-formatiertes Datum (z. B. „2018-12-31“) oder „heute“."
+msgid "ISO-formatted date (e.g. \"2018-12-31\") or \"%s\"."
+msgstr "ISO-formatiertes Datum (z. B. „2018-12-31“) oder „%s“."
 
 #. module: web
 #. odoo-javascript
@@ -5072,6 +5082,13 @@ msgstr "Nicht aktiver Zustand, anklicken, um ihn zu ändern"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/fields/many2many_binary/many2many_binary_field.js:0
+#, python-format
+msgid "Number of files"
+msgstr "Anzahl Dateien"
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
@@ -5804,6 +5821,13 @@ msgstr "Fortschrittsbalken"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/view_components/column_progress.xml:0
+#, python-format
+msgid "Progress bar"
+msgstr "Fortschrittsbalken"
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/views/fields/properties/properties_field.js:0
 #, python-format
 msgid "Properties"
@@ -6089,6 +6113,15 @@ msgstr "Feld entfernen"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#: code:addons/web/static/src/views/fields/boolean_favorite/boolean_favorite_field.xml:0
+#, python-format
+msgid "Remove from Favorites"
+msgstr "Aus Favoriten entfernen"
+
+#. module: web
+#. odoo-javascript
 #: code:addons/web/static/src/views/calendar/filter_panel/calendar_filter_panel.xml:0
 #: code:addons/web/static/src/views/calendar/filter_panel/calendar_filter_panel.xml:0
 #, python-format
@@ -6306,6 +6339,13 @@ msgstr "Speichern & Neu"
 #, python-format
 msgid "Save as:"
 msgstr "Speichern als:"
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/search/custom_favorite_item/custom_favorite_item.xml:0
+#, python-format
+msgid "Save current search"
+msgstr "Aktuelle Suche speichern"
 
 #. module: web
 #. odoo-javascript
@@ -10911,7 +10951,7 @@ msgstr "Bushaltestelle"
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
 msgid "business"
-msgstr "-Unternehmen"
+msgstr "Unternehmen"
 
 #. module: web
 #. odoo-javascript

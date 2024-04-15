@@ -24,7 +24,7 @@ msgstr ""
 #. module: web_hierarchy
 #: model:ir.model,name:web_hierarchy.model_ir_actions_act_window_view
 msgid "Action Window View"
-msgstr "Vista de acción de ventana"
+msgstr "Vista de la ventana de acción"
 
 #. module: web_hierarchy
 #: model:ir.model,name:web_hierarchy.model_base
@@ -101,7 +101,7 @@ msgstr "Nuevo"
 #: code:addons/web_hierarchy/static/src/hierarchy_model.js:0
 #, python-format
 msgid "The parent record cannot be the record dragged."
-msgstr "El registro principal no puede ser el registro que arrastró."
+msgstr "El registro padre no puede ser el registro que arrastró."
 
 #. module: web_hierarchy
 #. odoo-javascript
