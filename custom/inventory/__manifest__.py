@@ -2,7 +2,7 @@
 {
     'name': "Inventory Management",
 
-    'summary': "inheritance of inventory",
+    'summary': "Inventory",
 
     'description': """
 Long description of module's purpose
@@ -27,6 +27,7 @@ Long description of module's purpose
         'views/product_view.xml',
         'views/stock_picking_view.xml',
         'views/purchase_order_view.xml',
+        'views/sale_order_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
