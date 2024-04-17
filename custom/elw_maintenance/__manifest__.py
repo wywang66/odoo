@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "DBB Maintenance",
+    'name': "ELW Maintenance",
 
-    'summary': "Digital bigbite equipment maintenance including scheduled calibration",
+    'summary': "ELW maintenance",
 
     'description': """
 Digital bigbite equipment maintenance including scheduled calibration
