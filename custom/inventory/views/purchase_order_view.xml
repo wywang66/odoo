@@ -1,91 +1,94 @@
 <odoo>
-  <data>
+    <data>
 
-    <!-- Orders|RFQ -->
-    <record id="purchase_purchase_order__kpis_tree_inherit" model="ir.ui.view">
-      <field name="name">purchase.purchase.order.kpis.tree.inherit</field>
-      <field name="model">purchase.order</field>
-      <field name="inherit_id" ref="purchase.purchase_order_kpis_tree" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='partner_id']" position="after">
-          <field name="product_id"/>
-          <field name="categ_id"/>
-        </xpath>
-        <xpath expr="//field[@name='product_id']" position="attributes">
-          <attribute name="string">Part Number/Product </attribute>
-        </xpath>
-      </field>
-    </record>
+        <!-- Orders|RFQ -->
+        <record id="purchase_purchase_order__kpis_tree_inherit" model="ir.ui.view">
+            <field name="name">purchase.purchase.order.kpis.tree.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_kpis_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="product_id"/>
+                    <field name="categ_id"/>
+                </xpath>
+                <xpath expr="//field[@name='product_id']" position="attributes">
+                    <attribute name="string">Part Number/Product</attribute>
+                </xpath>
+            </field>
+        </record>
 
-    <!-- Orders|Purchase Orders -->
-    <!--Search panel ValueError: Cannot convert field purchase.order.categ_id to SQL -->
-    <!-- <record id="purchase_purchase_order_view_search_inherit" model="ir.ui.view">
-      <field name="name">purchase.purchase.order.view.search.inherit</field>
-      <field name="model">purchase.order</field>
-      <field name="inherit_id" ref="purchase.purchase_order_view_search" />
-      <field name="arch" type="xml">
-        <search>
-          <searchpanel>
-            <field name="categ_id" string="Product Category" icon="fa fa-users" aria-hidden="true" select="multi" enable_counters="1" />
-          </searchpanel>
-        </search>
-      </field>
-    </record> -->
+        <!-- Orders|Purchase Orders -->
+        <!--Search panel ValueError: Cannot convert field purchase.order.categ_id to SQL -->
+        <!-- Fix by setting store=True on 'categ_id'    -->
+        <record id="purchase_purchase_order_view_search_inherit" model="ir.ui.view">
+            <field name="name">purchase.purchase.order.view.search.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_view_search"/>
+            <field name="arch" type="xml">
+                <search>
+                    <searchpanel>
+                        <field name="categ_id" string="Product Category" icon="fa fa-users" aria-hidden="true"
+                               select="multi" enable_counters="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
 
-     <!-- Requests for Quotation Search view -->
-    <!-- <record id="purchase_view_purchase_order_filter_inherit" model="ir.ui.view">
-      <field name="name">purchase.view.purchase.order.filter.inherit</field>
-      <field name="model">purchase.order</field>
-      <field name="inherit_id" ref="purchase.view_purchase_order_filter" />
-      <field name="arch" type="xml">
-        <search>
-          <searchpanel>
-            <field name="categ_id" string="Product Category" icon="fa fa-users" aria-hidden="true" select="multi" enable_counters="1" />
-          </searchpanel>
-        </search>
-      </field>
-    </record> -->
+        <!-- Requests for Quotation Search view -->
+        <!--    Below alters the Purchase View. this view has additional 'All RFQs' -->
+        <!--    <record id="purchase_view_purchase_order_filter_inherit" model="ir.ui.view">-->
+        <!--      <field name="name">purchase.view.purchase.order.filter.inherit</field>-->
+        <!--      <field name="model">purchase.order</field>-->
+        <!--      <field name="inherit_id" ref="purchase.view_purchase_order_filter" />-->
+        <!--      <field name="arch" type="xml">-->
+        <!--        <search>-->
+        <!--          <searchpanel>-->
+        <!--            <field name="categ_id" string="Product Category" icon="fa fa-users" aria-hidden="true" select="multi" enable_counters="1" />-->
+        <!--          </searchpanel>-->
+        <!--        </search>-->
+        <!--      </field>-->
+        <!--    </record>-->
 
-    <record id="purchase_purchase_order_view_tree_inherit" model="ir.ui.view">
-      <field name="name">purchase.purchase.order.view.tree.inherit</field>
-      <field name="model">purchase.order</field>
-      <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='name']" position="after">
-          <field name="product_id"/>
-          <field name="categ_id"/>
-        </xpath>
-        <xpath expr="//field[@name='product_id']" position="attributes">
-          <attribute name="string">Part Number/Product </attribute>
-        </xpath>
-      </field>
-    </record>
+        <record id="purchase_purchase_order_view_tree_inherit" model="ir.ui.view">
+            <field name="name">purchase.purchase.order.view.tree.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="product_id"/>
+                    <field name="categ_id"/>
+                </xpath>
+                <xpath expr="//field[@name='product_id']" position="attributes">
+                    <attribute name="string">Part Number/Product</attribute>
+                </xpath>
+            </field>
+        </record>
 
-    <record id="purchase_purchase_order_form_inherit" model="ir.ui.view">
-      <field name="name">purchase.purchase.order.form.inherit</field>
-      <field name="model">purchase.order</field>
-      <field name="inherit_id" ref="purchase.purchase_order_form" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after">
-          <field name="categ_id" optional="show" />
-        </xpath>
-        <xpath expr="//field[@name='product_id']" position="attributes">
-          <attribute name="string">Part Number/Product </attribute>
-        </xpath>
-      </field>
-    </record>
+        <record id="purchase_purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                    <field name="categ_id" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='product_id']" position="attributes">
+                    <attribute name="string">Part Number/Product</attribute>
+                </xpath>
+            </field>
+        </record>
 
-    <!-- rename 'internal Reference' as 'Part Number' when clicking the product internal link -->
-    <record id="product_product_normal_form_view_inherit" model="ir.ui.view">
-      <field name="name">product.product.normal.form.view.inherit</field>
-      <field name="model">product.product</field>
-      <field name="inherit_id" ref="product.product_normal_form_view" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='default_code']" position="attributes">
-          <attribute name="string">Part Number</attribute>
-        </xpath>
-      </field>
-    </record>
+        <!-- rename 'internal Reference' as 'Part Number' when clicking the product internal link -->
+        <record id="product_product_normal_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.product.normal.form.view.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute name="string">Part Number</attribute>
+                </xpath>
+            </field>
+        </record>
 
-  </data>
+    </data>
 </odoo>

@@ -2,8 +2,6 @@ from odoo import models, fields, api
 
 # https://www.odoo.com/forum/help-1/pass-a-many2one-field-from-purchase-module-to-inventory-module-249828
 
-class PickingType(models.Model):
-    _inherit = "stock.picking.type"
 
 class StockMove(models.Model):
     _inherit = "stock.move"    
@@ -22,7 +20,7 @@ class Picking(models.Model):
     # Seen in categ_id = technical|Fields|inherit stock picking
     # categ_id = fields.Many2one('product.category', 'Product Category', related = 'purchase_id.categ_id',)
     # below works too
-    categ_id = fields.Many2one('product.category', 'Product Category', related = 'product_id.categ_id')
+    categ_id = fields.Many2one('product.category', 'Product Category', related = 'product_id.categ_id', store=True)
     is_part_qa_checked = fields.Boolean(string='Is Part QA Checked', required = True, default = False)
     
   

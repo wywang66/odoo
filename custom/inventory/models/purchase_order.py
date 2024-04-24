@@ -16,7 +16,7 @@ class PurchaseOrderLine(models.Model):
     # product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)], change_default=True, index='btree_not_null')
     # copy product_id from 'purchase.order.line'
     # product_id = fields.Many2one('product.product', string='Product', domain=[('purchase_ok', '=', True)], change_default=True, index='btree_not_null')
-    categ_id = fields.Many2one('product.category', related='product_id.categ_id', store=True)
+    categ_id = fields.Many2one('product.category', related='product_id.categ_id')
     
 
 # order_line = fields.One2many('purchase.order.line', 'order_id', string='Order Lines', copy=True)
@@ -28,7 +28,7 @@ class PurchaseOrder(models.Model):
     # purchase.order defines order_line as one2many 
     # order_line = fields.One2many('purchase.order.line', 'order_id', string='Order Lines', copy=True)
     # product_id = fields.Many2one('product.product', related='order_line.product_id', string='Product')
-    categ_id = fields.Many2one('product.category', related='order_line.categ_id', string='Product Category')
+    categ_id = fields.Many2one('product.category', related='order_line.categ_id', string='Product Category', store=True)
     # print("----------------purchase.order", categ_id)
     
 

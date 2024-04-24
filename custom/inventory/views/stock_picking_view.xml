@@ -1,59 +1,72 @@
 <odoo>
-  <data>
+    <data>
 
-    <!-- change root menu -->
-    <record id="stock.menu_stock_root" model="ir.ui.menu">
-      <field name="name">Inventory Management</field>
-    </record>
+        <!-- change root menu -->
+        <record id="stock.menu_stock_root" model="ir.ui.menu">
+            <field name="name">Inventory Management</field>
+        </record>
 
-    <!-- File path :\stock\views\stock_picking_type_views.xml -->
-    <!-- so object is stock -->
-    <record id="stock.stock_picking_type_action" model="ir.actions.act_window">
-      <field name="name">Inventory Management Overview</field>
-    </record>
+        <!-- File path :\stock\views\stock_picking_type_views.xml -->
+        <!-- so object is stock -->
+        <record id="stock.stock_picking_type_action" model="ir.actions.act_window">
+            <field name="name">Inventory Management Overview</field>
+        </record>
 
-    <!-- Stock.picking change Contact to Receive From and more -->
-    <record id="stock_picking_tree_inherit" model="ir.ui.view">
-      <field name="name">stock.picking.tree.inherit</field>
-      <field name="model">stock.picking</field>
-      <field name="inherit_id" ref="stock.vpicktree" />
-      <field name="arch" type="xml">
-        <!-- the original is applicable to inventory IN and OUT -->
-        <!-- <xpath expr="//field[@name='partner_id']" position="attributes">
-          <attribute name="string">Receive From</attribute>
-        </xpath> -->
-        <xpath expr="//field[@name='partner_id']" position="after">
-          <field name="product_id" />
-          <field name="categ_id" />
-          <field name="is_part_qa_checked" />
-        </xpath>
-        <xpath expr="//field[@name='product_id']" position="attributes">
-          <attribute name="string">Part Number/Product </attribute>
-        </xpath>
-      </field>
-    </record>
+        <!-- Stock.picking change Contact to Receive From and more -->
+        <record id="stock_picking_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.tree.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <!-- the original is applicable to inventory IN and OUT -->
+                <!-- <xpath expr="//field[@name='partner_id']" position="attributes">
+                  <attribute name="string">Receive From</attribute>
+                </xpath> -->
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="product_id"/>
+                    <field name="categ_id"/>
+                    <field name="is_part_qa_checked"/>
+                </xpath>
+                <xpath expr="//field[@name='product_id']" position="attributes">
+                    <attribute name="string">Part Number/Product</attribute>
+                </xpath>
+            </field>
+        </record>
 
-    <!-- Stock.picking change Contact to Supplier -->
-    <record id="stock_view_picking_form_inherit" model="ir.ui.view">
-      <field name="name">stock.view.picking.form.inherit</field>
-      <field name="model">stock.picking</field>
-      <field name="inherit_id" ref="stock.view_picking_form" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='origin']" position="after">
-          <field name="picking_type_code" />
-        </xpath>
-        <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']"
-          position="after">
-          <field name="categ_id" />
-        </xpath>
-        <xpath expr="//field[@name='backorder_id']" position="after">
-          <field name="is_part_qa_checked" />
-        </xpath>
-        <xpath expr="//field[@name='product_id']" position="attributes">
-          <attribute name="string">Part Number/Product</attribute>
-        </xpath>
-      </field>
-    </record>
+        <!-- Stock.picking change Contact to Supplier -->
+        <record id="stock_view_picking_form_inherit" model="ir.ui.view">
+            <field name="name">stock.view.picking.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="picking_type_code"/>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']"
+                       position="after">
+                    <field name="categ_id"/>
+                </xpath>
+                <xpath expr="//field[@name='backorder_id']" position="after">
+                    <field name="is_part_qa_checked"/>
+                </xpath>
+                <xpath expr="//field[@name='product_id']" position="attributes">
+                    <attribute name="string">Part Number/Product</attribute>
+                </xpath>
+            </field>
+        </record>
 
-  </data>
+      <record id="stock_view_picking_internal_search_inherit" model="ir.ui.view">
+            <field name="name">stock.view.picking.internal.search.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+            <field name="arch" type="xml">
+                <search>
+                    <searchpanel>
+                        <field name="categ_id" string="Product Category" icon="fa fa-users" aria-hidden="true"
+                               select="multi" enable_counters="1"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+    </data>
 </odoo>
