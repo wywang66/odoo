@@ -1,0 +1,144 @@
+<odoo>
+    <!-- quality.team: search -->
+    <record id="quality_team_view_search" model="ir.ui.view">
+        <field name="name">quality.team.search</field>
+        <field name="model">elw.quality.team</field>
+        <field name="arch" type="xml">
+            <search string="Search">
+                <field string="Team" name="name"/>
+                <filter string="Archived" domain="[('active', '=', False)]" name="inactive"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="quality_team_view_tree" model="ir.ui.view">
+        <field name="name">quality.team.tree</field>
+        <field name="model">elw.quality.team</field>
+        <field name="arch" type="xml">
+            <tree string="Quality Team" editable="bottom">
+                <field name="name"/>
+                <field name="member_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}" domain="[('share', '=', False)]"/>
+                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="quality_team_view_kanban" model="ir.ui.view">
+        <field name="name">quality.team.kanban</field>
+        <field name="model">elw.quality.team</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name" />
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div>
+                                <strong><field name="name"/></strong>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- quality.team: form views -->
+    <record id="quality_team_view_form" model="ir.ui.view">
+        <field name="name">quality.team.form</field>
+        <field name="model">elw.quality.team</field>
+        <field name="arch" type="xml">
+            <form string="Quality Team">
+                <sheet>
+                <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                <div class="oe_title">
+                    <label for="name" string="Team Name"/>
+                    <h1>
+                        <field name="name" placeholder="e.g. Quality Team"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="active" invisible="1"/>
+                        <field name="member_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create': True}" domain="[('share', '=', False)]"/>
+                    </group>
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- quality.team: actions -->
+    <record id="elw_quality_team_action" model="ir.actions.act_window">
+        <field name="name">Teams</field>
+        <field name="res_model">elw.quality.team</field>
+        <field name="view_mode">tree,kanban,form</field>
+<!--        <field name="search_view_id" ref="maintenance_team_view_search"/>-->
+        <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('quality_team_view_tree')}),]"/>
+<!--                (0, 0, {'view_mode': 'kanban', 'view_id': ref('maintenance_team_view_kanban')})]"/>-->
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Add a team in the quality request
+          </p>
+        </field>
+    </record>
+
+    <!-- quality alter stage:  -->
+    <record id="quality_alter_stage_view_search" model="ir.ui.view">
+        <field name="name">quality.alter.stage.search</field>
+        <field name="model">elw.quality.alter.stage</field>
+        <field name="arch" type="xml">
+            <search string="Quality Alter Stage">
+               <field name="name" string="Quality Alter Stages"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="quality_alter_stage_view_tree" model="ir.ui.view">
+        <field name="name">quality.alter.stage.tree</field>
+        <field name="model">elw.quality.alter.stage</field>
+        <field name="arch" type="xml">
+            <tree string="Quality Alter Stage" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="fold"/>
+                <field name="done"/>
+                <field name="team_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="quality_alter_stage_view_kanban" model="ir.ui.view">
+        <field name="name">quality.alter.stage.kanban</field>
+        <field name="model">elw.quality.alter.stage</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div>
+                                <strong><field name="name"/></strong>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- quality alter stage : actions -->
+    <record id="quality_alter_stage_action" model="ir.actions.act_window">
+        <field name="name">Stages</field>
+        <field name="res_model">elw.quality.alter.stage</field>
+        <field name="view_mode">tree,kanban</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Add a new stage in the maintenance request
+          </p>
+        </field>
+    </record>
+
+</odoo>

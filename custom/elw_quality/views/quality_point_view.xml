@@ -1,0 +1,98 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="elw_quality_point_tree_view">
+            <field name="name">elw.quality.point.tree.view</field>
+            <field name="model">elw.quality.point</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="title"/>
+                    <field name="product_ids" widget="many2many_tags"/>
+                    <field name="product_category_ids" widget="many2many_tags"/>
+                    <field name="picking_type_ids" widget="many2many_tags"/>
+                    <field name="picking_type_ids" widget="many2many_tags"/>
+                    <field name="user_id"/>
+                    <field name="measure_on"/>
+                    <field name="measure_frequency_type"/>
+                    <field name="test_type_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="elw_quality_point_form_view">
+            <field name="name">elw.quality.point.form.view</field>
+            <field name="model">elw.quality.point</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <strong>
+                            <field name="name"/>
+                        </strong>
+                        <group>
+                            <group>
+                                <field name="title"/>
+                                <field name="product_ids" widget="many2many_tags"/>
+                                <field name="product_category_ids" widget="many2many_tags"/>
+                                <field name="picking_type_ids" widget="many2many_tags"/>
+                                <field name="user_id"/>
+                            </group>
+                            <group>
+                                <field name="measure_on"/>
+                                <field name="measure_frequency_type"/>
+                                <label for="measure_frequency_value" invisible="measure_frequency_type != 'random'" />
+                                <div>
+                                    <span class="oe_inline" invisible="measure_frequency_type != 'random'">Every</span>
+                                    <field name="measure_frequency_value" nolable="1" class="oe_inline"
+                                           invisible="measure_frequency_type != 'random'"/>
+                                    <span class="oe_inline" invisible="measure_frequency_type != 'random'">% of Operations</span>
+                                </div>
+<!--                                <label for="measure_frequency_unit_value" invisible="measure_frequency_type != 'periodical'"/>-->
+                                <div>
+                                    <span class="oe_inline" invisible="measure_frequency_type != 'periodical'">Every</span>
+                                    <field name="measure_frequency_unit_value" nolable="1" class="oe_inline"
+                                           invisible="measure_frequency_type != 'periodical'"/>
+                                    <field name="measure_frequency_unit" nolable="1" class="oe_inline"
+                                           invisible="measure_frequency_type != 'periodical'" default='days'/>
+                                </div>
+                                <field name="test_type_id" />
+                                <field name="team_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Instructions">
+                                <field name="note" placeholder="Describe the quality check to do..."/>
+                            </page>
+                            <page string="Message If Failure">
+                                <field name="note"/>
+                            </page>
+                            <page string="Notes">
+                                <field name="note"
+                                       placeholder="Describe why you need to perform this quality check..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="elw_quality_control_point_action_window">
+            <field name="name">Quality Point</field>
+            <field name="res_model">elw.quality.point</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!--        <record id="elw_quality_overview_action" model="ir.actions.act_window">-->
+        <!--        <field name="name">Quality Teams</field>-->
+        <!--        <field name="res_model">elw.quality.team</field>-->
+        <!--        <field name="view_mode">kanban,form</field>-->
+        <!--        <field name="view_id" ref="maintenance_team_kanban"/>-->
+        <!--        <field name="help" type="html">-->
+        <!--          <p class="o_view_nocontent_smiling_face">-->
+        <!--            Add a new stage in the quality request-->
+        <!--          </p>-->
+        <!--        </field>-->
+        <!--    </record>-->
+
+    </data>
+</odoo>

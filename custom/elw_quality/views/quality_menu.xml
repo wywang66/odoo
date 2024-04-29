@@ -1,0 +1,96 @@
+<odoo>
+    <data>
+        <!-- Root menu item -->
+        <menuitem name="Quality"
+                  id="elw_quality_menu_root"
+                  web_icon="elw_quality,static/description/icon.png"
+                  sequence="0"
+        />
+
+        <!-- Top menu categories -->
+        <menuitem name="Overview"
+                  id="elw_quality_menu_top_overview"
+                  parent="elw_quality_menu_root"
+                  sequence="1"
+        />
+
+        <menuitem name="Quality Control"
+                  id="elw_quality_menu_top_quality_control"
+                  parent="elw_quality_menu_root"
+                  sequence="2"
+        />
+
+        <menuitem name="Products"
+                  id="elw_quality_menu_top_products"
+                  parent="elw_quality_menu_root"
+                  sequence="3"
+        />
+
+        <menuitem name="Reporting"
+                  id="elw_quality_menu_top_reporting"
+                  parent="elw_quality_menu_root"
+                  sequence="4"
+        />
+
+        <menuitem name="Configurations"
+                  id="elw_quality_menu_top_config"
+                  parent="elw_quality_menu_root"
+                  sequence="5"
+        />
+
+        <!--        Quality Control-->
+        <menuitem name="Control Points"
+                  id="elw_quality_control_point_menu_sub"
+                  parent="elw_quality_menu_top_quality_control"
+                  action="elw_quality_control_point_action_window"
+                  sequence="20"
+        />
+
+        <menuitem name="Control Checks"
+                  id="elw_quality_control_check_menu_sub"
+                  parent="elw_quality_menu_top_quality_control"
+                  action="elw_quality_control_check_action_window"
+                  sequence="21"
+        />
+
+        <!-- Products-->
+        <menuitem name="Products"
+                  id="elw_quality_product_menu_sub"
+                  parent="elw_quality_menu_top_products"
+                  action="elw_product_normal_action_quality"
+                  sequence="30"
+        />
+
+        <!-- disable Lots/Serial Numbers for a time being unclear the logic behind this-->
+        <!--        <menuitem name="Lots/Serial Numbers"-->
+        <!--                  id="elw_quality_lots_menu_sub"-->
+        <!--                  parent="elw_quality_menu_top_products"-->
+        <!--                  action="elw_quality_control_point_action_window"-->
+        <!--                  sequence="31"-->
+        <!--        />-->
+
+        <!--        Configurations-->
+        <menuitem name="Quality Teams"
+                  id="elw_quality_team_menu_sub"
+                  parent="elw_quality_menu_top_config"
+                  action="elw_quality_team_action"
+                  sequence="50"
+        />
+
+        <!--        Configurations-->
+        <menuitem name="Quality Alter Stages"
+                  id="elw_quality_alter_stage_menu_sub"
+                  parent="elw_quality_menu_top_config"
+                  action="quality_alter_stage_action"
+                  sequence="51"
+        />
+
+        <!--        Configurations-->
+        <menuitem name="Quality Test Types"
+                  id="elw_quality_test_type_menu_sub"
+                  parent="elw_quality_menu_top_config"
+                  action="quality_test_type_action_window"
+                  sequence="52"
+        />
+    </data>
+</odoo>
