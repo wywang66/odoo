@@ -9,6 +9,7 @@ class ElwQualityPoint(models.Model):
     _name = 'elw.quality.point'
     _description = 'elw quality Point'
     _rec_name = 'name'
+    _order = 'id desc, name desc'
 
     name = fields.Char(
         string='Reference', default='New', copy=False, readonly=True)
@@ -40,6 +41,7 @@ class ElwQualityPoint(models.Model):
 
     test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type')
     team_id = fields.Many2one('elw.quality.team', string='Team')
+    test_type = fields.Char(related="test_type_id.technical_name", string='Test Type in str')
 
     # for notebook
     note = fields.Html('Note')
@@ -68,9 +70,23 @@ class ElwQualityPoint(models.Model):
         # print("write return ............", rtn)
         return rtn
 
+
 class ElwQualityPointTestType(models.Model):
     _name = 'elw.quality.test.type'
     _description = 'elw quality Point Test Type'
 
     active = fields.Boolean(default=True)
     name = fields.Char(string='Name')
+    technical_name = fields.Char(string="Technical Name", compute="_compute_test_type")
+
+    def _compute_test_type(self):
+        if self.name == 'Instructions':
+            self.technical_name = 'instructions'
+        elif self.name == 'Take a Picture':
+            self.technical_name = 'picture'
+        elif self.name == 'Register Production':
+            self.technical_name = 'register_production'
+        elif self.name == 'Pass - Fail':
+            self.technical_name = 'passfail'
+        elif self.name == 'Measure':
+            self.technical_name = 'measure'

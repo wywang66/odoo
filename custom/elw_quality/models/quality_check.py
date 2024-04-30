@@ -4,6 +4,7 @@ from odoo import models, fields, api, _
 class ElwQualityCheck(models.Model):
     _name = 'elw.quality.check'
     _description = 'elw quality check'
+    _order = 'id desc, name desc'
 
     name = fields.Char(
         string='Reference', default='New', copy=False, readonly=True)
@@ -13,6 +14,7 @@ class ElwQualityCheck(models.Model):
         help='The company is automatically set from your user preferences.')
 
     point_id = fields.Many2one('elw.quality.point', string='Control Point ID')
+    # can be deleted
     stock_picking_id = fields.Many2one('stock.picking', string='Stock Picking ID')
     partner_id = fields.Many2one('res.partner', string='Partner')
     product_id = fields.Many2one('product.product', string='Product', store=True)
@@ -24,7 +26,7 @@ class ElwQualityCheck(models.Model):
     team_id = fields.Many2one('elw.quality.team', string='Team')
     control_date = fields.Date(string='Checked Date')
     quality_state = fields.Selection([('pass', 'PASS'), ('fail', 'Fail'), ('none', 'To Do')])
-    test_type = fields.Char(string="Test Type")
+    test_type = fields.Char(related='point_id.test_type', string="Test Type")
 
     # for notebook
     additional_note = fields.Text('Note')

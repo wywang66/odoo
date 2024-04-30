@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 
 # https://www.odoo.com/forum/help-1/pass-a-many2one-field-from-purchase-module-to-inventory-module-249828
@@ -24,26 +24,28 @@ class Picking(models.Model):
     categ_id = fields.Many2one('product.category', 'Product Category', related='product_id.categ_id', store=True)
     # to do, delete this field when using a new db
 
+    # may delete 'state'
     state = fields.Selection(selection_add=[('quality_check', 'Quality Check')])
-    show_quality_check_btn = fields.Boolean(default=False, compute='_compute_show_quality_check_btn')
-    # show_quality_check_btn = fields.Boolean(default=False)
 
+    show_quality_check_btn = fields.Boolean(default=False, compute='_compute_show_quality_check_btn')
+
+    # picking_id is 1st defined in stock.move and define in elw.quality.check
+    check_ids = fields.Many2many('elw.quality.check', 'picking_id',string="Checks")
+    # current_check_id = fields.Many2many('elw.quality.check', 'picking_id', string="Checks")
+
+    # can be deleted
     show_qa_check = fields.Integer(default=0)
 
+    # can be hidden
     qa_check_product_ids = fields.Many2many('product.product', string="QA Checking Products",
                                             # compute='_compute_qa_check_products',
                                             help="List of Products used in the Quality Check")
+    # can be deleted
     qa_check_point_name = fields.Char()
 
     # The error cannot duplicate now. Do not know the root cause of the issue.
     # missed this "# rec.show_quality_check_btn = False"
     # https://www.odoo.com/forum/help-1/odoo-17-uncaught-promise-an-error-occured-in-the-owl-lifecycle-see-this-error-s-cause-property-251142
-    @api.depends('state', 'move_ids.product_id', 'picking_type_id')
-    def _compute_qa_check_products(self):
-        for pro in self:
-            pro.qa_check_product_ids = self.env['product.product'].browse([5, 6])
-            print("-----------", self.qa_check_product_ids)
-
     @api.depends('state', 'move_ids.product_id', 'picking_type_id')
     def _compute_show_quality_check_btn(self):
         """
@@ -84,7 +86,7 @@ class Picking(models.Model):
                                 vals['picking_id'] = rec.picking_type_id.id
                                 vals['quality_state'] = 'none'
                                 vals['partner_id'] = rec.partner_id.id
-                                print("Found: qa_product_id, partner_id----------", qa_product_id, rec.partner_id )
+                                print("Found: qa_product_id, partner_id----------", qa_product_id, rec.partner_id)
                                 self._create_qa_check(vals)
 
     # Create a record in quality.check
@@ -94,8 +96,28 @@ class Picking(models.Model):
         # print("qa_check_rec--------", qa_check_rec)
 
     # call quality check wizard form
+    @api.depends('picking_type_id')
     def action_quality_check(self):
-        return
+        # qa_check_obj = self.env['elw.quality.check']
+        action = self.env.ref('elw_quality.qa_quality_check_wizard_action_window').read()[0]
+        # print("action ------", action)  # wo 'read()[0]' ir.actions.act_window(445,)
+        # print("action ------", action)  # w 'read()[0]' {'id': 445, 'name': 'Quality Check', 'type': 'ir.actions.act_window', 'xml_id':
+        # print("self.check_ids", self.check_ids) # no data self.check_ids elw.quality.check()
+        return {
+            'name': _('Quality Check'),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'elw.quality.check.wizard',
+            'view_type': 'form',
+            # 'domain': [('check_ids', '=', self.check_ids)],
+            # 'views': [(view.id, 'form')],
+            # 'view_id': view.id,
+            'target': 'new',
+            # 'res_id': appointment_rec.id,
+            # 'context': dict(
+            #     self.env.context,
+            # ),
+        }
 
     def button_eval(self):
         self._compute_show_quality_check_btn()
