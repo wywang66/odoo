@@ -27,7 +27,7 @@ Long description of module's purpose
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
         'data/quality_test_type_data.xml',
-        'views/quality_point_view.xml',
+        'views/quality_control_point_view.xml',
         'views/quality_check_view.xml',
         'views/product_view.xml',
         'views/configuration_view.xml',

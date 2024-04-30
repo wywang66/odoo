@@ -13,6 +13,11 @@ class ElwQualityPoint(models.Model):
     name = fields.Char(
         string='Reference', default='New', copy=False, readonly=True)
 
+    company_id = fields.Many2one(
+        'res.company', 'Company', default=lambda self: self.env.company,
+        readonly=True, required=True,
+        help='The company is automatically set from your user preferences.')
+
     title = fields.Char("Title")
     product_ids = fields.Many2many('product.product', string="Products", domain="[('type','in',('product','consu'))]", )
     product_category_ids = fields.Many2many('product.category', string="Product Categories")
@@ -30,6 +35,7 @@ class ElwQualityPoint(models.Model):
 
     test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type')
     team_id = fields.Many2one('elw.quality.team', string='Team')
+
 
     # for notebook
     note = fields.Html('Note')

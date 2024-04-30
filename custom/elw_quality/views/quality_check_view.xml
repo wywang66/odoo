@@ -6,13 +6,11 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="product_id" />
-<!--                    <field name="product_category_ids" widget="many2many_tags"/>-->
-<!--                    <field name="picking_type_ids" widget="many2many_tags"/>-->
-<!--                    <field name="picking_type_ids" widget="many2many_tags"/>-->
-<!--                    <field name="user_id"/>-->
-                    <field name="measure_on"/>
-<!--                    <field name="measure_frequency_type"/>-->
+                    <field name="product_id"/>
+                    <field name="lot_id"/>
+                    <field name="control_date"/>
+                    <field name="user_id" widget="many2one_avatar_user"/>
+                    <field name="quality_state" widget="badge"/>
                 </tree>
             </field>
         </record>
@@ -23,49 +21,31 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-<!--                        <strong>-->
-<!--                            <field name="name"/>-->
-<!--                        </strong>-->
+                        <!--                        <strong>-->
+                        <!--                            <field name="name"/>-->
+                        <!--                        </strong>-->
                         <group>
                             <group>
-                                <field name="product_id" />
+                                <field name="product_id"/>
                                 <field name="measure_on"/>
-<!--                                <field name="picking_type_ids" widget="many2many_tags"/>-->
-<!--                                <field name="user_id"/>-->
+                                <!--                                <field name="picking_type_ids" widget="many2many_tags"/>-->
+                                <!--                                <field name="user_id"/>-->
                             </group>
                             <group>
                                 <field name="picking_id"/>
                                 <field name="point_id"/>
-<!--                                <label for="measure_frequency_value"/>-->
-<!--                                <div invisible="measure_frequency_type != 'random'">-->
-<!--                                    <span class="oe_inline">Every</span>-->
-<!--                                    <field name="measure_frequency_value" nolable="1" class="oe_inline"-->
-<!--                                           invisible="measure_frequency_type != 'random'"/>-->
-<!--                                    <span class="oe_inline">% of Operations</span>-->
-<!--                                </div>-->
-<!--                                <div invisible="measure_frequency_type != 'periodical'">-->
-<!--                                    <span class="oe_inline">Every</span>-->
-<!--                                    <field name="measure_frequency_unit_value" nolable="1" class="oe_inline"-->
-<!--                                           invisible="measure_frequency_type != 'periodical'"/>-->
-<!--                                    <field name="measure_frequency_unit" nolable="1" class="oe_inline"-->
-<!--                                           invisible="measure_frequency_type != 'periodical'" default='days'/>-->
-<!--                                </div>-->
-<!--                                <label for="team_id"/>-->
-<!--                                <div>-->
-<!--                                    <field name="team_id"/>-->
-<!--                                </div>-->
+                                <field name="team_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="user_id" string="Control Person" invisible="1"/>
+                                <field name="partner_id" invisible="not partner_id"/>
                             </group>
                         </group>
                         <notebook>
-                            <page string="Instructions">
-<!--                                <field name="note" placeholder="Describe the quality check to do..."/>-->
-                            </page>
-                            <page string="Message If Failure">
-<!--                                <field name="note"/>-->
-                            </page>
-                            <page string="Notes">
-<!--                                <field name="note"-->
-<!--                                       placeholder="Describe why you need to perform this quality check..."/>-->
+                            <page string="Notes" name="notes">
+                                <group>
+                                    <field string="Instructions" name="note"/>
+                                    <field string="Notes" name="additional_note" widget="text"/>
+                                </group>
                             </page>
                         </notebook>
                     </sheet>
@@ -79,7 +59,6 @@
             <field name="res_model">elw.quality.check</field>
             <field name="view_mode">tree,form</field>
         </record>
-
 
 
     </data>

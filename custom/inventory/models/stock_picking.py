@@ -79,13 +79,16 @@ class Picking(models.Model):
                             if qa_product_id in delivery_product_ids:
                                 rec.show_quality_check_btn = True
                                 # rec.state = 'quality_check'
-                                print("Found: qa_product_id-----------", qa_product_id)
                                 vals['product_id'] = qa_product_id
                                 vals['point_id'] = qa_product_ids_obj.id
                                 vals['picking_id'] = rec.picking_type_id.id
+                                vals['quality_state'] = 'none'
+                                vals['partner_id'] = rec.partner_id.id
+                                print("Found: qa_product_id, partner_id----------", qa_product_id, rec.partner_id )
                                 self._create_qa_check(vals)
 
     def _create_qa_check(self, vals):
+        self.ensure_one()
         qa_check_rec = self.env['elw.quality.check'].create(vals)
         # print("qa_check_rec--------", qa_check_rec)
 

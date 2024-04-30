@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from . import quality
+from . import quality_control_point
 from . import product
 from . import configuration
 from . import quality_check
