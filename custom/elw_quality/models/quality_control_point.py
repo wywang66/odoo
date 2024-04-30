@@ -25,7 +25,12 @@ class ElwQualityPoint(models.Model):
     active = fields.Boolean(default=True)
     user_id = fields.Many2one('res.users', string='Responsible')
     measure_on = fields.Selection([('operation', 'Operation'), ('product', 'Product'), ('move_line', 'Quantity')],
-                                  required=True, string='Control per')
+                                  required=True, string='Control per', readonly=True,
+                                  help='Product = A quality check is requested per product.'
+                                       #  Operation = One quality check is requested at the operation level.
+                                       # ' Quantity = A quality check is requested for each new product quantity registered,'
+                                       # 'with partial quantity checks also possible.'
+                                  )
     measure_frequency_type = fields.Selection([('all', 'All'), ('random', 'Randomly'), ('periodical', 'Periodically')],
                                               required=True, string='Control Frequency')
     measure_frequency_value = fields.Float(string="Control Frequency Value", store=True, copy=True)
@@ -35,7 +40,6 @@ class ElwQualityPoint(models.Model):
 
     test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type')
     team_id = fields.Many2one('elw.quality.team', string='Team')
-
 
     # for notebook
     note = fields.Html('Note')
@@ -63,40 +67,6 @@ class ElwQualityPoint(models.Model):
         rtn = super(ElwQualityPoint, self).write(vals)
         # print("write return ............", rtn)
         return rtn
-
-
-class ElwQualityCheck(models.Model):
-    _name = 'elw.quality.check'
-    _description = 'elw quality check'
-
-    name = fields.Char(
-        string='Reference', default='New', copy=False, readonly=True)
-
-    point_id = fields.Many2one('elw.quality.point', string='Control Point ID')
-    stock_picking_id = fields.Many2one('stock.picking', string='Stock Picking ID')
-    product_id = fields.Many2one('product.product', string='product', store=True)
-    picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
-    measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
-
-    # test_type_id = fields.Many2one(
-    #     string='Test Type', default='New', copy=False, readonly=True)
-
-    @api.model_create_multi
-    def create(self, vals):
-        for vals in vals:
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'elw.quality.check.sequence')
-            rtn = super(ElwQualityCheck, self).create(vals)
-            return rtn
-
-    # #  no decorator needed
-    def write(self, vals):
-        if not vals.get('name'):
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'elw.quality.check.sequence')
-        rtn = super(ElwQualityCheck, self).write(vals)
-        return rtn
-
 
 class ElwQualityPointTestType(models.Model):
     _name = 'elw.quality.test.type'

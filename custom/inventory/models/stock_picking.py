@@ -87,12 +87,14 @@ class Picking(models.Model):
                                 print("Found: qa_product_id, partner_id----------", qa_product_id, rec.partner_id )
                                 self._create_qa_check(vals)
 
+    # Create a record in quality.check
     def _create_qa_check(self, vals):
         self.ensure_one()
         qa_check_rec = self.env['elw.quality.check'].create(vals)
         # print("qa_check_rec--------", qa_check_rec)
 
-    def button_quality_check(self):
+    # call quality check wizard form
+    def action_quality_check(self):
         return
 
     def button_eval(self):
