@@ -55,13 +55,13 @@ class Picking(models.Model):
         qa_checkpoint_lists = self.env['elw.quality.point'].search([])
         for rec in self:
             rec.show_quality_check_btn = False
-            quality_check_product_ids = []
+            vals = {}
             # get all products in the delivery order
             delivery_product_ids = []
             picking_obj = rec.filtered(lambda p: p.state == 'assigned')  # assigned = Ready
             for move in picking_obj.move_ids:
                 delivery_product_ids.append(move.product_id.id)
-            print("=========delivery_product_ids", delivery_product_ids)
+            # print("=========delivery_product_ids", delivery_product_ids)
 
             if len(qa_checkpoint_lists) and rec.picking_type_id.id is not None:
                 # qa_check_ids is a many2many field
@@ -73,13 +73,21 @@ class Picking(models.Model):
                         #       qa_checkpoint_list.name)
                         # then check if each qa_product_id of elw.quality.point is found in delivery_product_ids
                         for qa_product_id in qa_product_ids_obj.product_ids.ids:
-                            print("qa_product_id rec.show_quality_check_btn ========", qa_product_id,
-                                  rec.show_quality_check_btn)
+                            # print("qa_product_id rec.show_quality_check_btn ========", qa_product_id,
+                            #       rec.show_quality_check_btn, qa_product_ids_obj.id, qa_product_ids_obj.name,
+                            #       rec.picking_type_id.id, rec.picking_type_id.name)
                             if qa_product_id in delivery_product_ids:
                                 rec.show_quality_check_btn = True
                                 # rec.state = 'quality_check'
-                                quality_check_product_ids.append(qa_product_id)
-                                print("quality_check_product_ids-----------", quality_check_product_ids)
+                                print("Found: qa_product_id-----------", qa_product_id)
+                                vals['product_id'] = qa_product_id
+                                vals['point_id'] = qa_product_ids_obj.id
+                                vals['picking_id'] = rec.picking_type_id.id
+                                self._create_qa_check(vals)
+
+    def _create_qa_check(self, vals):
+        qa_check_rec = self.env['elw.quality.check'].create(vals)
+        # print("qa_check_rec--------", qa_check_rec)
 
     def button_quality_check(self):
         return
