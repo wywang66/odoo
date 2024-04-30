@@ -3,4 +3,4 @@
 from . import quality
 from . import product
 from . import configuration
-
+from . import quality_check

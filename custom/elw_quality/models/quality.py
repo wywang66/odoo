@@ -43,8 +43,6 @@ class ElwQualityPoint(models.Model):
                 'elw.quality.point.sequence')
             # print("Success ............", vals.get('name'))
             rtn = super(ElwQualityPoint, self).create(vals)
-            # rtn['state'] = "pending_calibration" # set the default value when createing a record
-            # create return ............ dbb.maintenance.calibration(6,)
             # print("create return ............", rtn)
             return rtn
 
@@ -56,7 +54,6 @@ class ElwQualityPoint(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.point.sequence')
             # print("write Success 2 ............", vals.get('name'))
-        # vals.state = "pending_calibration"
         rtn = super(ElwQualityPoint, self).write(vals)
         # print("write return ............", rtn)
         return rtn
