@@ -10,7 +10,11 @@
                     <field name="lot_id"/>
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>
-                    <field name="quality_state" widget="badge"/>
+                    <field name="quality_state" widget="badge"
+                           decoration-success="quality_state == 'pass'"
+                           decoration-info="quality_state =='none'"
+                           decoration-danger="quality_state =='fail'"
+                    />
                 </tree>
             </field>
         </record>
@@ -20,10 +24,28 @@
             <field name="model">elw.quality.check</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <field name="test_type" invisible="1"/>
+                        <button name="do_pass" type="object" class="btn-primary" string="Pass" data-hotkey="q"/>
+<!--                        <button name="do_pass" type="object" invisible="quality_state != 'fail'"-->
+<!--                                string="Pass" data-hotkey="q"/>-->
+                        <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'none'"
+                                string="Fail" data-hotkey="w"/>
+                        <button name="do_fail" type="object" invisible="quality_state != 'pass'"
+                                 string="Fail" data-hotkey="w"/>
+                        <button name="do_measure" type="object"
+                                invisible="test_type != 'measure' or quality_state != 'none'" string="Measure"
+                                data-hotkey="v"/>
+                        <!--                        <button name="do_alert" type="object" invisible="alert_ids or quality_state != 'pass'"-->
+                        <!--                                string="Create Alert" data-hotkey="g"/>-->
+                        <!--                        <button name="do_alert" type="object" class="btn-primary"-->
+                        <!--                                invisible="alert_ids or quality_state != 'fail'" string="Create Alert" data-hotkey="g"/>-->
+                        <field name="quality_state" widget="statusbar" nolabel="1" statusbar_visible="none,pass,fail"/>
+                    </header>
                     <sheet>
-                        <!--                        <strong>-->
-                        <!--                            <field name="name"/>-->
-                        <!--                        </strong>-->
+                        <h3>
+                            <field name="name" readonly="1"/>
+                        </h3>
                         <group>
                             <group>
                                 <field name="product_id"/>
@@ -34,6 +56,7 @@
                             <group>
                                 <field name="picking_id"/>
                                 <field name="point_id"/>
+                                <field name="test_type_id"/>
                                 <field name="team_id"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="user_id" string="Control Person" invisible="1"/>

@@ -16,10 +16,11 @@ class QualityCheckWizard(models.TransientModel):
     note = fields.Html('Note')
     product_id = fields.Many2one('product.product', string='Product', related="current_check_id.product_id")
     test_type = fields.Char(related='current_check_id.test_type')
-    is_last_check = fields.Boolean(readonly=True)
+    is_last_check = fields.Boolean(readonly=False)
     name = fields.Char(related='current_check_id.name', string="Reference")
-    quality_state = fields.Selection([('pass', 'PASS'), ('fail', 'Fail'), ('none', 'To Do')])
+    quality_state = fields.Selection(related='current_check_id.quality_state')
     additional_note = fields.Text(string="Additional Note")
+    nb_checks = fields.Integer(string="Nb Checks")
 
     def do_pass(self):
         qa_check_obj = self.env['elw.quality.check']

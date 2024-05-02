@@ -26,7 +26,7 @@ class ElwQualityPoint(models.Model):
     active = fields.Boolean(default=True)
     user_id = fields.Many2one('res.users', string='Responsible')
     measure_on = fields.Selection([('operation', 'Operation'), ('product', 'Product'), ('move_line', 'Quantity')],
-                                  required=True, string='Control per', readonly=True,
+                                  required=True, string='Control per',
                                   help='Product = A quality check is requested per product.'
                                        #  Operation = One quality check is requested at the operation level.
                                        # ' Quantity = A quality check is requested for each new product quantity registered,'

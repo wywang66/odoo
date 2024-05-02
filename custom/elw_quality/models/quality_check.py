@@ -14,8 +14,7 @@ class ElwQualityCheck(models.Model):
         help='The company is automatically set from your user preferences.')
 
     point_id = fields.Many2one('elw.quality.point', string='Control Point ID')
-    # can be deleted
-    stock_picking_id = fields.Many2one('stock.picking', string='Stock Picking ID')
+
     partner_id = fields.Many2one('res.partner', string='Partner')
     product_id = fields.Many2one('product.product', string='Product', store=True)
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
@@ -25,13 +24,14 @@ class ElwQualityCheck(models.Model):
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', )
     team_id = fields.Many2one('elw.quality.team', string='Team')
     control_date = fields.Date(string='Checked Date')
-    quality_state = fields.Selection([('pass', 'PASS'), ('fail', 'Fail'), ('none', 'To Do')])
+    quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
+                                     default='none')
     test_type = fields.Char(related='point_id.test_type', string="Test Type")
+    alert_count = fields.Integer(default=0)
 
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
-    alert_count = fields.Integer(default=0)
 
     @api.model_create_multi
     def create(self, vals):
@@ -53,10 +53,14 @@ class ElwQualityCheck(models.Model):
         pass
 
     def do_pass(self):
-        pass
+        for rec in self:
+            if rec.quality_state == 'none':
+                rec.quality_state = 'pass'
 
     def do_fail(self):
-        pass
+        for rec in self:
+            if rec.quality_state == 'none':
+                rec.quality_state = 'fail'
 
     def do_measure(self):
         pass

@@ -40,11 +40,13 @@
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='button_validate']" position="after">
                     <field name="show_quality_check_btn" invisible="1"/>
-<!--                    <button name="button_quality_check" invisible="state not in ('quality_check')" string="Quality Check" type="object" class="oe_highlight" />-->
-                    <button name="action_quality_check" invisible="show_quality_check_btn == False or state in ('done','cancel')" string="Quality Check" type="object" class="oe_highlight" />
+                    <!--                    <button name="button_quality_check" invisible="state not in ('quality_check')" string="Quality Check" type="object" class="oe_highlight" />-->
+                    <button name="action_quality_check"
+                            invisible="show_quality_check_btn == False or state in ('done','cancel')"
+                            string="Quality Check" type="object" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//button[@name='button_validate']" position="after">
-                    <button name="button_eval"  string="Btn eval" type="object" class="oe_highlight" />
+                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>
@@ -54,10 +56,9 @@
                     <field name="categ_id"/>
                 </xpath>
                 <xpath expr="//field[@name='backorder_id']" position="after">
-<!--                    <field name="show_quality_check_btn"/>-->
-<!--                    <field name="show_qa_check"/>-->
-                    <field name="qa_check_product_ids" invisible="state not in ('quality_check')" widget="many2many_tags" />
-                    <field name="qa_check_point_name" invisible="state not in ('quality_check') " />
+
+                    <field name="qa_check_product_ids" widget="many2many_tags" invisible="show_quality_check_btn == False"/>
+<!--                    <field name="qa_check_point_name" invisible="state not in ('quality_check') "/>-->
                 </xpath>
                 <xpath expr="//field[@name='product_id']" position="attributes">
                     <attribute name="string">Part Number/Product</attribute>
@@ -67,7 +68,7 @@
             </field>
         </record>
 
-      <record id="stock_view_picking_internal_search_inherit" model="ir.ui.view">
+        <record id="stock_view_picking_internal_search_inherit" model="ir.ui.view">
             <field name="name">stock.view.picking.internal.search.inherit</field>
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_internal_search"/>
