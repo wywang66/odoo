@@ -33,8 +33,6 @@ Long description of module's purpose
         'views/quality_check_view.xml',
         'views/product_view.xml',
         'views/configuration_view.xml',
-        'views/quality_test_type_view.xml',
-        'views/quality_tag_view.xml',
         'views/quality_alert_view.xml',
         'views/quality_menu.xml',
 

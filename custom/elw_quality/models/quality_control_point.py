@@ -69,24 +69,3 @@ class ElwQualityPoint(models.Model):
         rtn = super(ElwQualityPoint, self).write(vals)
         # print("write return ............", rtn)
         return rtn
-
-
-class ElwQualityPointTestType(models.Model):
-    _name = 'elw.quality.test.type'
-    _description = 'ELW Quality Control Point Test Type'
-
-    active = fields.Boolean(default=True)
-    name = fields.Char(string='Name')
-    technical_name = fields.Char(string="Technical Name", compute="_compute_test_type")
-
-    def _compute_test_type(self):
-        if self.name == 'Instructions':
-            self.technical_name = 'instructions'
-        elif self.name == 'Take a Picture':
-            self.technical_name = 'picture'
-        elif self.name == 'Register Production':
-            self.technical_name = 'register_production'
-        elif self.name == 'Pass - Fail':
-            self.technical_name = 'passfail'
-        elif self.name == 'Measure':
-            self.technical_name = 'measure'
