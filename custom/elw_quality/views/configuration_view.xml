@@ -141,4 +141,23 @@
         </field>
     </record>
 
+     <record model="ir.ui.view" id="elw_quality_reason_tree_view">
+      <field name="name">elw.quality.reason.tree.view</field>
+      <field name="model">elw.quality.reason</field>
+      <field name="arch" type="xml">
+        <tree string="Quality Reason" editable="bottom">
+          <field name="name"/>
+<!--          <field name="color"  widget="color_picker" invisible="1"/>-->
+<!--          <field name="active" invisible="1"/>-->
+        </tree>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="elw_quality_reason_action_window">
+      <field name="name">Quality Reasons</field>
+      <field name="res_model">elw.quality.reason</field>
+      <field name="view_mode">tree</field>
+    </record>
+
 </odoo>

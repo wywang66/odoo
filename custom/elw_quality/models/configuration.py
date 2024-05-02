@@ -40,3 +40,13 @@ class QualityStage(models.Model):
     fold = fields.Boolean('Folded in Quality Pipe')
     done = fields.Boolean('Request Done')
     team_id = fields.Many2one('elw.quality.team', string='Team')
+
+
+class QualityReason(models.Model):
+    _name = 'elw.quality.reason'
+    _description = 'ELW Quality Location'
+    _order = 'id'
+
+    active = fields.Boolean(default=True)
+    name = fields.Char('Name', required=True, translate=True)
+    # display_name = fields.Char('Display Name', required=True, translate=True)

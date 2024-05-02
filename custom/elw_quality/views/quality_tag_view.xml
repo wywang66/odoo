@@ -1,0 +1,23 @@
+<odoo>
+  <data>
+      <record model="ir.ui.view" id="elw_quality_tag_tree_view">
+      <field name="name">elw.quality.tag.tree.view</field>
+      <field name="model">elw.quality.tag</field>
+      <field name="arch" type="xml">
+        <tree string="Quality Tag" editable="bottom">
+          <field name="name"/>
+<!--          <field name="color"  widget="color_picker" invisible="1"/>-->
+<!--          <field name="active" invisible="1"/>-->
+        </tree>
+      </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="elw_quality_tag_action_window">
+      <field name="name">Quality Tags</field>
+      <field name="res_model">elw.quality.tag</field>
+      <field name="view_mode">tree</field>
+    </record>
+
+  </data>
+</odoo>

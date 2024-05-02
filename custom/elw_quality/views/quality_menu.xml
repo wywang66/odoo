@@ -47,10 +47,17 @@
         />
 
         <menuitem name="Control Checks"
-                  id="elw_quality_control_check_menu_sub"
+                  id="elw_quality_check_menu_sub"
                   parent="elw_quality_menu_top_quality_control"
-                  action="elw_quality_control_check_action_window"
+                  action="elw_quality_check_action_window"
                   sequence="21"
+        />
+
+        <menuitem name="Control Alerts"
+                  id="elw_quality_alert_menu_sub"
+                  parent="elw_quality_menu_top_quality_control"
+                  action="elw_quality_alert_action_window"
+                  sequence="22"
         />
 
         <!-- Products-->
@@ -86,11 +93,27 @@
         />
 
         <!--        Configurations-->
-        <menuitem name="Quality Test Types"
-                  id="elw_quality_test_type_menu_sub"
+<!--        <menuitem name="Quality Test Types"-->
+<!--                  id="elw_quality_test_type_menu_sub"-->
+<!--                  parent="elw_quality_menu_top_config"-->
+<!--                  action="quality_test_type_action_window"-->
+<!--                  sequence="52"-->
+<!--        />-->
+
+        <!--        Configurations-->
+        <menuitem name="Quality Tags"
+                  id="elw_quality_tag_menu_sub"
                   parent="elw_quality_menu_top_config"
-                  action="quality_test_type_action_window"
-                  sequence="52"
+                  action="elw_quality_tag_action_window"
+                  sequence="53"
         />
+
+        <!--        Configurations-->
+<!--        <menuitem name="Quality Reasons"-->
+<!--                  id="elw_quality_reason_menu_sub"-->
+<!--                  parent="elw_quality_menu_top_config"-->
+<!--                  action="elw_quality_reason_action_window"-->
+<!--                  sequence="53"-->
+<!--        />-->
     </data>
 </odoo>

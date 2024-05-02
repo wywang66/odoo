@@ -73,7 +73,7 @@ class ElwQualityPoint(models.Model):
 
 class ElwQualityPointTestType(models.Model):
     _name = 'elw.quality.test.type'
-    _description = 'elw quality Point Test Type'
+    _description = 'ELW Quality Control Point Test Type'
 
     active = fields.Boolean(default=True)
     name = fields.Char(string='Name')

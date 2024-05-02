@@ -34,52 +34,8 @@ class Picking(models.Model):
     check_ids = fields.Many2many('elw.quality.check', 'picking_id', string="Checks")
     qa_check_product_ids = fields.Many2many('product.product', string="QA Checking Products",
                                             compute='_compute_qa_check_product_ids',
-                                            help="List of Products used in the Quality Check")
+                                            help="List of Quality-Check products")
 
-    # quality_check_todo = fields.Boolean(compute='_compute_quality_check_todo', default=False, string='Pending checks')
-    #
-    # def _compute_quality_check_todo(self):
-    #     print('quality_check_todo', self.quality_check_todo)
-    #
-    #     qa_checkpoint_lists = self.env['elw.quality.point'].search([])
-    #     for rec in self:
-    #         vals = {}
-    #         delivery_product_ids = []
-    #         picking_obj = rec.filtered(lambda p: p.state == 'assigned')  # assigned = Ready
-    #         for move in picking_obj.move_ids:
-    #             delivery_product_ids.append(move.product_id.id)
-    #
-    #         if len(qa_checkpoint_lists) and rec.picking_type_id.id is not None:
-    #             # qa_check_ids is a many2many field
-    #             for qa_checkpoint_list in qa_checkpoint_lists:
-    #                 #  first check if picking_type_id is found in picking_type_ids of elw.quality.point
-    #                 if rec.picking_type_id.id in qa_checkpoint_list.picking_type_ids.ids:  # picking_type_ids.ids : [1,2]
-    #                     qa_product_ids_obj = rec.env['elw.quality.point'].browse(qa_checkpoint_list.id)
-    #                     print("qa_product_ids ========", qa_product_ids_obj.product_ids.ids, qa_checkpoint_list.id,
-    #                           qa_checkpoint_list.name)
-    #                     # then check if each qa_product_id of elw.quality.point is found in delivery_product_ids
-    #                     for qa_product_id in qa_product_ids_obj.product_ids.ids:
-    #                         # print("qa_product_id rec.show_quality_check_btn ========", qa_product_id,
-    #                         #       rec.show_quality_check_btn, qa_product_ids_obj.id, qa_product_ids_obj.name,
-    #                         #       rec.picking_type_id.id, rec.picking_type_id.name)
-    #                         if qa_product_id in delivery_product_ids:
-    #                             rec.show_quality_check_btn = True
-    #                             # rec.state = 'quality_check'
-    #                             vals['product_id'] = qa_product_id
-    #                             vals['point_id'] = qa_product_ids_obj.id
-    #                             vals['picking_id'] = rec.picking_type_id.id
-    #                             vals['quality_state'] = 'none'
-    #                             vals['partner_id'] = rec.partner_id.id
-    #                             # import traceback
-    #                             # print(traceback.print_stack())
-    #                             print("Found: qa_product_id, partner_id----------", qa_product_id, rec.partner_id)
-    #                             self._create_qa_check(vals)
-
-    # current_check_id = fields.Many2many('elw.quality.check', 'picking_id', string="Checks")
-
-    # The error cannot duplicate now. Do not know the root cause of the issue.
-    # missed this "# rec.show_quality_check_btn = False"
-    # https://www.odoo.com/forum/help-1/odoo-17-uncaught-promise-an-error-occured-in-the-owl-lifecycle-see-this-error-s-cause-property-251142
     @api.depends('state', 'move_ids.product_id', 'picking_type_id')
     def _compute_qa_check_product_ids(self):
         """
@@ -152,7 +108,7 @@ class Picking(models.Model):
     def _create_qa_check_record(self, vals):
         self.ensure_one()
         qa_check_rec = self.env['elw.quality.check'].create(vals)
-        print("created qa_check_rec--------", qa_check_rec, qa_check_rec.id)
+        print("created qa_check_rec--------", qa_check_rec, qa_check_rec.id, qa_check_rec.name)
         return qa_check_rec
 
     def _create_qa_check_wizard_record(self, vals):
@@ -186,6 +142,7 @@ class Picking(models.Model):
                 'type': 'ir.actions.act_window',
                 'view_mode': 'form',
                 'view_id': self.env.ref('elw_quality.elw_quality_check_form_view').id,
+                # 'view_id': self.env.ref('elw_quality.elw_quality_check_tree_view').id,
                 'target': 'new',
             }
 
