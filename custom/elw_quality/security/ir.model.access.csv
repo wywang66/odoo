@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_elw_quality_point,elw.quality.point,model_elw_quality_point,base.group_user,1,1,1,1
+access_elw_quality_team,elw.quality.team,model_elw_quality_team,base.group_user,1,1,1,1
+access_elw_quality_check,elw.quality.check,model_elw_quality_check,base.group_user,1,1,1,1
+access_elw_quality_test_type,elw.quality.test.type,model_elw_quality_test_type,base.group_user,1,1,1,1
+access_elw_quality_check_wizard,elw.quality.check.wizard,model_elw_quality_check_wizard,base.group_user,1,1,1,1
+access_elw_quality_alert,elw.quality.alert,model_elw_quality_alert,base.group_user,1,1,1,1
+access_elw_quality_tag,elw.quality.tag,model_elw_quality_tag,base.group_user,1,1,1,1
+access_elw_quality_reason,elw.quality.reason,model_elw_quality_reason,base.group_user,1,1,1,1
+access_elw_quality_alert_stage,elw.quality.alert.stage,model_elw_quality_alert_stage,base.group_user,1,1,1,1

@@ -1,0 +1,24 @@
+<odoo>
+    <data noupdate="1">
+
+        <record model="elw.quality.test.type" id="qa_test_type_instructions" >
+            <field name="name">Instructions</field>
+        </record>
+
+        <record model="elw.quality.test.type" id="qa_test_type_take_picture" >
+            <field name="name">Take a Picture</field>
+        </record>
+
+        <record model="elw.quality.test.type" id="qa_test_type_register_production" >
+            <field name="name">Register Production</field>
+        </record>
+
+        <record model="elw.quality.test.type" id="qa_test_type_pass_fail" >
+            <field name="name">Pass - Fail</field>
+        </record>
+
+        <record model="elw.quality.test.type" id="qa_test_type_measure" >
+            <field name="name">Measure</field>
+        </record>
+    </data>
+</odoo>

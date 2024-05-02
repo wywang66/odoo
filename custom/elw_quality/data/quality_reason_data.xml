@@ -1,0 +1,21 @@
+<odoo>
+    <data noupdate="1">
+        <record model="elw.quality.reason" id="qa_reason_workcenter_failure" >
+            <field name="name">Workcenter Failure</field>
+        </record>
+
+        <record model="elw.quality.reason" id="qa_reason_part_quality" >
+            <field name="name">Part Quality</field>
+        </record>
+
+        <record model="elw.quality.reason" id="qa_reason_work_operation" >
+            <field name="name">Work Operation</field>
+        </record>
+
+        <record model="elw.quality.reason" id="qa_reason_others" >
+            <field name="name">Others</field>
+        </record>
+
+
+    </data>
+</odoo>

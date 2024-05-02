@@ -1,0 +1,95 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="elw_quality_alert_tree_view">
+            <field name="name">elw.quality.alert.tree.view</field>
+            <field name="model">elw.quality.alert</field>
+            <field name="arch" type="xml">
+                <tree sample="1" string="Quality Alert Tree ">
+                    <field name="name" decoration-bf="1"/>
+                    <!--                    <field name="product_tmpl_id" optional="show"/>-->
+                    <field name="product_id" optional="show"/>
+                    <field name="lot_id" optional="hide"/>
+                    <field name="team_id" optional="show"/>
+                    <field name="user_id" optional="show" widget="many2one_avatar_user"/>
+                    <field name="check_id" optional="show"/>
+                    <field name="tag_ids" optional="hide" widget="many2many_tags"/>
+                    <field name="reason_id" optional="hide"/>
+                    <field name="priority" optional="hide"/>
+                    <field name="date_assign" optional="show"/>
+                    <field name="partner_id" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="elw_quality_alert_form_view">
+            <field name="name">elw.quality.alert.form.view</field>
+            <field name="model">elw.quality.alert</field>
+            <field name="arch" type="xml">
+                <form string="Quality Alert Form">
+                    <header>
+                        <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'folded'}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h3>
+                                <field name="name" readonly="1"/>
+                            </h3>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="title"/>
+                                <field name="product_id"/>
+                                <!--                                <field name="picking_type_ids" widget="many2many_tags"/>-->
+                                <field name="lot_id" context="{'default_product_id': product_id}"/>
+                                <field name="picking_id"/>
+                            </group>
+                            <group>
+                                <field name="team_id"/>
+                                <field name="user_id" domain="[('share', '=', False)]"/>
+                                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                <field name="reason_id"/>
+                                <field name="priority" widget="priority"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Description" name="description">
+                                <field name="description" placeholder="Description of the issue..."/>
+                            </page>
+                            <page string="Preventive Actions" name="preventive_actions">
+                                <field name="action_preventive"
+                                       placeholder="Describe the preventive actions you did..."/>
+                            </page>
+                            <page string="Miscellaneous" name="miscellaneous">
+                                <group>
+                                    <group>
+                                        <field name="partner_id"/>
+                                        <field name="company_id" groups="base.group_multi_company"/>
+                                        <field name="email_cc" groups="base.group_no_one"/>
+                                    </group>
+                                    <group>
+                                        <field name="date_assign"/>
+                                        <field name="date_close" invisible="not date_close"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="elw_quality_alert_action_window">
+            <field name="name">Quality Alert</field>
+            <field name="res_model">elw.quality.alert</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+    </data>
+</odoo>
