@@ -3,9 +3,8 @@ access_elw_quality_point,elw.quality.point,model_elw_quality_point,base.group_us
 access_elw_quality_team,elw.quality.team,model_elw_quality_team,base.group_user,1,1,1,1
 access_elw_quality_check,elw.quality.check,model_elw_quality_check,base.group_user,1,1,1,1
 access_elw_quality_test_type,elw.quality.test.type,model_elw_quality_test_type,base.group_user,1,1,1,1
-access_elw_quality_check_wizard,elw.quality.check.wizard,model_elw_quality_check_wizard,base.group_user,1,1,1,1
 access_elw_quality_alert,elw.quality.alert,model_elw_quality_alert,base.group_user,1,1,1,1
 access_elw_quality_tag,elw.quality.tag,model_elw_quality_tag,base.group_user,1,1,1,1
 access_elw_quality_reason,elw.quality.reason,model_elw_quality_reason,base.group_user,1,1,1,1
 access_elw_quality_alert_stage,elw.quality.alert.stage,model_elw_quality_alert_stage,base.group_user,1,1,1,1
-access_elw_quality_check_popup,elw.quality.check.popup,model_elw_quality_check_popup,base.group_user,1,1,1,1
+access_elw_quality_check_popup_wizard,elw.quality.check.popup.wizard,model_elw_quality_check_popup_wizard,base.group_user,1,1,1,1

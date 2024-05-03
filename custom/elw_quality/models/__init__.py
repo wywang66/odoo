@@ -5,5 +5,5 @@ from . import product
 from . import configuration
 from . import quality_check
 from . import quality_alert
-from . import quality_check_popup
+
 
