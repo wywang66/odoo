@@ -169,3 +169,32 @@ class Picking(models.Model):
         print("eval btn ------")
 
         # self._compute_qa_check_product_ids()
+
+    def button_validate(self):
+        self.ensure_one()
+        if self.qa_check_product_ids:
+            results = self._parse_vals()
+            # print("---------", results)
+            vals_popup = {'product_ids': [], 'quality_state': 'none', 'partner_id': ''}
+            for val in results:
+                # print("val =========", val)
+                # qa_check_rec = self._create_qa_check_record(val)
+                vals_popup['product_ids'].append(val['product_id'])
+                # vals_popup['check_ids'].append(qa_check_rec.id)
+                vals_popup['quality_state'] = 'none'
+                vals_popup['partner_id'] = (val['partner_id'])
+
+            print("vals_popup ", vals_popup)
+            qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+            show_name = 'Quality Check on Delivery: ' + self.name
+            return {
+                    'name': show_name,
+                    'res_model': 'elw.quality.check.popup.wizard',
+                    'res_id': qa_check_popup_wizard.id,
+                    'type': 'ir.actions.act_window',
+                    'view_mode': 'form',
+                    'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
+                    'target': 'new',
+                }
+        else:
+            return super(Picking, self).button_validate()
