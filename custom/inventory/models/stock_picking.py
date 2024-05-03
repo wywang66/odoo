@@ -27,9 +27,6 @@ class Picking(models.Model):
     # may delete 'state'
     state = fields.Selection(selection_add=[('quality_check', 'Quality Check')])
 
-    # delete when using a new db
-    show_quality_check_btn = fields.Boolean(default=False)
-
     # picking_id is 1st defined in stock.move and define in elw.quality.check
     check_ids = fields.Many2many('elw.quality.check', 'picking_id', string="Checks")
     qa_check_product_ids = fields.Many2many('product.product', string="QA Checking Products",
@@ -46,7 +43,6 @@ class Picking(models.Model):
         """
         qa_checkpoint_lists = self.env['elw.quality.point'].search([])
         for rec in self:
-            rec.show_quality_check_btn = False
             rec.qa_check_product_ids = None
             vals = {}
             qa_check_product_ids_buf = []  # product_ids.ids
@@ -68,11 +64,10 @@ class Picking(models.Model):
                         #       qa_checkpoint_list.name)
                         # then check if each qa_product_id of elw.quality.point is found in delivery_product_ids
                         for qa_product_id in qa_product_ids_obj.product_ids.ids:
-                            # print("qa_product_id rec.show_quality_check_btn ========", qa_product_id,
-                            #       rec.show_quality_check_btn, qa_product_ids_obj.id, qa_product_ids_obj.name,
+                            # print("qa_product_id ========", qa_product_id,
+                            #        qa_product_ids_obj.id, qa_product_ids_obj.name,
                             #       rec.picking_type_id.id, rec.picking_type_id.name)
                             if qa_product_id in delivery_product_ids:
-                                rec.show_quality_check_btn = True
                                 # rec.state = 'quality_check'
                                 vals['picking_id'] = rec.id
                                 vals['quality_state'] = 'none'
