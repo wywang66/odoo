@@ -117,54 +117,75 @@ class Picking(models.Model):
         print("created qa_check_rec wizard--------", qa_check_wizard_rec, qa_check_wizard_rec.id)
         return qa_check_wizard_rec
 
+    def _create_qa_check_popup_record(self, vals):
+        self.ensure_one()
+        qa_check_popup_rec = self.env['elw.quality.check.popup'].create(vals)
+        print("created qa_check_rec--------", qa_check_popup_rec, qa_check_popup_rec.id, qa_check_popup_rec.name)
+        return qa_check_popup_rec
+
     # call quality check wizard form
     @api.depends('picking_type_id')
     def action_quality_check(self):
         # vals = self._get_vals_then_create_qa_check_records()
         results = self._parse_vals()
         print("---------", results)
-        # create the elw.quality.check records
 
+        # create the elw.quality.check records
+        # assign vals_wizard
+        # vals_wizard = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'picking_id': ''}
+        vals_wizard = {}
+        vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
         for val in results:
-            print("val =========", val)
+            # print("val =========", val)
             qa_check_rec = self._create_qa_check_record(val)
 
-            # vals_wizard['product_id'] = val['product_id']
-            # vals_wizard['current_check_id'] = qa_check_rec.id
-            # qa_check_wizard_rec = self._create_qa_check_wizard_record(vals_wizard)
+            # # vals_wizard['product_ids'].append(val['product_id'])
+            # vals_wizard['product_id'] = (val['product_id'])
+            # # vals_wizard['check_ids'].append(qa_check_rec.id)
+            # vals_wizard['picking_id'] = val['picking_id']
+
+            vals_popup['product_ids'].append(val['product_id'])
+            vals_popup['check_ids'].append(qa_check_rec.id)
+            vals_popup['quality_state'] = 'none'
+            vals_popup['partner_id'] = (val['partner_id'])
+
             # print("val wiz =========", vals_wizard)
+            # qa_check_wizard_rec = self._create_qa_check_wizard_record(vals_wizard)
 
-            # below works
-            return {
-                'name': _('Quality Check'),
-                'res_model': 'elw.quality.check',
-                'res_id': qa_check_rec.id,  # open the corresponding form
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'view_id': self.env.ref('elw_quality.elw_quality_check_form_view').id,
-                # 'view_id': self.env.ref('elw_quality.elw_quality_check_tree_view').id,
-                'target': 'new',
-            }
+        print("val popup =========", vals_popup)
+        qa_check_popup = self._create_qa_check_popup_record(vals_popup)
+        print("val popup =========", qa_check_popup, qa_check_popup.id, qa_check_popup.name)
 
-
-
+            # below works. commented as it display one form
+            # return {
+            #     'name': _('Quality Check'),
+            #     'res_model': 'elw.quality.check',
+            #     'res_id': qa_check_rec.id,  # open the corresponding form
+            #     'type': 'ir.actions.act_window',
+            #     'view_mode': 'form',
+            #     'view_id': self.env.ref('elw_quality.elw_quality_check_form_view').id,
+            #     # 'view_id': self.env.ref('elw_quality.elw_quality_check_tree_view').id,
+            #     'target': 'new',
+            # }
 
         # action = self.env.ref('elw_quality.qa_quality_check_wizard_action_window').read()[0]
         # print("action ------", action)  # wo 'read()[0]' ir.actions.act_window(445,)
         # print("action ------", action)  # w 'read()[0]' {'id': 445, 'name': 'Quality Check', 'type': 'ir.actions.act_window', 'xml_id':
         # print("self.check_ids", self.check_ids) # no data self.check_ids elw.quality.check()
-
+        show_name = 'Quality Check on Delivery: ' + self.name
         return {
-            'name': _('Quality Check'),
+            # 'name': _('Quality Check'),
+            'name': show_name,
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
-            'res_model': 'elw.quality.check.wizard',
+            'res_model': 'elw.quality.check.popup',
             'view_type': 'form',
+            'res_id': qa_check_popup.id,
             # 'domain': [('check_ids', '=', self.check_ids)],
             # 'views': [(view.id, 'form')],
             # 'view_id': view.id,
             'target': 'new',
-            # 'res_id': appointment_rec.id,
+
             'context': dict(
                 self.env.context,
             ),

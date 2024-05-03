@@ -108,6 +108,13 @@
                   sequence="53"
         />
 
+<!--        <menuitem name="Quality Check Popup"-->
+<!--                  id="elw_quality_check_popup_menu_sub"-->
+<!--                  parent="elw_quality_menu_top_config"-->
+<!--                  action="elw_quality_check_popup_action_window"-->
+<!--                  sequence="54"-->
+<!--        />-->
+
         <!--        Configurations-->
 <!--        <menuitem name="Quality Reasons"-->
 <!--                  id="elw_quality_reason_menu_sub"-->

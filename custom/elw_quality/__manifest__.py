@@ -34,6 +34,7 @@ Long description of module's purpose
         'views/product_view.xml',
         'views/configuration_view.xml',
         'views/quality_alert_view.xml',
+        'views/quality_check_popup.view.xml',
         'views/quality_menu.xml',
 
     ],
