@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError, RedirectWarning
 
 
 # https://www.odoo.com/forum/help-1/pass-a-many2one-field-from-purchase-module-to-inventory-module-249828
@@ -25,15 +26,33 @@ class Picking(models.Model):
     # to do, delete this field when using a new db
 
     # may delete 'state'
-    state = fields.Selection(selection_add=[('quality_check', 'Quality Check')])
+    # state = fields.Selection(selection_add=[('quality_check', 'Quality Check')])
 
     # picking_id is 1st defined in stock.move and define in elw.quality.check
     check_ids = fields.Many2many('elw.quality.check', 'picking_id', string="Checks")
+
     qa_check_product_ids = fields.Many2many('product.product', string="QA Checking Products",
                                             compute='_compute_qa_check_product_ids',
                                             help="List of Quality-Check products")
 
-    @api.depends('state', 'move_ids.product_id', 'picking_type_id')
+    quality_alert_count = fields.Integer(string="Quality Alert Count")
+    quality_alert_ids = fields.One2many('elw.quality.alert', 'picking_id', string="Alerts", store=True)
+
+    check_id = fields.Many2one('elw.quality.check', string="Check ID")
+    quality_check_fail = fields.Boolean(string="Quality Check Fail")
+
+    @api.onchange('check_id')
+    def onchange_check_id(self):
+        if self.check_id:
+            print("2 stock.picking onchange trigger", self.check_id)
+            if self.check_id.quality_state == 'fail':
+                self.quality_check_fail = True
+                print("3 stock.picking onchange trigger", self.check_id.quality_state)
+            else:
+                print("3 stock.picking onchange trigger", self.check_id.quality_state)
+                self.quality_check_fail = False
+
+    @api.depends('move_ids.product_id', 'picking_type_id')
     def _compute_qa_check_product_ids(self):
         """
         This function returns qa_check_product_ids that display the pending quality check products
@@ -114,89 +133,132 @@ class Picking(models.Model):
               qa_check_popup_wizard_rec.name)
         return qa_check_popup_wizard_rec
 
-    # call quality check wizard form
-
-    def action_quality_check(self):
+    @api.depends('qa_check_product_ids', 'check_ids')
+    def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
-        results = self._parse_vals()
-        # print("---------", results)
-
-        # create the elw.quality.check records
-        # assign vals_popup
-        vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
-        for val in results:
-            # print("val =========", val)
-            qa_check_rec = self._create_qa_check_record(val)
-            vals_popup['product_ids'].append(val['product_id'])
-            vals_popup['check_ids'].append(qa_check_rec.id)
-            vals_popup['quality_state'] = 'none'
-            vals_popup['partner_id'] = (val['partner_id'])
-
-        # show all QA check info in one form
-        # print("val popup =========", vals_popup)
-        self.check_ids = self.env['elw.quality.check'].browse(vals_popup['check_ids'])
-        qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
-        # print("self.check_ids =========", self.check_ids, self.check_ids.id, self.check_ids.name)
-        # print("val popup =========", qa_check_popup_wizard, qa_check_popup_wizard.id, qa_check_popup_wizard.name)
-
-        # below works. commented as it display one form
-        # return {
-        #     'name': _('Quality Check'),
-        #     'res_model': 'elw.quality.check',
-        #     'res_id': qa_check_rec.id,  # open the corresponding form
-        #     'type': 'ir.actions.act_window',
-        #     'view_mode': 'form',
-        #     'view_id': self.env.ref('elw_quality.elw_quality_check_form_view').id,
-        #     # 'view_id': self.env.ref('elw_quality.elw_quality_check_tree_view').id,
-        #     'target': 'new',
-        # }
-
-        show_name = 'Quality Check on Delivery: ' + self.name
-        return {
-            # 'name': _('Quality Check'),
-            'name': show_name,
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': 'elw.quality.check.popup.wizard',
-            'view_type': 'form',
-            'res_id': qa_check_popup_wizard.id,
-            # 'domain': [('check_ids', '=', self.check_ids)],
-            # 'views': [(view.id, 'form')],
-            # 'view_id': view.id,
-            'target': 'new',
-            'context': dict(
-                self.env.context,
-            ),
-        }
-
-    def button_eval(self):
-        print("eval btn ------")
-
-        # self._compute_qa_check_product_ids()
-
-    def button_validate(self):
-        self.ensure_one()
-        if self.qa_check_product_ids:
+        if self.check_ids and self.qa_check_product_ids:
             results = self._parse_vals()
-            # print("---------", results)
+            # print("validate ---------", results)
             vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
             for val in results:
                 vals_popup['product_ids'].append(val['product_id'])
                 vals_popup['check_ids'].append(self.check_ids.id)
                 vals_popup['quality_state'] = 'none'
                 vals_popup['partner_id'] = (val['partner_id'])
+        else:
+            raise ValidationError(_("ERROR: check_ids or qa_check_product_ids is unavailable! "))
+        return vals_popup
 
-            print("vals_popup ", vals_popup)
+    def action_create_quality_check(self):
+        self.ensure_one()
+        # avoid creating duplicated records
+        # first time condition do, create records and popup
+        if not self.check_ids and self.qa_check_product_ids:
+            vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
+            results = self._parse_vals()
+            # print("---------", results)
+
+            # create the elw.quality.check records, and assign vals_popup
+            for val in results:
+                # print("val =========", val)
+                qa_check_rec = self._create_qa_check_record(val)
+                vals_popup['product_ids'].append(val['product_id'])
+                vals_popup['check_ids'].append(qa_check_rec.id)
+                vals_popup['quality_state'] = 'none'
+                vals_popup['partner_id'] = (val['partner_id'])
+
+            # below works. commented as it display one form
+            # return {
+            #     'name': _('Quality Check'),
+            #     'res_model': 'elw.quality.check',
+            #     'res_id': qa_check_rec.id,  # open the corresponding form
+            #     'type': 'ir.actions.act_window',
+            #     'view_mode': 'form',
+            #     'view_id': self.env.ref('elw_quality.elw_quality_check_form_view').id,
+            #     # 'view_id': self.env.ref('elw_quality.elw_quality_check_tree_view').id,
+            #     'target': 'new',
+            # }
+
+            self.check_ids = self.env['elw.quality.check'].browse(vals_popup['check_ids'])
+            qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+
+            # print("self.check_ids, =========", self.check_ids, self.check_ids.id)
+            # print("val popup =========", qa_check_popup_wizard, qa_check_popup_wizard.id, qa_check_popup_wizard.name)
+            show_name = 'Quality Check on Delivery: ' + self.name
+            return {
+                # 'name': _('Quality Check'),
+                'name': show_name,
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'elw.quality.check.popup.wizard',
+                'view_type': 'form',
+                'res_id': qa_check_popup_wizard.id,
+                # 'domain': [('check_ids', '=', self.check_ids)],
+                # 'views': [(view.id, 'form')],
+                # 'view_id': view.id,
+                'target': 'new',
+                'context': dict(
+                    self.env.context,
+                ),
+              }
+
+    def action_quality_check(self):
+        self.ensure_one()
+        if self.check_ids.id and self.qa_check_product_ids:
+            vals_popup = self._fill_in_vals_popup_after_popup()
+
+            # print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
             show_name = 'Quality Check on Delivery: ' + self.name
             return {
-                    'name': show_name,
-                    'res_model': 'elw.quality.check.popup.wizard',
-                    'res_id': qa_check_popup_wizard.id,
-                    'type': 'ir.actions.act_window',
-                    'view_mode': 'form',
-                    'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
-                    'target': 'new',
-                }
+                'name': show_name,
+                'res_model': 'elw.quality.check.popup.wizard',
+                'res_id': qa_check_popup_wizard.id,
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
+                'target': 'new',
+            }
+        elif not self.check_ids and self.qa_check_product_ids:
+            raise ValidationError(_("Sorry, Please Click 'Quality Check' First! "))
+
+    def button_eval(self):
+        print("eval btn ------")
+        if self.check_ids.id and self.qa_check_product_ids:
+            vals_popup = self._fill_in_vals_popup_after_popup()
+
+            # print("vals_popup ", vals_popup)
+            qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+            show_name = 'Quality Check on Delivery: ' + self.name
+            return {
+                'name': show_name,
+                'res_model': 'elw.quality.check.popup.wizard',
+                'res_id': qa_check_popup_wizard.id,
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
+                'target': 'new',
+            }
+        elif not self.check_ids and self.qa_check_product_ids:
+            raise ValidationError(_("Sorry, Quality Records have not been created! "))
+
+    def button_validate(self):
+        self.ensure_one()
+        if self.check_ids.id and self.qa_check_product_ids:
+            vals_popup = self._fill_in_vals_popup_after_popup()
+            # print("vals_popup ", vals_popup)
+            qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+            show_name = 'Quality Check on Delivery: ' + self.name
+            return {
+                'name': show_name,
+                'res_model': 'elw.quality.check.popup.wizard',
+                'res_id': qa_check_popup_wizard.id,
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
+                'target': 'new',
+            }
+        elif not self.check_ids and self.qa_check_product_ids:
+            raise ValidationError(_("Sorry, Quality Records have not been created! "))
         else:
             return super(Picking, self).button_validate()
