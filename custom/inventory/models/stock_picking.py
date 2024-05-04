@@ -85,6 +85,7 @@ class Picking(models.Model):
                 return vals
 
     # parse vals and return result list consisting of new_val elements
+    @api.depends('qa_check_product_ids')
     def _parse_vals(self):
         vals = self._compute_qa_check_product_ids()
         results = []
@@ -114,8 +115,9 @@ class Picking(models.Model):
         return qa_check_popup_wizard_rec
 
     # call quality check wizard form
-    @api.depends('picking_type_id')
+
     def action_quality_check(self):
+        self.ensure_one()
         results = self._parse_vals()
         # print("---------", results)
 
@@ -132,7 +134,9 @@ class Picking(models.Model):
 
         # show all QA check info in one form
         # print("val popup =========", vals_popup)
+        self.check_ids = self.env['elw.quality.check'].browse(vals_popup['check_ids'])
         qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+        # print("self.check_ids =========", self.check_ids, self.check_ids.id, self.check_ids.name)
         # print("val popup =========", qa_check_popup_wizard, qa_check_popup_wizard.id, qa_check_popup_wizard.name)
 
         # below works. commented as it display one form
@@ -175,12 +179,10 @@ class Picking(models.Model):
         if self.qa_check_product_ids:
             results = self._parse_vals()
             # print("---------", results)
-            vals_popup = {'product_ids': [], 'quality_state': 'none', 'partner_id': ''}
+            vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
             for val in results:
-                # print("val =========", val)
-                # qa_check_rec = self._create_qa_check_record(val)
                 vals_popup['product_ids'].append(val['product_id'])
-                # vals_popup['check_ids'].append(qa_check_rec.id)
+                vals_popup['check_ids'].append(self.check_ids.id)
                 vals_popup['quality_state'] = 'none'
                 vals_popup['partner_id'] = (val['partner_id'])
 
