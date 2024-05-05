@@ -29,7 +29,7 @@ class Picking(models.Model):
     # state = fields.Selection(selection_add=[('quality_check', 'Quality Check')])
 
     # picking_id is 1st defined in stock.move and define in elw.quality.check
-    check_ids = fields.Many2many('elw.quality.check', 'picking_id', string="Checks")
+    check_ids = fields.Many2many('elw.quality.check', 'picking_id', string="Quality Checks References")
 
     qa_check_product_ids = fields.Many2many('product.product', string="QA Checking Products",
                                             compute='_compute_qa_check_product_ids',
@@ -38,19 +38,28 @@ class Picking(models.Model):
     quality_alert_count = fields.Integer(string="Quality Alert Count")
     quality_alert_ids = fields.One2many('elw.quality.alert', 'picking_id', string="Alerts", store=True)
 
+    # delete when switch to new db
     check_id = fields.Many2one('elw.quality.check', string="Check ID")
-    quality_check_fail = fields.Boolean(string="Quality Check Fail")
+    quality_check_fail = fields.Boolean(string="Quality Check Fail", compute="_compute_quality_check_fail")
+    # delete when switch to new db
+    quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')],)
 
-    @api.onchange('check_id')
-    def onchange_check_id(self):
-        if self.check_id:
-            print("2 stock.picking onchange trigger", self.check_id)
-            if self.check_id.quality_state == 'fail':
-                self.quality_check_fail = True
-                print("3 stock.picking onchange trigger", self.check_id.quality_state)
-            else:
-                print("3 stock.picking onchange trigger", self.check_id.quality_state)
-                self.quality_check_fail = False
+    # loop over the check_ids
+    def _compute_quality_check_fail(self):
+        quality_state_list = [check.quality_state for check in self.check_ids] if self.check_ids else []
+        print("quality_state_list=========", quality_state_list)
+        self.quality_check_fail = 'fail' in quality_state_list
+
+    # @api.onchange('check_id')
+    # def onchange_check_id(self):
+    #     if self.check_id:
+    #         print("2 stock.picking onchange trigger", self.check_id)
+    #         if self.check_id.quality_state == 'fail':
+    #             self.quality_check_fail = True
+    #             print("3 stock.picking onchange trigger", self.check_id.quality_state)
+    #         else:
+    #             print("3 stock.picking onchange trigger", self.check_id.quality_state)
+    #             self.quality_check_fail = False
 
     @api.depends('move_ids.product_id', 'picking_type_id')
     def _compute_qa_check_product_ids(self):
@@ -200,15 +209,17 @@ class Picking(models.Model):
                 'context': dict(
                     self.env.context,
                 ),
-              }
+            }
 
+    # display the created quality.check record
     def action_quality_check(self):
         self.ensure_one()
         if self.check_ids.id and self.qa_check_product_ids:
             vals_popup = self._fill_in_vals_popup_after_popup()
 
-            # print("vals_popup ", vals_popup)
+            print("vals_popup qa_check", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+
             show_name = 'Quality Check on Delivery: ' + self.name
             return {
                 'name': show_name,
@@ -244,10 +255,15 @@ class Picking(models.Model):
 
     def button_validate(self):
         self.ensure_one()
-        if self.check_ids.id and self.qa_check_product_ids:
+        if not self.check_ids and self.qa_check_product_ids:  # before getting the 1st popup
+            raise ValidationError(_("Sorry, Quality Records have not been created! "))
+        # after 1st popup window
+        elif self.check_ids and self.check_ids.quality_state != 'pass':
             vals_popup = self._fill_in_vals_popup_after_popup()
             # print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+            print("self.check_ids.quality_state", self.check_ids.quality_state)  # self.check_ids.quality_state pass
+
             show_name = 'Quality Check on Delivery: ' + self.name
             return {
                 'name': show_name,
@@ -258,7 +274,26 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
-        elif not self.check_ids and self.qa_check_product_ids:
-            raise ValidationError(_("Sorry, Quality Records have not been created! "))
         else:
             return super(Picking, self).button_validate()
+
+    # display a message with product_ids, check_ids to reminder the user to create QA alert
+    def do_alert(self):
+        self.ensure_one()
+        # vals = {
+        #     'product_id': self.product_id.id,
+        #     'check_id': self.id,
+        #     'picking_id': self.picking_id.id,
+        #     'partner_id': self.partner_id.id,
+        # }
+        # print("vals in quality.check---------", vals)
+        # self._create_qa_alert_record(vals)
+        return {
+            'name': _('Quality Check'),
+            'res_model': 'elw.quality.alert',
+            # 'res_id': qa_check_rec.id,  # open the corresponding form
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            'target': 'new',
+        }

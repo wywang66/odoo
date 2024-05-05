@@ -31,6 +31,7 @@ class ElwQualityCheck(models.Model):
                                      default='none')
     test_type = fields.Char(related='point_id.test_type', string="Test Type")
     alert_count = fields.Integer(default=0)
+    alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
 
     # for notebook
     additional_note = fields.Text('Note')
