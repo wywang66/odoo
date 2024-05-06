@@ -41,14 +41,33 @@ class Picking(models.Model):
     quality_check_fail = fields.Boolean(string="Quality Check Fail", compute="_compute_quality_check_fail")
     # delete when switch to new db
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')],)
+    quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality States")
 
     # loop over the check_ids
+    @api.depends('check_ids')
     def _compute_quality_check_fail(self):
-        quality_state_list = [check.quality_state for check in self.check_ids] if self.check_ids else []
-        print("quality_state_list=========", quality_state_list)
-        self.quality_check_fail = 'fail' in quality_state_list
+        for rec in self:
+            if rec.check_ids:
+                quality_state_list = [check.quality_state for check in rec.check_ids] if rec.check_ids else []
+                print("quality_state_list=========", quality_state_list)
+                for qa_state in quality_state_list:
+                    if 'none' in qa_state:
+                        rec.quality_state = 'none'
+                        rec.quality_check_fail = False
+                    elif 'fail' in qa_state:
+                        rec.quality_state = 'fail'
+                        rec.quality_check_fail = True
+                    else:
+                        rec.quality_state = 'pass'
+                        rec.quality_check_fail = False
+            else:
+                rec.quality_state = 'none'
+                rec.quality_check_fail = False
 
-    # @api.onchange('check_id')
+
+
+
+# @api.onchange('check_id')
     # def onchange_check_id(self):
     #     if self.check_id:
     #         print("2 stock.picking onchange trigger", self.check_id)
@@ -143,18 +162,30 @@ class Picking(models.Model):
     @api.depends('qa_check_product_ids', 'check_ids')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
-        if self.check_ids and self.qa_check_product_ids:
-            results = self._parse_vals()
+        if self.quality_check_ids:
+            # results = self._parse_vals()
             # print("validate ---------", results)
             vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
-            for val in results:
-                vals_popup['product_ids'].append(val['product_id'])
-                vals_popup['check_ids'].append(self.check_ids.id)
+            for val in self.quality_check_ids:
+                vals_popup['product_ids'].append(val.product_id.id)
+                vals_popup['check_ids'].append(val.id)
                 vals_popup['quality_state'] = 'none'
-                vals_popup['partner_id'] = (val['partner_id'])
+                vals_popup['partner_id'] = val.partner_id.id
         else:
             raise ValidationError(_("ERROR: check_ids or qa_check_product_ids is unavailable! "))
         return vals_popup
+
+    # get selection field value
+    def _get_selection_field_value(self, selection_field, key):
+        selection_field_info = dict(self.fields_get([selection_field]))
+        # selection filed has 'selection' key
+        selections = selection_field_info[selection_field]['selection']
+        # print("...........", selections) #[('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')]
+        for k, v in selections:
+            if k == key:
+                return v
+        raise ValidationError(_(f"Key {key} is not found!"))
+
 
     def action_create_quality_check(self):
         self.ensure_one()
@@ -212,7 +243,7 @@ class Picking(models.Model):
     # display the created quality.check record
     def action_quality_check(self):
         self.ensure_one()
-        if self.check_ids.id and self.qa_check_product_ids:
+        if self.check_ids:
             vals_popup = self._fill_in_vals_popup_after_popup()
 
             print("vals_popup qa_check", vals_popup)
@@ -256,13 +287,14 @@ class Picking(models.Model):
         if not self.check_ids and self.qa_check_product_ids:  # before getting the 1st popup
             raise ValidationError(_("Sorry, Quality Records have not been created! "))
         # after 1st popup window
-        elif self.check_ids and self.check_ids.quality_state != 'pass':
+        elif self.check_ids and self.quality_state != 'pass':
             vals_popup = self._fill_in_vals_popup_after_popup()
-            # print("vals_popup ", vals_popup)
+            print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
-            print("self.check_ids.quality_state", self.check_ids.quality_state)  # self.check_ids.quality_state pass
+            # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
-            show_name = 'Pending Quality Check on Delivery: ' + self.name
+            quality_state_value = self._get_selection_field_value('quality_state', self.quality_state)
+            show_name = 'Quality Check on Delivery: ' + self.name + '. Quality State: ' + quality_state_value
             return {
                 'name': show_name,
                 'res_model': 'elw.quality.check.popup.wizard',

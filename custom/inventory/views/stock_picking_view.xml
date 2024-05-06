@@ -42,7 +42,11 @@
                     <field name="qa_check_product_ids" widget="many2many_tags"/>
                     <field name="check_ids" widget="many2many_tags"/>
                     <field name="quality_check_fail" />
-
+                    <field name="quality_check_ids" invisible="not check_ids">
+                        <tree>
+                            <field name="quality_state"/>
+                        </tree>
+                    </field>
                 </xpath>
                 <xpath expr="//button[@name='button_validate']" position="after">
                     <button name="action_create_quality_check"
@@ -57,7 +61,7 @@
                 <xpath expr="//button[@name='button_validate']" position="after">
 <!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight"-->
 <!--                            invisible="not qa_check_product_ids or state in ('done','cancel')"/>-->
-                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight" />
+<!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight" />-->
                 </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>
