@@ -24,5 +24,13 @@
             <field name="company_id" eval="False"/> <!-- False : common for all companies-->
         </record>
 
+        <record id="seq_elw_quality_check_popup" model="ir.sequence">
+            <field name="name">Elw Quality Check Popup Sequence</field>
+            <field name="code">elw.quality.check.popup.wizard.sequence</field>
+            <field name="prefix">POP</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/> <!-- False : common for all companies-->
+        </record>
+
     </data>
 </odoo>

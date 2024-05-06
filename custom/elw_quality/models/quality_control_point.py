@@ -8,6 +8,9 @@ from datetime import datetime, timedelta
 class ElwQualityPoint(models.Model):
     _name = 'elw.quality.point'
     _description = 'elw quality Point'
+    _inherit = ['mail.thread',
+                'mail.activity.mixin',
+                ]  # add a chatter
     _rec_name = 'name'
     _order = 'id desc, name desc'
 

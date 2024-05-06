@@ -28,14 +28,13 @@ Long description of module's purpose
         'data/sequence_data.xml',
         'data/quality_test_type_data.xml',
         'data/quality_reason_data.xml',
-        'wizard/quality_check.xml',
+        'wizard/quality_check_popup_view.xml',
         'views/quality_control_point_view.xml',
         'views/quality_check_view.xml',
         'views/product_view.xml',
         'views/configuration_view.xml',
         'views/quality_alert_view.xml',
         'views/quality_menu.xml',
-
     ],
     # only loaded in demonstration mode
 

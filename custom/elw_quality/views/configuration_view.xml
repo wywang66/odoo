@@ -91,34 +91,24 @@
         </field>
     </record>
 
-    <!-- quality alter stage:  -->
-    <record id="quality_alter_stage_view_search" model="ir.ui.view">
-        <field name="name">quality.alter.stage.search</field>
-        <field name="model">elw.quality.alter.stage</field>
-        <field name="arch" type="xml">
-            <search string="Quality Alter Stage">
-                <field name="name" string="Quality Alter Stages"/>
-            </search>
-        </field>
-    </record>
 
-    <record id="quality_alter_stage_view_tree" model="ir.ui.view">
-        <field name="name">quality.alter.stage.tree</field>
-        <field name="model">elw.quality.alter.stage</field>
+    <record id="quality_alert_stage_view_tree" model="ir.ui.view">
+        <field name="name">quality.alert.stage.tree</field>
+        <field name="model">elw.quality.alert.stage</field>
         <field name="arch" type="xml">
-            <tree string="Quality Alter Stage" editable="bottom">
+            <tree string="Quality Alert Stage" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="fold"/>
+                <field name="folded"/>
                 <field name="done"/>
-                <field name="team_id"/>
+                <field name="team_ids" widget="many2many_tags"/>
             </tree>
         </field>
     </record>
 
-    <record id="quality_alter_stage_view_kanban" model="ir.ui.view">
-        <field name="name">quality.alter.stage.kanban</field>
-        <field name="model">elw.quality.alter.stage</field>
+    <record id="quality_alert_stage_view_kanban" model="ir.ui.view">
+        <field name="name">quality.alert.stage.kanban</field>
+        <field name="model">elw.quality.alert.stage</field>
         <field name="arch" type="xml">
             <kanban class="o_kanban_mobile">
                 <templates>
@@ -136,10 +126,10 @@
         </field>
     </record>
 
-    <!-- quality alter stage : actions -->
-    <record id="quality_alter_stage_action" model="ir.actions.act_window">
+    <!-- quality alert stage : actions -->
+    <record id="quality_alert_stage_action" model="ir.actions.act_window">
         <field name="name">Stages</field>
-        <field name="res_model">elw.quality.alter.stage</field>
+        <field name="res_model">elw.quality.alert.stage</field>
         <field name="view_mode">tree,kanban</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

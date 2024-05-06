@@ -26,9 +26,9 @@
             <field name="model">elw.quality.alert</field>
             <field name="arch" type="xml">
                 <form string="Quality Alert Form">
-                    <!--                    <header>-->
-                    <!--                        <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'folded'}"/>-->
-                    <!--                    </header>-->
+                    <header>
+                        <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'folded'}"/>
+                    </header>
                     <sheet>
                         <div class="oe_title">
                             <h3>
@@ -63,8 +63,8 @@
                                 <group>
                                     <group>
                                         <field name="partner_id"/>
-                                        <!--                                        <field name="company_id" groups="base.group_multi_company"/>-->
-                                        <!--                                        <field name="email_cc" groups="base.group_no_one"/>-->
+                                        <field name="company_id" groups="base.group_multi_company"/>
+                                        <field name="email_cc" groups="base.group_no_one"/>
                                     </group>
                                     <group>
                                         <field name="date_assign"/>
@@ -74,6 +74,11 @@
                             </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>

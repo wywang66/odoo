@@ -85,10 +85,10 @@
         />
 
         <!--        Configurations-->
-        <menuitem name="Quality Alter Stages"
-                  id="elw_quality_alter_stage_menu_sub"
+        <menuitem name="Quality Alert Stages"
+                  id="elw_quality_alert_stage_menu_sub"
                   parent="elw_quality_menu_top_config"
-                  action="quality_alter_stage_action"
+                  action="quality_alert_stage_action"
                   sequence="51"
         />
 
@@ -107,6 +107,13 @@
                   action="elw_quality_tag_action_window"
                   sequence="53"
         />
+
+<!--        <menuitem name="Quality Check Popup"-->
+<!--                  id="elw_quality_check_popup_menu_sub"-->
+<!--                  parent="elw_quality_menu_top_config"-->
+<!--                  action="elw_quality_check_popup_action_window"-->
+<!--                  sequence="54"-->
+<!--        />-->
 
         <!--        Configurations-->
 <!--        <menuitem name="Quality Reasons"-->

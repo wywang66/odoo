@@ -1,0 +1,49 @@
+<odoo>
+    <data>
+
+<!--        <record model="ir.ui.view" id="elw_quality_check_popup_tree_view">-->
+<!--            <field name="name">elw.quality.check.popup.tree.view</field>-->
+<!--            <field name="model">elw.quality.check.popup</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <tree>-->
+<!--                    <field name="name" readonly="1"/>-->
+<!--                    <field name="product_ids" widget="many2many_tags"/>-->
+<!--                    <field name="partner_id"/>-->
+<!--                    <field name="quality_state"/>-->
+<!--                </tree>-->
+<!--            </field>-->
+<!--        </record>-->
+
+        <record model="ir.ui.view" id="elw_quality_check_popup_form_view">
+            <field name="name">elw.quality.check.popup.wizard.form.view</field>
+            <field name="model">elw.quality.check.popup.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <h3>
+                            <field name="name" readonly="1" invisible="1"/>
+                        </h3>
+                        <group>
+                            <group>
+                                <field name="product_ids" widget="many2many_tags"/>
+                                <field name="check_ids" widget="many2many_tags"/>
+                                <field name="partner_id"/>
+                                <field name="quality_state"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="OK" class="btn-primary" special="cancel" data-hotkey="x"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="elw_quality_check_popup_wizard_action_window">
+            <field name="name">Quality Check Popup</field>
+            <field name="res_model">elw.quality.check.popup.wizard</field>
+            <field name="view_mode">form</field>
+        </record>
+    </data>
+</odoo>

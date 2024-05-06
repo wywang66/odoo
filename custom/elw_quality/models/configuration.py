@@ -15,6 +15,7 @@ class QualityTeam(models.Model):
         'res.users', 'quality_team_users_rel', string="Team Members",
         domain="[('company_ids', 'in', company_id)]")
     color = fields.Integer("Color Index", default=0)
+    alert_count = fields.Integer("# Quality Alerts")
     # member_ids = fields.Many2many('hr.employee', string="Company employee",)
 
     # For the dashboard only
@@ -28,18 +29,17 @@ class QualityTeam(models.Model):
     # todo_request_count_unscheduled = fields.Integer(string="Number of Requests Unscheduled",
     #                                                 compute='_compute_todo_requests')
 
-class QualityStage(models.Model):
-    """ Model for case stages. This models the main stages of a quality Request management flow. """
 
-    _name = 'elw.quality.alter.stage'
+class QualityAlertStage(models.Model):
+    _name = 'elw.quality.alert.stage'
     _description = 'ELW Quality Alter Stage'
     _order = 'sequence, id'
 
     name = fields.Char('Stage Name', required=True, translate=True)
-    sequence = fields.Integer('Sequence', default=20)
-    fold = fields.Boolean('Folded in Quality Pipe')
-    done = fields.Boolean('Request Done')
-    team_id = fields.Many2one('elw.quality.team', string='Team')
+    sequence = fields.Integer('Sequence')
+    folded = fields.Boolean('Folded')
+    done = fields.Boolean('Alert Processed')
+    team_ids = fields.Many2many('elw.quality.team', string='Teams')
 
 
 class QualityReason(models.Model):
@@ -65,7 +65,7 @@ class QualityTag(models.Model):
     ]
 
 
-class ElwQualityPointTestType(models.Model):
+class QualityPointTestType(models.Model):
     _name = 'elw.quality.test.type'
     _description = 'ELW Quality Control Point Test Type'
 

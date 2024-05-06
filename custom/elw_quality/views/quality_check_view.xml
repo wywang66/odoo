@@ -5,8 +5,10 @@
             <field name="model">elw.quality.check</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="active" optional="hide"/>
                     <field name="name"/>
                     <field name="product_id"/>
+                    <field name="picking_id"/>
                     <field name="lot_id"/>
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>
@@ -26,9 +28,10 @@
                 <form>
                     <header>
                         <field name="test_type" invisible="1"/>
-                        <button name="do_pass" type="object" class="btn-primary" string="Pass" data-hotkey="q"/>
-                        <!--                        <button name="do_pass" type="object" invisible="quality_state != 'fail'"-->
-                        <!--                                string="Pass" data-hotkey="q"/>-->
+                        <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none'"
+                                string="Pass" data-hotkey="q"/>
+                        <button name="do_pass" type="object" invisible="quality_state != 'fail'"
+                                string="Pass" data-hotkey="q"/>
                         <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'none'"
                                 string="Fail" data-hotkey="w"/>
                         <button name="do_fail" type="object" invisible="quality_state != 'pass'"
@@ -36,10 +39,10 @@
                         <button name="do_measure" type="object"
                                 invisible="test_type != 'measure' or quality_state != 'none'" string="Measure"
                                 data-hotkey="v"/>
-                        <button name="do_alert" type="object" invisible="quality_state != 'pass'"
+                        <button name="do_alert" type="object" invisible="alert_ids or quality_state != 'pass'"
                                 string="Create Alert" data-hotkey="g"/>
                         <button name="do_alert" type="object" class="btn-primary"
-                                invisible="quality_state != 'fail'" string="Create Alert" data-hotkey="g"/>
+                                invisible="alert_ids or quality_state != 'fail'" string="Create Alert" data-hotkey="g"/>
                         <field name="quality_state" widget="statusbar" nolabel="1" statusbar_visible="none,pass,fail"/>
                     </header>
                     <sheet>
@@ -50,8 +53,9 @@
                             <group>
                                 <field name="product_id"/>
                                 <field name="measure_on"/>
+                                <!--                                <field name="quality_check_fail"/>-->
                                 <!--                                <field name="picking_type_ids" widget="many2many_tags"/>-->
-                                <!--                                <field name="user_id"/>-->
+                                <field name="alert_ids" invisible="1"/>
                             </group>
                             <group>
                                 <field name="picking_id"/>
@@ -72,6 +76,11 @@
                             </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -82,7 +91,5 @@
             <field name="res_model">elw.quality.check</field>
             <field name="view_mode">tree,form</field>
         </record>
-
-
     </data>
 </odoo>

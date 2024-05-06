@@ -3,6 +3,9 @@ from odoo import models, fields, api, _
 
 class ElwQualityCheck(models.Model):
     _name = 'elw.quality.check'
+    _inherit = ['mail.thread',
+                'mail.activity.mixin',
+                ]  # add a chatter
     _description = 'elw quality check'
     _order = 'id desc, name desc'
 
@@ -12,7 +15,7 @@ class ElwQualityCheck(models.Model):
         'res.company', 'Company', default=lambda self: self.env.company,
         readonly=True, required=True,
         help='The company is automatically set from your user preferences.')
-
+    active = fields.Boolean(default=True)
     point_id = fields.Many2one('elw.quality.point', string='Control Point ID')
 
     partner_id = fields.Many2one('res.partner', string='Partner')
@@ -28,6 +31,7 @@ class ElwQualityCheck(models.Model):
                                      default='none')
     test_type = fields.Char(related='point_id.test_type', string="Test Type")
     alert_count = fields.Integer(default=0)
+    alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
 
     # for notebook
     additional_note = fields.Text('Note')
@@ -65,5 +69,20 @@ class ElwQualityCheck(models.Model):
     def do_measure(self):
         pass
 
+    def _create_qa_alert_record(self, vals):
+        self.ensure_one()
+        qa_alert_rec = self.env['elw.quality.alert'].create(vals)
+        print("created qa_alert_rec--------", qa_alert_rec, qa_alert_rec.id, qa_alert_rec.name)
+        return qa_alert_rec
+
     def do_alert(self):
-        pass
+        self.ensure_one()
+        # get vals to create a quality.alert record
+        vals = {
+            'product_id': self.product_id.id,
+            'check_id': self.id,
+            'picking_id': self.picking_id.id,
+            'partner_id': self.partner_id.id,
+        }
+        print("vals in quality.check---------", vals)
+        self._create_qa_alert_record(vals)
