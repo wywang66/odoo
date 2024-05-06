@@ -165,7 +165,7 @@ class Picking(models.Model):
         if self.quality_check_ids:
             # results = self._parse_vals()
             # print("validate ---------", results)
-            vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
+            vals_popup = {'picking_id': self.id, 'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
             for val in self.quality_check_ids:
                 vals_popup['product_ids'].append(val.product_id.id)
                 vals_popup['check_ids'].append(val.id)
@@ -241,6 +241,7 @@ class Picking(models.Model):
             }
 
     # display the created quality.check record
+    @api.depends('check_ids', 'qa_check_product_ids')
     def action_quality_check(self):
         self.ensure_one()
         if self.check_ids:
@@ -249,7 +250,7 @@ class Picking(models.Model):
             print("vals_popup qa_check", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
 
-            show_name = 'Pending Quality Check on Delivery: ' + self.name
+            show_name = 'Status of Quality Check on Delivery: ' + self.name
             return {
                 'name': show_name,
                 'res_model': 'elw.quality.check.popup.wizard',
@@ -259,7 +260,7 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
-        elif not self.check_ids and self.qa_check_product_ids:
+        else:
             raise ValidationError(_("Sorry, Please Click 'Quality Check' First! "))
 
     def button_eval(self):
@@ -282,6 +283,7 @@ class Picking(models.Model):
         elif not self.check_ids and self.qa_check_product_ids:
             raise ValidationError(_("Sorry, Quality Records have not been created! "))
 
+    @api.depends('check_ids', 'quality_state')
     def button_validate(self):
         self.ensure_one()
         if not self.check_ids and self.qa_check_product_ids:  # before getting the 1st popup
@@ -293,8 +295,8 @@ class Picking(models.Model):
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
             # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
-            quality_state_value = self._get_selection_field_value('quality_state', self.quality_state)
-            show_name = 'Quality Check on Delivery: ' + self.name + '. Quality State: ' + quality_state_value
+            # quality_state_value = self._get_selection_field_value('quality_state', self.quality_state)
+            show_name = 'Status of Quality Check on Delivery: ' + self.name
             return {
                 'name': show_name,
                 'res_model': 'elw.quality.check.popup.wizard',
