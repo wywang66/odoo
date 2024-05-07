@@ -14,7 +14,12 @@ class QualityCheckPopup(models.TransientModel):
     partner_id = fields.Many2one('res.partner', string='Vendor/Customer')
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
                                      default='none')
+    quality_check_fail = fields.Boolean()
     qa_status = fields.Char("Status", compute="_compute_qa_status")
+    info = fields.Char(string="Next", default="Please proceed to Quality Checks (To Do) or Quality Alerts (Failed)...",
+                       readonly=True)
+    info_fail = fields.Char(string="Next", default="Please proceed Quality Alerts (Failed)...",
+                            readonly=True)
 
     def _get_selection_field_value(self, key):
         if key == 'none':

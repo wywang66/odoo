@@ -28,12 +28,17 @@
                                 <field name="product_ids" widget="many2many_tags"/>
                                 <field name="check_ids" widget="many2many_tags"/>
                                 <field name="partner_id"/>
-                                <label for="qa_status" />
+                                <label for="qa_status"/>
                                 <div>
                                     <b>
                                         <field name="qa_status"/>
                                     </b>
                                 </div>
+                                <field name="quality_check_fail" invisible="1"/>
+                                <field name="info_fail" style="color:Red; font-weight:bold;"
+                                       invisible="not quality_check_fail" />
+                                <field name="info" style="color:Blue; font-weight:bold;"
+                                       invisible="quality_check_fail" />
                             </group>
                         </group>
                     </sheet>
