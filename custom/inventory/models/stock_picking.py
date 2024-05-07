@@ -158,7 +158,8 @@ class Picking(models.Model):
     @api.depends('qa_check_product_ids', 'check_ids')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
-        vals_popup = {'quality_check_fail': self.quality_check_fail, 'product_ids': [], 'check_ids': [], 'quality_state': 'none',
+        vals_popup = {'quality_check_fail': self.quality_check_fail, 'product_ids': [], 'check_ids': [],
+                      'quality_state': 'none',
                       'partner_id': ''}
         if self.quality_check_ids:
             for val in self.quality_check_ids:
@@ -281,7 +282,8 @@ class Picking(models.Model):
     def button_validate(self):
         self.ensure_one()
         if not self.check_ids and self.qa_check_product_ids:  # before getting the 1st popup
-            raise ValidationError(_("Sorry, Quality Records have not been created! "))
+            raise ValidationError(
+                _("Sorry, Quality Records have not been created! Please Click 'Create QA Check Record'."))
         # after 1st popup window
         elif self.check_ids and self.quality_state != 'pass':
             vals_popup = self._fill_in_vals_popup_after_popup()

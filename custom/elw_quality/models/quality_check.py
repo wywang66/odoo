@@ -83,6 +83,18 @@ class ElwQualityCheck(models.Model):
             'check_id': self.id,
             'picking_id': self.picking_id.id,
             'partner_id': self.partner_id.id,
+            'team_id': self.team_id.id,
+            'user_id': self.user_id.id,
         }
         print("vals in quality.check---------", vals)
-        self._create_qa_alert_record(vals)
+        qa_alert_rec = self._create_qa_alert_record(vals)
+
+        return {
+            'name': _('Quality Alert'),
+            'res_model': 'elw.quality.alert',
+            'res_id': qa_alert_rec.id,  # open the corresponding form
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            # 'target': 'new',
+        }
