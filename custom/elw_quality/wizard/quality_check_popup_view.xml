@@ -28,7 +28,7 @@
                                 <field name="product_ids" widget="many2many_tags"/>
                                 <field name="check_ids" widget="many2many_tags"/>
                                 <field name="partner_id"/>
-<!--                                <field name="quality_state" invisible="1"/>-->
+                                <label for="qa_status" />
                                 <div>
                                     <b>
                                         <field name="qa_status"/>
