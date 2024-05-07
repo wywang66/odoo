@@ -9,7 +9,6 @@ class QualityCheckPopup(models.TransientModel):
     name = fields.Char(
         string='Reference', default='New', copy=False, readonly=True)
 
-    picking_id = fields.Many2one('stock.picking', string='Picking')
     product_ids = fields.Many2many('product.product', string='Product')
     check_ids = fields.Many2many('elw.quality.check', string="QA Check Reference#")
     partner_id = fields.Many2one('res.partner', string='Vendor/Customer')

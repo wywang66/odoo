@@ -39,7 +39,6 @@ class Picking(models.Model):
     quality_alert_ids = fields.One2many('elw.quality.alert', 'picking_id', string="Alerts", store=True)
 
     quality_check_fail = fields.Boolean(string="Quality Check Fail", compute="_compute_quality_check_fail")
-    # delete when switch to new db
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')],)
     quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality States")
 
@@ -165,7 +164,7 @@ class Picking(models.Model):
         if self.quality_check_ids:
             # results = self._parse_vals()
             # print("validate ---------", results)
-            vals_popup = {'picking_id': self.id, 'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
+            vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
             for val in self.quality_check_ids:
                 vals_popup['product_ids'].append(val.product_id.id)
                 vals_popup['check_ids'].append(val.id)

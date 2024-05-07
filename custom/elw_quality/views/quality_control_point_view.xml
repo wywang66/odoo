@@ -44,29 +44,25 @@
                             <group>
                                 <field name="measure_on"/>
                                 <field name="measure_frequency_type"/>
-                                <label for="measure_frequency_value" invisible="measure_frequency_type != 'random'"/>
-                                <div>
-                                    <span class="oe_inline" invisible="measure_frequency_type != 'random'">Every</span>
-                                    <field name="measure_frequency_value" nolable="1" class="oe_inline"
-                                           invisible="measure_frequency_type != 'random'"/>
-                                    <span class="oe_inline" invisible="measure_frequency_type != 'random'">% of
-                                        Operations
-                                    </span>
+
+                                <label for="measure_frequency_value" invisible="measure_frequency_type != 'random'"
+                                       string="Frequency"/>
+                                <div invisible="measure_frequency_type != 'random'">
+                                    <span>Every</span>
+                                    <field name="measure_frequency_value" class="oe_inline"/>
+                                    <span>% of Operations</span>
                                 </div>
                                 <label for="measure_frequency_unit_value"
-                                       invisible="measure_frequency_type != 'periodical'"/>
-                                <div>
-                                    <span class="oe_inline" invisible="measure_frequency_type != 'periodical'">Every
-                                    </span>
-                                    <field name="measure_frequency_unit_value" nolable="1" class="oe_inline"
-                                           invisible="measure_frequency_type != 'periodical'"/>
+                                       invisible="measure_frequency_type != 'periodical'" string="Frequency"/>
+                                <div invisible="measure_frequency_type != 'periodical'">
+                                    <span>Every</span>
+                                    <field name="measure_frequency_unit_value" nolable="1" class="oe_inline"/>
                                     <field name="measure_frequency_unit" nolable="1" class="oe_inline"
-                                           invisible="measure_frequency_type != 'periodical'" default='days'/>
+                                           default='days'/>
                                 </div>
                                 <field name="test_type" invisible="1"/>
-                                <field string="Type" name="test_type_id"
-                                       options="{'no_open': True, 'no_create': True}"/>
-                                <field name="team_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field string="Type" name="test_type_id"/>
+                                <field name="team_id"/>
                             </group>
                         </group>
                         <notebook>

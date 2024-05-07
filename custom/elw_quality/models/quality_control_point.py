@@ -36,7 +36,7 @@ class ElwQualityPoint(models.Model):
                                        # 'with partial quantity checks also possible.'
                                   )
     measure_frequency_type = fields.Selection([('all', 'All'), ('random', 'Randomly'), ('periodical', 'Periodically')],
-                                              required=True, string='Control Frequency')
+                                              required=True, string='Control Frequency Type')
     measure_frequency_value = fields.Float(string="Control Frequency Value", store=True, copy=True)
     measure_frequency_unit = fields.Selection([('days', 'Days'), ('week', 'Weeks'), ('months', 'Months')],
                                               store=True, copy=True, default='days')
