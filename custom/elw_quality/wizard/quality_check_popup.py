@@ -16,9 +16,9 @@ class QualityCheckPopup(models.TransientModel):
                                      default='none')
     quality_check_fail = fields.Boolean()
     qa_status = fields.Char("Status", compute="_compute_qa_status")
-    info = fields.Char(string="Next", default="Please proceed to Quality Checks (To Do) or Quality Alerts (Failed)...",
+    info = fields.Char(string="Next", default="Please Proceed to Quality Checks for 'To Do' or 'Failed' Actions...",
                        readonly=True)
-    info_fail = fields.Char(string="Next", default="Please proceed Quality Alerts (Failed)...",
+    info_fail = fields.Char(string="Next", default="Please proceed Quality Checks for 'Failed' Actions...",
                             readonly=True)
 
     def _get_selection_field_value(self, key):

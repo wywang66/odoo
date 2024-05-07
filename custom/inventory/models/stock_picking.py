@@ -42,6 +42,10 @@ class Picking(models.Model):
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], )
     quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality States")
 
+    # logic: if 'none' in quality_state_list: quality_state = 'none'
+    # logic: if 'fail' in all quality_state_list: quality_state = 'fail', quality_check_fail = True
+    # logic: if 'pass' in all quality_state_list: quality_state = 'pass', quality_check_fail = False
+    # logic: if 'fail' and 'pass' quality_state_list: quality_state = 'fail', quality_check_fail = True
     # loop over the check_ids, True - all fail
     @api.depends('check_ids')
     def _compute_quality_check_fail(self):
@@ -49,19 +53,20 @@ class Picking(models.Model):
             if rec.check_ids:
                 quality_state_list = [check.quality_state for check in rec.check_ids] if rec.check_ids else []
                 # print("quality_state_list=========", quality_state_list)
-                for qa_state in quality_state_list:
-                    if 'none' in qa_state:
-                        rec.quality_state = 'none'
-                        rec.quality_check_fail = False
-                    elif 'fail' in qa_state:
-                        rec.quality_state = 'fail'
-                        rec.quality_check_fail = True
-                    else:
-                        rec.quality_state = 'pass'
-                        rec.quality_check_fail = False
+                if 'none' in quality_state_list:
+                    rec.quality_state = 'none'
+                    rec.quality_check_fail = False
+                elif all(state == 'fail' for state in quality_state_list):
+                    rec.quality_state = 'fail'
+                    rec.quality_check_fail = True
+                elif all(state == 'pass' for state in quality_state_list):
+                    rec.quality_state = 'pass'
+                    rec.quality_check_fail = False
+                else:
+                    rec.quality_state = 'fail'
+                    rec.quality_check_fail = True
             else:
-                rec.quality_state = 'none'
-                rec.quality_check_fail = False
+                return
 
     # @api.onchange('check_id')
     # def onchange_check_id(self):
@@ -305,6 +310,8 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
+        elif self.quality_check_fail and not self.quality_alert_count:
+            return super(Picking, self).button_validate()
         else:
             return super(Picking, self).button_validate()
 
