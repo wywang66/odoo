@@ -1,19 +1,28 @@
 <odoo>
     <data noupdate="1">
-        <record model="elw.quality.alert.stage" id="qa_alert_stage_new">
+        <record model="elw.quality.alert.stage" id="stage_1">
             <field name="name">New</field>
+            <field name="sequence" eval="1"/>
+            <field name="folded" eval="False"/>
         </record>
 
-        <record model="elw.quality.alert.stage" id="qa_alert_stage_confirmed">
+        <record model="elw.quality.alert.stage" id="stage_2">
             <field name="name">Confirmed</field>
+            <field name="sequence" eval="2"/>
+            <field name="folded" eval="False"/>
         </record>
 
-        <record model="elw.quality.alert.stage" id="qa_alert_stage_action_proposed">
+        <record model="elw.quality.alert.stage" id="stage_3">
             <field name="name">Action Proposed</field>
+            <field name="sequence" eval="3"/>
+            <field name="folded" eval="True"/>
         </record>
 
-        <record model="elw.quality.alert.stage" id="qa_alert_stage_solved">
+        <record model="elw.quality.alert.stage" id="stage_4">
             <field name="name">Solved</field>
+            <field name="sequence" eval="4"/>
+            <field name="folded" eval="True"/>
+            <field name="done" eval="True"/>
         </record>
     </data>
 </odoo>

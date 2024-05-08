@@ -37,7 +37,7 @@ class QualityAlertStage(models.Model):
 
     name = fields.Char('Stage Name', required=True, translate=True)
     sequence = fields.Integer('Sequence')
-    folded = fields.Boolean('Folded')
+    folded = fields.Boolean('Folded in Quality Alert')
     done = fields.Boolean('Alert Processed')
     team_ids = fields.Many2many('elw.quality.team', string='Teams')
 
