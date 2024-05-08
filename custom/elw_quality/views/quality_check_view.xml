@@ -1,5 +1,28 @@
 <odoo>
     <data>
+        <record model="ir.ui.view" id="elw_quality_check_search_view">
+            <field name="name">elw.quality.check.search.view</field>
+            <field name="model">elw.quality.check</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="product_id"/>
+                    <field name="picking_id"/>
+                    <field name="team_id"/>
+                    <filter string="In Progress" name="progress" domain="[('quality_state', '=', 'none')]"/>
+                    <filter string="Passed" name="passed" domain="[('quality_state', '=', 'pass')]"/>
+                    <filter string="Failed" name="failed" domain="[('quality_state', '=', 'fail')]"/>
+                    <separator/>
+                    <filter string="Checked Date" name="control_date" date="control_date"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Status" name="state" context="{'group_by': 'quality_state'}"/>
+                        <filter string="Product" name="by_product" context="{'group_by': 'product_id'}"/>
+                        <filter string="Control Point" name="groupby_point_id" context="{'group_by': 'point_id'}"/>
+                        <filter string="Team" name="groupby_team_id" context="{'group_by': 'team_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="elw_quality_check_tree_view">
             <field name="name">elw.quality.check.tree.view</field>
             <field name="model">elw.quality.check</field>
@@ -39,7 +62,7 @@
                         <button name="do_measure" type="object"
                                 invisible="test_type != 'measure' or quality_state != 'none'" string="Measure"
                                 data-hotkey="v"/>
-                        <button name="do_alert" type="object" invisible="alert_ids or quality_state != 'pass'"
+                        <button name="do_alert" type="object" invisible="alert_ids or quality_state == 'pass'"
                                 string="Create Alert" data-hotkey="g"/>
                         <button name="do_alert" type="object" class="btn-primary"
                                 invisible="alert_ids or quality_state != 'fail'" string="Create Alert" data-hotkey="g"/>
@@ -53,9 +76,13 @@
                             <group>
                                 <field name="product_id"/>
                                 <field name="measure_on"/>
-                                <!--                                <field name="quality_check_fail"/>-->
-                                <!--                                <field name="picking_type_ids" widget="many2many_tags"/>-->
-                                <field name="alert_ids" invisible="1"/>
+                                <field name="alert_ids" invisible="quality_state == 'pass'">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="stage_id"/>
+                                    </tree>
+                                </field>
+                                <field name="alert_result" invisible="quality_state == 'pass'"/>
                             </group>
                             <group>
                                 <field name="picking_id"/>

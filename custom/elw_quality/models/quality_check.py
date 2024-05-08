@@ -32,10 +32,20 @@ class ElwQualityCheck(models.Model):
     test_type = fields.Char(related='point_id.test_type', string="Test Type")
     alert_count = fields.Integer(default=0)
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
-
+    alert_result = fields.Char(compute="_compute_alert_result")
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
+
+    @api.depends('alert_ids')
+    def _compute_alert_result(self):
+        for rec in self:
+            alert_result_list = [alert_res.stage_id.name for alert_res in rec.alert_ids] if rec.quality_state == 'fail' else []
+            print("alert_result_list=========", alert_result_list)
+            if all(res == 'Solved' for res in alert_result_list):
+                rec.alert_result = 'Solved'
+            else:
+                rec.alert_result = 'Unsolved'
 
     @api.model_create_multi
     def create(self, vals):
@@ -83,6 +93,18 @@ class ElwQualityCheck(models.Model):
             'check_id': self.id,
             'picking_id': self.picking_id.id,
             'partner_id': self.partner_id.id,
+            'team_id': self.team_id.id,
+            'user_id': self.user_id.id,
         }
         print("vals in quality.check---------", vals)
-        self._create_qa_alert_record(vals)
+        qa_alert_rec = self._create_qa_alert_record(vals)
+
+        return {
+            'name': _('Quality Alert'),
+            'res_model': 'elw.quality.alert',
+            'res_id': qa_alert_rec.id,  # open the corresponding form
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            # 'target': 'new',
+        }

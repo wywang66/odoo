@@ -38,17 +38,35 @@ class Picking(models.Model):
     quality_alert_count = fields.Integer(string="Quality Alert Count")
     quality_alert_ids = fields.One2many('elw.quality.alert', 'picking_id', string="Alerts", store=True)
 
-    # delete when switch to new db
-    check_id = fields.Many2one('elw.quality.check', string="Check ID")
     quality_check_fail = fields.Boolean(string="Quality Check Fail", compute="_compute_quality_check_fail")
-    # delete when switch to new db
-    quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')],)
+    quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], )
+    quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality States")
 
-    # loop over the check_ids
+    # logic: if 'none' in quality_state_list: quality_state = 'none'
+    # logic: if 'fail' in all quality_state_list: quality_state = 'fail', quality_check_fail = True
+    # logic: if 'pass' in all quality_state_list: quality_state = 'pass', quality_check_fail = False
+    # logic: if 'fail' and 'pass' quality_state_list: quality_state = 'fail', quality_check_fail = True
+    # loop over the check_ids, True - all fail
+    @api.depends('check_ids')
     def _compute_quality_check_fail(self):
-        quality_state_list = [check.quality_state for check in self.check_ids] if self.check_ids else []
-        print("quality_state_list=========", quality_state_list)
-        self.quality_check_fail = 'fail' in quality_state_list
+        for rec in self:
+            if rec.check_ids:
+                quality_state_list = [check.quality_state for check in rec.check_ids] if rec.check_ids else []
+                print("quality_state_list=========", quality_state_list)
+                if 'none' in quality_state_list:
+                    rec.quality_state = 'none'
+                    rec.quality_check_fail = False
+                elif all(state == 'fail' for state in quality_state_list):
+                    rec.quality_state = 'fail'
+                    rec.quality_check_fail = True
+                elif all(state == 'pass' for state in quality_state_list):
+                    rec.quality_state = 'pass'
+                    rec.quality_check_fail = False
+                else:
+                    rec.quality_state = 'fail'
+                    rec.quality_check_fail = True
+            else:
+                rec.quality_check_fail = False
 
     # @api.onchange('check_id')
     # def onchange_check_id(self):
@@ -137,6 +155,7 @@ class Picking(models.Model):
 
     def _create_qa_check_popup_wizard_record(self, vals):
         self.ensure_one()
+        print("vals............wizard creation",vals)
         qa_check_popup_wizard_rec = self.env['elw.quality.check.popup.wizard'].create(vals)
         print("created qa_check_popup_wizard rec--------", qa_check_popup_wizard_rec, qa_check_popup_wizard_rec.id,
               qa_check_popup_wizard_rec.name)
@@ -145,18 +164,36 @@ class Picking(models.Model):
     @api.depends('qa_check_product_ids', 'check_ids')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
-        if self.check_ids and self.qa_check_product_ids:
-            results = self._parse_vals()
-            # print("validate ---------", results)
-            vals_popup = {'product_ids': [], 'check_ids': [], 'quality_state': 'none', 'partner_id': ''}
-            for val in results:
-                vals_popup['product_ids'].append(val['product_id'])
-                vals_popup['check_ids'].append(self.check_ids.id)
-                vals_popup['quality_state'] = 'none'
-                vals_popup['partner_id'] = (val['partner_id'])
+        # vals_popup = {'quality_check_fail': self.quality_check_fail, 'product_ids': [], 'check_ids': [],
+        #               'quality_state': '',
+        #               'partner_id': ''}
+        vals_popup = {'product_ids': [], 'check_ids': [],
+                      'quality_state': self.quality_state,
+                      'partner_id': '',
+                      # 'info': "Please Proceed to Quality Checks for 'To Do' or 'Failed' Actions...",
+                      # 'info_fail': "Please proceed Quality Checks for 'Failed' Actions..."
+                      }
+        if self.quality_check_ids:
+            for val in self.quality_check_ids:
+                vals_popup['product_ids'].append(val.product_id.id)
+                vals_popup['check_ids'].append(val.id)
+                vals_popup['quality_state'] = val.quality_state
+                vals_popup['partner_id'] = val.partner_id.id
+                print("-----------", vals_popup)
         else:
             raise ValidationError(_("ERROR: check_ids or qa_check_product_ids is unavailable! "))
         return vals_popup
+
+    # get selection field value
+    def _get_selection_field_value(self, selection_field, key):
+        selection_field_info = dict(self.fields_get([selection_field]))
+        # selection filed has 'selection' key
+        selections = selection_field_info[selection_field]['selection']
+        # print("...........", selections) #[('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')]
+        for k, v in selections:
+            if k == key:
+                return v
+        raise ValidationError(_(f"Key {key} is not found!"))
 
     def action_create_quality_check(self):
         self.ensure_one()
@@ -193,7 +230,7 @@ class Picking(models.Model):
 
             # print("self.check_ids, =========", self.check_ids, self.check_ids.id)
             # print("val popup =========", qa_check_popup_wizard, qa_check_popup_wizard.id, qa_check_popup_wizard.name)
-            show_name = 'Quality Check on Delivery: ' + self.name
+            show_name = 'Created Quality Check on Delivery: ' + self.name
             return {
                 # 'name': _('Quality Check'),
                 'name': show_name,
@@ -212,15 +249,16 @@ class Picking(models.Model):
             }
 
     # display the created quality.check record
+    @api.depends('check_ids', 'qa_check_product_ids')
     def action_quality_check(self):
         self.ensure_one()
-        if self.check_ids.id and self.qa_check_product_ids:
+        if self.check_ids:
             vals_popup = self._fill_in_vals_popup_after_popup()
 
-            print("vals_popup qa_check", vals_popup)
+            print("action_quality_check vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
 
-            show_name = 'Quality Check on Delivery: ' + self.name
+            show_name = 'Status of Quality Check on Delivery: ' + self.name
             return {
                 'name': show_name,
                 'res_model': 'elw.quality.check.popup.wizard',
@@ -230,7 +268,7 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
-        elif not self.check_ids and self.qa_check_product_ids:
+        else:
             raise ValidationError(_("Sorry, Please Click 'Quality Check' First! "))
 
     def button_eval(self):
@@ -253,18 +291,24 @@ class Picking(models.Model):
         elif not self.check_ids and self.qa_check_product_ids:
             raise ValidationError(_("Sorry, Quality Records have not been created! "))
 
+    @api.depends('check_ids', 'quality_state')
     def button_validate(self):
         self.ensure_one()
         if not self.check_ids and self.qa_check_product_ids:  # before getting the 1st popup
-            raise ValidationError(_("Sorry, Quality Records have not been created! "))
+            raise ValidationError(
+                _("Sorry, Quality Records have not been created! Please Click 'Create QA Check Record'."))
         # after 1st popup window
-        elif self.check_ids and self.check_ids.quality_state != 'pass':
+        elif self.check_ids and self.quality_state != 'pass':
             vals_popup = self._fill_in_vals_popup_after_popup()
-            # print("vals_popup ", vals_popup)
+            print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
-            print("self.check_ids.quality_state", self.check_ids.quality_state)  # self.check_ids.quality_state pass
+            # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
-            show_name = 'Quality Check on Delivery: ' + self.name
+            # quality_state_value = self._get_selection_field_value('quality_state', self.quality_state)
+            if self.quality_check_fail:
+                show_name = 'Create Quality Alert. Status of Quality Check on Delivery: ' + self.name
+            else:
+                show_name = 'Status of Quality Check on Delivery: ' + self.name
             return {
                 'name': show_name,
                 'res_model': 'elw.quality.check.popup.wizard',
@@ -274,26 +318,28 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
+        elif self.quality_check_fail and not self.quality_alert_count:
+            return super(Picking, self).button_validate()
         else:
             return super(Picking, self).button_validate()
 
-    # display a message with product_ids, check_ids to reminder the user to create QA alert
+    # display a message with product_ids, check_ids do_alert, to reminder the user to create QA alert
     def do_alert(self):
         self.ensure_one()
-        # vals = {
-        #     'product_id': self.product_id.id,
-        #     'check_id': self.id,
-        #     'picking_id': self.picking_id.id,
-        #     'partner_id': self.partner_id.id,
-        # }
-        # print("vals in quality.check---------", vals)
-        # self._create_qa_alert_record(vals)
-        return {
-            'name': _('Quality Check'),
-            'res_model': 'elw.quality.alert',
-            # 'res_id': qa_check_rec.id,  # open the corresponding form
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
-            'target': 'new',
-        }
+        if self.check_ids and self.quality_check_fail:
+            vals_popup = self._fill_in_vals_popup_after_popup()
+            print("do_alert vals_popup ", vals_popup)
+            qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
+            # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
+
+            # quality_state_value = self._get_selection_field_value('quality_state', self.quality_state)
+            show_name = 'Create Quality Alert. Status of Quality Check on Delivery: ' + self.name
+            return {
+                'name': show_name,
+                'res_model': 'elw.quality.check.popup.wizard',
+                'res_id': qa_check_popup_wizard.id,
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
+                'target': 'new',
+            }

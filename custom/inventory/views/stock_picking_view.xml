@@ -40,16 +40,22 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='backorder_id']" position="after">
                     <field name="qa_check_product_ids" widget="many2many_tags"/>
-                    <field name="check_ids" widget="many2many_tags"/>
-                    <field name="quality_check_fail" />
-
+                    <field name="check_ids" widget="many2many_tags" invisible="not qa_check_product_ids"/>
+                    <field name="quality_check_fail" invisible="not check_ids"/>
+                    <field name="quality_state" invisible="not check_ids"/>
+                    <field name="quality_check_ids" invisible="not check_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="quality_state"/>
+                        </tree>
+                    </field>
                 </xpath>
                 <xpath expr="//button[@name='button_validate']" position="after">
                     <button name="action_create_quality_check"
                             invisible="not qa_check_product_ids or state in ('done','cancel') or check_ids"
                             string="Create QA Check Record" type="object" class="oe_highlight"/>
                     <button name="action_quality_check"
-                            invisible="not check_ids or state in ('done','cancel') "
+                            invisible="not check_ids or state in ('done','cancel') or quality_state in ('fail','pass')"
                             string="Quality Check" type="object" class="oe_highlight"/>
                     <button name="do_alert" type="object" class="btn-primary"
                                 invisible="not quality_check_fail" string="Create Alert" data-hotkey="g"/>
@@ -57,7 +63,7 @@
                 <xpath expr="//button[@name='button_validate']" position="after">
 <!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight"-->
 <!--                            invisible="not qa_check_product_ids or state in ('done','cancel')"/>-->
-                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight" />
+<!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight" />-->
                 </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>

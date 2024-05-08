@@ -1,5 +1,45 @@
 <odoo>
     <data>
+        <record model="ir.ui.view" id="elw_quality_alert_search_view">
+            <field name="name">elw.quality.alert.search.view</field>
+            <field name="model">elw.quality.alert</field>
+            <field name="arch" type="xml">
+                <search  string="Quality Alert Search ">
+                    <field name="name" string="Quality Alert"
+                           filter_domain="[                     '|', '|', '|', ('name', 'ilike', self), ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_id', 'ilike', self)]"/>
+                    <field name="product_id" string="Product"
+                           filter_domain="[                     '|', '|', ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_id', 'ilike', self)]"/>
+                    <field name="tag_ids"/>
+                    <field name="user_id"/>
+                    <filter string="My Alerts" name="myalerts" domain="[('user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="In Progress" name="inprogress" domain="[('stage_id.done', '=', False)]"/>
+                    <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <separator/>
+                    <filter name="filter_date_assign" date="date_assign"/>
+                    <filter name="filter_date_close" date="date_close"/>
+                    <separator/>
+                    <filter string="Late Activities" name="activities_overdue"
+                            domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                            help="Show all records which has next action date is before today"/>
+                    <filter string="Today Activities" name="activities_today"
+                            domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="Future Activities" name="activities_upcoming_all"
+                            domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Stage" name="groupby_stage" domain="[]" context="{'group_by': 'stage_id'}"/>
+                        <filter string="Responsible" name="groupby_user" domain="[]" context="{'group_by': 'user_id'}"/>
+                        <filter string="Root Cause" name="groupby_reason" domain="[]"
+                                context="{'group_by': 'reason_id'}"/>
+                        <filter string="Creation Date" name="groupby_createmonth" domain="[]"
+                                context="{'group_by': 'create_date'}"/>
+                        <filter string="Quality Team" name="groupby_team_id" domain="[]"
+                                context="{'group_by': 'team_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="elw_quality_alert_tree_view">
             <field name="name">elw.quality.alert.tree.view</field>
             <field name="model">elw.quality.alert</field>
@@ -27,7 +67,7 @@
             <field name="arch" type="xml">
                 <form string="Quality Alert Form">
                     <header>
-                        <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'folded'}"/>
+                        <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -39,9 +79,10 @@
                             <group>
                                 <field name="title"/>
                                 <field name="product_id"/>
-                                <!--                                <field name="picking_type_ids" widget="many2many_tags"/>-->
                                 <field name="lot_id" context="{'default_product_id': product_id}"/>
                                 <field name="picking_id"/>
+                                <field name="check_id"/>
+                                <field name="point_id"/>
                             </group>
                             <group>
                                 <field name="team_id"/>
@@ -54,6 +95,10 @@
                         <notebook>
                             <page string="Description" name="description">
                                 <field name="description" placeholder="Description of the issue..."/>
+                            </page>
+                            <page string="Corrective Actions" name="corrective_actions">
+                                <field name="action_corrective"
+                                       placeholder="Describe the corrective actions you did..."/>
                             </page>
                             <page string="Preventive Actions" name="preventive_actions">
                                 <field name="action_preventive"
