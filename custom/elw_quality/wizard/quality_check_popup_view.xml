@@ -28,17 +28,19 @@
                                 <field name="product_ids" widget="many2many_tags"/>
                                 <field name="check_ids" widget="many2many_tags"/>
                                 <field name="partner_id"/>
+                                <field name="quality_state" invisible="1"/>
                                 <label for="qa_status"/>
                                 <div>
                                     <b>
                                         <field name="qa_status"/>
                                     </b>
                                 </div>
-                                <field name="quality_check_fail" invisible="1"/>
+                                <field name="quality_alert_ids" invisible="not quality_alert_ids"/>
+                                <field name="quality_alert_open_count" invisible="not quality_alert_ids"/>
                                 <field name="info_fail" style="color:Red; font-weight:bold;"
-                                       invisible="not quality_check_fail" />
+                                       invisible="quality_state !='fail'" />
                                 <field name="info" style="color:Blue; font-weight:bold;"
-                                       invisible="quality_check_fail" />
+                                       invisible="quality_state !='none'" />
                             </group>
                         </group>
                     </sheet>

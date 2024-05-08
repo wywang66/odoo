@@ -40,13 +40,20 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='backorder_id']" position="after">
                     <field name="qa_check_product_ids" widget="many2many_tags"/>
-                    <field name="check_ids" widget="many2many_tags"/>
-                    <field name="quality_check_fail" />
-                    <field name="quality_state"/>
-                    <field name="quality_check_ids" invisible="not check_ids">
+                    <field name="check_ids" widget="many2many_tags" invisible="not check_ids"/>
+                    <field name="quality_check_fail" invisible="not check_ids"/>
+                    <field name="quality_state" invisible="not check_ids"/>
+                    <field name="quality_alert_count" invisible="not check_ids"/>
+                    <field name="quality_check_ids" invisible="not quality_alert_ids">
                         <tree>
                             <field name="name"/>
                             <field name="quality_state"/>
+                        </tree>
+                    </field>
+                    <field name="quality_alert_ids" invisible="not check_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="stage_id"/>
                         </tree>
                     </field>
                 </xpath>
@@ -58,7 +65,7 @@
                             invisible="not check_ids or state in ('done','cancel') or quality_state in ('fail','pass')"
                             string="Quality Check" type="object" class="oe_highlight"/>
                     <button name="do_alert" type="object" class="btn-primary"
-                                invisible="not quality_check_fail" string="Create Alert" data-hotkey="g"/>
+                                invisible="not quality_check_fail or quality_alert_ids" string="Create Alert" data-hotkey="g"/>
                 </xpath>
                 <xpath expr="//button[@name='button_validate']" position="after">
 <!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight"-->

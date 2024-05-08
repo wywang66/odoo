@@ -19,7 +19,7 @@ class QualityAlert(models.Model):
         'res.company', 'Company', default=lambda self: self.env.company,
         readonly=True, required=True,
         help='The company is automatically set from your user preferences.')
-
+    active = fields.Boolean(default=True)
     partner_id = fields.Many2one('res.partner', string='Vendor')
     product_id = fields.Many2one('product.product', string='Product', store=True)
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
@@ -34,6 +34,7 @@ class QualityAlert(models.Model):
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', store=True)
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='restrict')
+
     user_id = fields.Many2one('res.users', string='Responsible', store=True)
     team_id = fields.Many2one('elw.quality.team', string='Team')
     date_assign = fields.Date(string='Date Assigned')

@@ -35,12 +35,25 @@ class Picking(models.Model):
                                             compute='_compute_qa_check_product_ids',
                                             help="List of Quality-Check products")
 
-    quality_alert_count = fields.Integer(string="Quality Alert Count")
     quality_alert_ids = fields.One2many('elw.quality.alert', 'picking_id', string="Alerts", store=True)
+    quality_alert_count = fields.Integer(string="Quality Alert Count", compute="_compute_quality_alert_count")
+    quality_alert_open_count = fields.Integer(string="Quality Alert Open Count", compute="_compute_quality_alert_count")
 
     quality_check_fail = fields.Boolean(string="Quality Check Fail", compute="_compute_quality_check_fail")
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], )
     quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality States")
+
+    @api.depends('quality_alert_ids')
+    def _compute_quality_alert_count(self):
+        for rec in self:
+            if rec.quality_alert_ids:
+                rec.quality_alert_count = len(rec.quality_alert_ids)
+                rec.quality_alert_open_count = len(
+                    rec.quality_alert_ids.filtered(lambda st: st.stage_id.id != 4))
+                print("rec.quality_alert_open_count .........", rec.quality_alert_open_count)
+            else:
+                rec.quality_alert_count = 0
+                rec.quality_alert_open_count = 0
 
     # logic: if 'none' in quality_state_list: quality_state = 'none'
     # logic: if 'fail' in all quality_state_list: quality_state = 'fail', quality_check_fail = True
@@ -66,7 +79,7 @@ class Picking(models.Model):
                     rec.quality_state = 'fail'
                     rec.quality_check_fail = True
             else:
-                return
+                rec.quality_check_fail = False
 
     # @api.onchange('check_id')
     # def onchange_check_id(self):
@@ -163,14 +176,15 @@ class Picking(models.Model):
     @api.depends('qa_check_product_ids', 'check_ids')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
-        vals_popup = {'quality_check_fail': self.quality_check_fail, 'product_ids': [], 'check_ids': [],
-                      'quality_state': 'none',
-                      'partner_id': ''}
+        vals_popup = {'product_ids': [], 'check_ids': [],
+                      'quality_state': self.quality_state,
+                      'partner_id': '',
+                      }
         if self.quality_check_ids:
             for val in self.quality_check_ids:
                 vals_popup['product_ids'].append(val.product_id.id)
                 vals_popup['check_ids'].append(val.id)
-                vals_popup['quality_state'] = 'none'
+
                 vals_popup['partner_id'] = val.partner_id.id
         else:
             raise ValidationError(_("ERROR: check_ids or qa_check_product_ids is unavailable! "))
@@ -247,7 +261,7 @@ class Picking(models.Model):
         if self.check_ids:
             vals_popup = self._fill_in_vals_popup_after_popup()
 
-            print("vals_popup qa_check", vals_popup)
+            print("action_quality_check vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
 
             show_name = 'Status of Quality Check on Delivery: ' + self.name
@@ -297,8 +311,10 @@ class Picking(models.Model):
             # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
             # quality_state_value = self._get_selection_field_value('quality_state', self.quality_state)
-            if self.quality_check_fail:
+            if self.quality_check_fail and not self.quality_alert_ids:
                 show_name = 'Create Quality Alert. Status of Quality Check on Delivery: ' + self.name
+            elif self.quality_alert_ids:
+                show_name = 'Please Close Quality Alert. Status of Quality Check on Delivery: ' + self.name
             else:
                 show_name = 'Status of Quality Check on Delivery: ' + self.name
             return {
@@ -320,7 +336,7 @@ class Picking(models.Model):
         self.ensure_one()
         if self.check_ids and self.quality_check_fail:
             vals_popup = self._fill_in_vals_popup_after_popup()
-            print("vals_popup ", vals_popup)
+            print("do_alert vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
             # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
