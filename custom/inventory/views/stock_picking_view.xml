@@ -43,14 +43,14 @@
                     <field name="check_ids" widget="many2many_tags" invisible="not check_ids"/>
                     <field name="quality_check_fail" invisible="not check_ids"/>
                     <field name="quality_state" invisible="not check_ids"/>
-                    <field name="quality_alert_count" invisible="not check_ids"/>
-                    <field name="quality_check_ids" invisible="not quality_alert_ids">
+                    <field name="quality_alert_open_count" invisible="not quality_alert_ids"/>
+                    <field name="quality_check_ids" invisible="not check_ids">
                         <tree>
                             <field name="name"/>
                             <field name="quality_state"/>
                         </tree>
                     </field>
-                    <field name="quality_alert_ids" invisible="not check_ids">
+                    <field name="quality_alert_ids" invisible="not quality_alert_ids">
                         <tree>
                             <field name="name"/>
                             <field name="stage_id"/>

@@ -16,9 +16,9 @@ class QualityCheckPopup(models.TransientModel):
     quality_alert_ids = fields.Many2many('elw.quality.alert', string="Alerts")
     quality_alert_open_count = fields.Integer(string="Quality Alert Open Count")
     qa_status = fields.Char("Status", compute="_compute_qa_status")
-    info = fields.Char(string="Next", default="Please Proceed to Quality Checks for 'To Do' or 'Failed' Actions...",
+    info = fields.Text(string="Next", default="Please Proceed to Quality Checks for 'To Do' or 'Failed' Actions...",
                        readonly=True)
-    info_fail = fields.Char(string="Next", default="Please proceed Quality Checks for 'Failed' Actions...",
+    info_fail = fields.Text(string="Next", default="Please proceed Quality Checks for 'Failed' Actions...",
                             readonly=True)
 
     def _get_selection_field_value(self, key):

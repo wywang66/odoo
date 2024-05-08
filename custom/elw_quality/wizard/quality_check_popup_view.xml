@@ -1,19 +1,6 @@
 <odoo>
     <data>
 
-        <!--        <record model="ir.ui.view" id="elw_quality_check_popup_tree_view">-->
-        <!--            <field name="name">elw.quality.check.popup.tree.view</field>-->
-        <!--            <field name="model">elw.quality.check.popup</field>-->
-        <!--            <field name="arch" type="xml">-->
-        <!--                <tree>-->
-        <!--                    <field name="name" readonly="1"/>-->
-        <!--                    <field name="product_ids" widget="many2many_tags"/>-->
-        <!--                    <field name="partner_id"/>-->
-        <!--                    <field name="quality_state"/>-->
-        <!--                </tree>-->
-        <!--            </field>-->
-        <!--        </record>-->
-
         <record model="ir.ui.view" id="elw_quality_check_popup_form_view">
             <field name="name">elw.quality.check.popup.wizard.form.view</field>
             <field name="model">elw.quality.check.popup.wizard</field>
@@ -25,22 +12,21 @@
                         </h3>
                         <group>
                             <group>
-                                <field name="product_ids" widget="many2many_tags"/>
-                                <field name="check_ids" widget="many2many_tags"/>
+                                <field name="product_ids" widget="many2many_tags" style="width:1000px;"/>
+                                <field name="check_ids" widget="many2many_tags" style="width:1000px;"/>
                                 <field name="partner_id"/>
                                 <field name="quality_state" invisible="1"/>
                                 <label for="qa_status"/>
                                 <div>
-                                    <b>
-                                        <field name="qa_status"/>
-                                    </b>
+                                    <field name="qa_status" style="font-weight:bold; width:1000px;"/>
                                 </div>
-                                <field name="quality_alert_ids" invisible="not quality_alert_ids"/>
+                                <field name="quality_alert_ids" widget="many2many_tags"
+                                       invisible="not quality_alert_ids"/>
                                 <field name="quality_alert_open_count" invisible="not quality_alert_ids"/>
-                                <field name="info_fail" style="color:Red; font-weight:bold;"
-                                       invisible="quality_state !='fail'" />
-                                <field name="info" style="color:Blue; font-weight:bold;"
-                                       invisible="quality_state !='none'" />
+                                <field name="info_fail" style="color:Red; font-weight:bold;width:1000px;"
+                                       invisible="quality_state !='fail'"/>
+                                <field name="info" style="color:Blue; font-weight:bold; width:1000px;"
+                                       invisible="quality_state !='none'"/>
                             </group>
                         </group>
                     </sheet>
