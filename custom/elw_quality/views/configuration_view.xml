@@ -133,7 +133,7 @@
         <field name="view_mode">tree,kanban</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Add a new stage in the maintenance request
+                Add a new stage in the quality alert request
             </p>
         </field>
     </record>
