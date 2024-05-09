@@ -33,6 +33,7 @@ class ElwQualityCheck(models.Model):
     alert_count = fields.Integer(default=0)
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result")
+
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
@@ -40,12 +41,15 @@ class ElwQualityCheck(models.Model):
     @api.depends('alert_ids')
     def _compute_alert_result(self):
         for rec in self:
-            alert_result_list = [alert_res.stage_id.name for alert_res in rec.alert_ids] if rec.quality_state == 'fail' else []
-            print("alert_result_list=========", alert_result_list)
-            if all(res == 'Solved' for res in alert_result_list):
-                rec.alert_result = 'Solved'
-            else:
+            if rec.quality_state == 'fail' and len(rec.alert_ids):
                 rec.alert_result = 'Unsolved'
+                alert_result_list = [alert_res.stage_id.name for alert_res in rec.alert_ids] if rec.quality_state == 'fail' else []
+                # print("alert_result_list=========", alert_result_list)
+                if len(alert_result_list):
+                    if all(res == 'Solved' for res in alert_result_list):
+                        rec.alert_result = 'Solved'
+            else:
+                rec.alert_result = ''
 
     @api.model_create_multi
     def create(self, vals):

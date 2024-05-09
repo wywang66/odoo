@@ -76,13 +76,13 @@
                             <group>
                                 <field name="product_id"/>
                                 <field name="measure_on"/>
-                                <field name="alert_ids" invisible="quality_state == 'pass'">
+                                <field name="alert_ids" invisible="quality_state == 'pass'" readonly = "1">
                                     <tree>
                                         <field name="name"/>
                                         <field name="stage_id"/>
                                     </tree>
                                 </field>
-                                <field name="alert_result" invisible="quality_state == 'pass'"/>
+<!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
                             </group>
                             <group>
                                 <field name="picking_id"/>

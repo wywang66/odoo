@@ -46,14 +46,15 @@ class Picking(models.Model):
     @api.depends('quality_alert_ids')
     def _compute_quality_alert_count(self):
         for rec in self:
-            if rec.quality_alert_ids:
+            # list.quality_alert_ids.id = False if no quality_alert_ids
+            if rec.quality_alert_ids.ids:
                 rec.quality_alert_count = len(rec.quality_alert_ids)
                 rec.quality_alert_open_count = len(
                     rec.quality_alert_ids.filtered(lambda st: st.stage_id.id != 4))
                 print("rec.quality_alert_open_count .........", rec.quality_alert_open_count)
             else:
                 rec.quality_alert_count = 0
-                rec.quality_alert_open_count = 0
+                rec.quality_alert_open_count = -1
 
     # logic: if 'none' in quality_state_list: quality_state = 'none'
     # logic: if 'fail' in all quality_state_list: quality_state = 'fail', quality_check_fail = True
@@ -173,7 +174,8 @@ class Picking(models.Model):
               qa_check_popup_wizard_rec.name)
         return qa_check_popup_wizard_rec
 
-    @api.depends('qa_check_product_ids', 'check_ids')
+    @api.depends('qa_check_product_ids', 'check_ids', 'partner_id', 'quality_state', 'quality_alert_ids',
+                 'quality_alert_open_count')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
         vals_popup = {'product_ids': self.qa_check_product_ids,
@@ -196,6 +198,7 @@ class Picking(models.Model):
                 return v
         raise ValidationError(_(f"Key {key} is not found!"))
 
+    @api.depends('check_ids', 'qa_check_product_ids')
     def action_create_quality_check(self):
         self.ensure_one()
         # avoid creating duplicated records
@@ -274,27 +277,12 @@ class Picking(models.Model):
 
     def button_eval(self):
         print("eval btn ------")
-        if self.check_ids.id and self.qa_check_product_ids:
-            vals_popup = self._fill_in_vals_popup_after_popup()
 
-            # print("vals_popup ", vals_popup)
-            qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
-            show_name = 'Quality Check on Delivery: ' + self.name
-            return {
-                'name': show_name,
-                'res_model': 'elw.quality.check.popup.wizard',
-                'res_id': qa_check_popup_wizard.id,
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
-                'target': 'new',
-            }
-        elif not self.check_ids and self.qa_check_product_ids:
-            raise ValidationError(_("Sorry, Quality Records have not been created! "))
-
-    @api.depends('check_ids', 'quality_state')
+    @api.depends('check_ids', 'quality_state', 'qa_check_product_ids', 'quality_alert_open_count', 'quality_alert_ids',
+                 'quality_check_fail')
     def button_validate(self):
         self.ensure_one()
+        # print("trigger here-----self.quality_alert_open_count----", self.quality_alert_open_count)
         if not self.check_ids and self.qa_check_product_ids:  # before getting the 1st popup
             raise ValidationError(
                 _("Sorry, Quality Records have not been created! Please Click 'Create QA Check Record'."))
@@ -321,12 +309,14 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
-        elif self.quality_check_fail and self.quality_alert_open_count == 0:
-            return super(Picking, self).button_validate()
+        # elif self.quality_alert_ids and self.quality_alert_open_count == 0:
+        #     print("trigger here---------")
+        #     return super(Picking, self).button_validate()
         else:
             return super(Picking, self).button_validate()
 
     # display a message with product_ids, check_ids do_alert, to reminder the user to create QA alert
+    @api.depends('check_ids', 'quality_check_fail')
     def do_alert(self):
         self.ensure_one()
         if self.check_ids and self.quality_check_fail:
