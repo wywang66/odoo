@@ -38,20 +38,38 @@ class Picking(models.Model):
     quality_alert_ids = fields.One2many('elw.quality.alert', 'picking_id', string="Alerts", store=True)
     quality_alert_count = fields.Integer(string="Quality Alert Count", compute="_compute_quality_alert_count")
     quality_alert_open_count = fields.Integer(string="Quality Alert Open Count", compute="_compute_quality_alert_count")
+    is_all_quality_fails_resolved = fields.Boolean(compute="_compute_is_all_quality_fails_resolved")
 
     quality_check_fail = fields.Boolean(string="Quality Check Fail", compute="_compute_quality_check_fail")
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], )
     quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality States")
 
+    @api.depends('quality_check_ids')
+    def _compute_is_all_quality_fails_resolved(self):
+        for rec in self:
+            if rec.quality_check_ids:
+                rec.is_all_quality_fails_resolved = False
+                quality_result_list = [res.alert_result for res in
+                                       rec.quality_check_ids] if rec.quality_check_ids else []
+                # print("quality_result_list .........", quality_result_list)
+                # returns True if at least one element in the iterable (such as a list, tuple, or set) is True.
+                # False if ['Passed', 'Unsolved', '']
+                if '' in quality_result_list or 'Unsolved' in quality_result_list:
+                    rec.is_all_quality_fails_resolved = False
+                elif all(res == 'Solved' or 'Passed' for res in quality_result_list):
+                    rec.is_all_quality_fails_resolved = True
+            else:
+                rec.is_all_quality_fails_resolved = False
+
     @api.depends('quality_alert_ids')
     def _compute_quality_alert_count(self):
         for rec in self:
             # list.quality_alert_ids.id = False if no quality_alert_ids
-            if rec.quality_alert_ids.id:
+            if rec.quality_alert_ids.ids:
                 rec.quality_alert_count = len(rec.quality_alert_ids)
                 rec.quality_alert_open_count = len(
                     rec.quality_alert_ids.filtered(lambda st: st.stage_id.id != 4))
-                print("rec.quality_alert_open_count .........", rec.quality_alert_open_count)
+                # print("rec.quality_alert_open_count .........", rec.quality_alert_open_count)
             else:
                 rec.quality_alert_count = 0
                 rec.quality_alert_open_count = -1
@@ -164,26 +182,27 @@ class Picking(models.Model):
     def _create_qa_check_record(self, vals):
         self.ensure_one()
         qa_check_rec = self.env['elw.quality.check'].create(vals)
-        print("created qa_check_rec--------", qa_check_rec, qa_check_rec.id, qa_check_rec.name)
+        # print("created qa_check_rec--------", qa_check_rec, qa_check_rec.id, qa_check_rec.name)
         return qa_check_rec
 
     def _create_qa_check_popup_wizard_record(self, vals):
         self.ensure_one()
         qa_check_popup_wizard_rec = self.env['elw.quality.check.popup.wizard'].create(vals)
-        print("created qa_check_popup_wizard rec--------", qa_check_popup_wizard_rec, qa_check_popup_wizard_rec.id,
-              qa_check_popup_wizard_rec.name)
+        # print("created qa_check_popup_wizard rec--------", qa_check_popup_wizard_rec, qa_check_popup_wizard_rec.id,
+        #       qa_check_popup_wizard_rec.name)
         return qa_check_popup_wizard_rec
 
     @api.depends('qa_check_product_ids', 'check_ids', 'partner_id', 'quality_state', 'quality_alert_ids',
-                 'quality_alert_open_count')
+                 'quality_alert_open_count', 'quality_check_ids')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
         vals_popup = {'product_ids': self.qa_check_product_ids,
                       'check_ids': self.check_ids,
                       'quality_state': self.quality_state,
                       'partner_id': self.partner_id.id,
-                      'quality_alert_ids': self.quality_alert_ids,
-                      'quality_alert_open_count': self.quality_alert_open_count,
+                      # 'quality_alert_ids': self.quality_alert_ids,
+                      # 'quality_alert_open_count': self.quality_alert_open_count,
+                      'is_all_quality_fails_resolved': self.is_all_quality_fails_resolved,
                       }
         return vals_popup
 
@@ -287,17 +306,17 @@ class Picking(models.Model):
             raise ValidationError(
                 _("Sorry, Quality Records have not been created! Please Click 'Create QA Check Record'."))
         # after 1st popup window
-        elif self.check_ids and self.quality_state != 'pass' and self.quality_alert_open_count != 0:
+        elif self.check_ids and self.quality_state != 'pass' and not self.is_all_quality_fails_resolved:
             vals_popup = self._fill_in_vals_popup_after_popup()
-            print("vals_popup ", vals_popup)
+            # print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
             # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
             quality_state_value = self._get_selection_field_value('quality_state', self.quality_state)
             if self.quality_check_fail and not self.quality_alert_ids:
                 show_name = 'Create Quality Alert. Status of Quality Check on Delivery: ' + self.name
-            elif self.quality_alert_ids:
-                show_name = 'Please Close Quality Alert. Status of Quality Check on Delivery: ' + self.name
+            elif not self.is_all_quality_fails_resolved:
+                show_name = 'Please Close Quality Issues. Status of Quality Check on Delivery: ' + self.name
             else:
                 show_name = 'Status of Quality Check on Delivery: ' + self.name
             return {
@@ -309,9 +328,6 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
-        # elif self.quality_alert_ids and self.quality_alert_open_count == 0:
-        #     print("trigger here---------")
-        #     return super(Picking, self).button_validate()
         else:
             return super(Picking, self).button_validate()
 
@@ -336,3 +352,28 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
+
+    def action_open_quality_check_picking(self):
+        return {
+            'name': _('Quality Check'),
+            'res_model': 'elw.quality.check',
+            # 'res_id': qa_check_rec.id,  # open the corresponding form
+            'domain': [('id', 'in', self.quality_check_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            # commented the following as it will show tree, and form views
+            # 'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            'target': 'current',
+        }
+
+    def open_quality_alert_picking(self):
+        return {
+            'name': _('Quality Alerts'),
+            'res_model': 'elw.quality.alert',
+            'domain': [('id', 'in', self.quality_alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            # commented the following as it will show tree, and form views
+            # 'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            'target': 'current',
+        }

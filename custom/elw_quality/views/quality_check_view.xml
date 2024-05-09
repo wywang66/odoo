@@ -62,13 +62,19 @@
                         <button name="do_measure" type="object"
                                 invisible="test_type != 'measure' or quality_state != 'none'" string="Measure"
                                 data-hotkey="v"/>
-                        <button name="do_alert" type="object" invisible="alert_ids or quality_state == 'pass'"
+                        <button name="do_alert" type="object" invisible="alert_ids or quality_state != 'pass'"
                                 string="Create Alert" data-hotkey="g"/>
                         <button name="do_alert" type="object" class="btn-primary"
                                 invisible="alert_ids or quality_state != 'fail'" string="Create Alert" data-hotkey="g"/>
                         <field name="quality_state" widget="statusbar" nolabel="1" statusbar_visible="none,pass,fail"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_see_alerts" icon="fa-bell" type="object" class="oe_stat_button"
+                                    invisible="alert_count == 0">
+                                <field name="alert_count" string="Quality Alerts" widget="statinfo"/>
+                            </button>
+                        </div>
                         <h3>
                             <field name="name" readonly="1"/>
                         </h3>
@@ -76,13 +82,13 @@
                             <group>
                                 <field name="product_id"/>
                                 <field name="measure_on"/>
-                                <field name="alert_ids" invisible="quality_state == 'pass'" readonly = "1">
-                                    <tree>
+                                <field name="alert_ids" invisible="quality_state == 'pass'">
+                                    <tree delete="0" create="0">
                                         <field name="name"/>
                                         <field name="stage_id"/>
                                     </tree>
                                 </field>
-<!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
+                                <!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
                             </group>
                             <group>
                                 <field name="picking_id"/>

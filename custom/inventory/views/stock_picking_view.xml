@@ -39,20 +39,29 @@
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='backorder_id']" position="after">
-                    <field name="qa_check_product_ids" widget="many2many_tags"/>
-                    <field name="check_ids" widget="many2many_tags" invisible="not check_ids"/>
-                    <field name="quality_check_fail" invisible="not check_ids"/>
-                    <field name="quality_state" invisible="not check_ids"/>
-                    <field name="quality_alert_open_count" invisible="not quality_alert_ids"/>
-                    <field name="quality_check_ids" invisible="not check_ids" readonly="1" style="width:500px;">
-                        <tree>
-                            <field name="name"/>
-                            <field name="quality_state"/>
-                            <field name="alert_ids" widget="many2many_tags"/>
-                            <field name="alert_result" />
-                        </tree>
-                    </field>
-                    <field name="quality_alert_ids" invisible="not quality_alert_ids" readonly="1" >
+
+                    <field name="qa_check_product_ids" widget="many2many_tags" invisible="quality_check_ids"/>
+                    <field name="check_ids" widget="many2many_tags" invisible="1"/>
+                    <field name="quality_check_fail" invisible="1"/>
+                    <field name="quality_state" invisible="1"/>
+<!--                    <div>-->
+                        <field name="is_all_quality_fails_resolved" invisible="not check_ids"
+                               style="margin-bottom:20px;"/>
+
+                        <!--avoid the overlapping with  fields in the 2nd group-->
+                        <field name="quality_check_ids" invisible="not check_ids">
+                                                           style="width:600px; margin-top:100px;">
+                            <!--  make it to be no deletable and no creatable-->
+                            <tree delete="0" create="0">
+                                <field name="product_id"/>
+                                <field name="name"/>
+                                <field name="quality_state"/>
+                                <field name="alert_ids" widget="many2many_tags"/>
+                                <field name="alert_result"/>
+                            </tree>
+                        </field>
+<!--                    </div>-->
+                    <field name="quality_alert_ids" invisible="1" readonly="1">
                         <tree>
                             <field name="name"/>
                             <field name="stage_id"/>
@@ -67,23 +76,52 @@
                             invisible="not check_ids or state in ('done','cancel') or quality_state in ('fail','pass')"
                             string="Quality Check" type="object" class="oe_highlight"/>
                     <button name="do_alert" type="object" class="btn-primary"
-                                invisible="not quality_check_fail or quality_alert_ids" string="Create Alert" data-hotkey="g"/>
+                            invisible="not quality_check_fail or quality_alert_ids" string="Create Alert"
+                            data-hotkey="g"/>
                 </xpath>
                 <xpath expr="//button[@name='button_validate']" position="after">
-<!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight"-->
-<!--                            invisible="not qa_check_product_ids or state in ('done','cancel')"/>-->
-<!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight" />-->
+                    <!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight"-->
+                    <!--                            invisible="not qa_check_product_ids or state in ('done','cancel')"/>-->
+                    <!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight" />-->
                 </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>
                 </xpath>
                 <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']"
                        position="after">
-                    <field name="categ_id"/>
+                    <field name="categ_id" optional="hide"/>
                 </xpath>
 
                 <xpath expr="//field[@name='product_id']" position="attributes">
                     <attribute name="string">Part Number/Product</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_view_stock_valuation_layers']" position="after">
+                    <div name="button_box" position="inside">
+                        <button name="open_quality_alert_picking" type="object"
+                                class="oe_stat_button" icon="fa-bell" invisible="quality_alert_count == 0">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="quality_alert_count"/>
+                                </span>
+                                <span class="o_stat_text">Quality Alert</span>
+                            </div>
+                        </button>
+                        <button name="action_open_quality_check_picking"
+                                invisible="not check_ids or quality_check_fail or quality_state != 'none'" type="object"
+                                class="oe_stat_button" icon="fa-check">
+                            <span class="o_stat_text">Quality Checks</span>
+                        </button>
+                        <button name="action_open_quality_check_picking"
+                                invisible="not check_ids or quality_check_fail or quality_state != 'pass'" type="object"
+                                class="oe_stat_button text-success" icon="fa-check">
+                            <span class="o_stat_text text-success">Quality Checks</span>
+                        </button>
+                        <button name="action_open_quality_check_picking"
+                                invisible="not check_ids or not quality_check_fail" type="object"
+                                class="oe_stat_button text-danger" icon="fa-check">
+                            <span class="o_stat_text text-danger">Quality Checks</span>
+                        </button>
+                    </div>
                 </xpath>
             </field>
         </record>

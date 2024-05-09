@@ -4,7 +4,7 @@
             <field name="name">elw.quality.alert.search.view</field>
             <field name="model">elw.quality.alert</field>
             <field name="arch" type="xml">
-                <search  string="Quality Alert Search ">
+                <search string="Quality Alert Search ">
                     <field name="name" string="Quality Alert"
                            filter_domain="[                     '|', '|', '|', ('name', 'ilike', self), ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_id', 'ilike', self)]"/>
                     <field name="product_id" string="Product"
@@ -70,6 +70,18 @@
                         <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_see_check" type="object" invisible="not check_id"
+                                    class="oe_stat_button"
+                                    icon="fa-check-square-o">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="check_id" readonly="1"/>
+                                    </span>
+                                    <span class="o_stat_text">Quality Check</span>
+                                </div>
+                            </button>
+                        </div>
                         <div class="oe_title">
                             <h3>
                                 <field name="name" readonly="1"/>

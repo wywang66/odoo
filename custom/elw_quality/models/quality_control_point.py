@@ -14,6 +14,9 @@ class ElwQualityPoint(models.Model):
     _rec_name = 'name'
     _order = 'id desc, name desc'
 
+    def _default_test_type_id(self):
+        return self.env['elw.quality.test.type'].search([('name', '=', 'Pass - Fail')], limit=1).id
+
     name = fields.Char(
         string='Reference', default='New', copy=False, readonly=True)
 
@@ -30,19 +33,21 @@ class ElwQualityPoint(models.Model):
     user_id = fields.Many2one('res.users', string='Responsible')
     measure_on = fields.Selection([('operation', 'Operation'), ('product', 'Product'), ('move_line', 'Quantity')],
                                   required=True, string='Control per',
-                                  help='Product = A quality check is requested per product.'
-                                       #  Operation = One quality check is requested at the operation level.
-                                       # ' Quantity = A quality check is requested for each new product quantity registered,'
-                                       # 'with partial quantity checks also possible.'
+                                  help='Product = A quality check is requested per product.',
+                                  #  Operation = One quality check is requested at the operation level.
+                                  # ' Quantity = A quality check is requested for each new product quantity registered,'
+                                  # 'with partial quantity checks also possible.'
+                                  default='product',
                                   )
     measure_frequency_type = fields.Selection([('all', 'All'), ('random', 'Randomly'), ('periodical', 'Periodically')],
-                                              required=True, string='Control Frequency Type')
+                                              required=True, string='Control Frequency Type', default='all')
     measure_frequency_value = fields.Float(string="Control Frequency Value", store=True, copy=True)
     measure_frequency_unit = fields.Selection([('days', 'Days'), ('week', 'Weeks'), ('months', 'Months')],
                                               store=True, copy=True, default='days')
     measure_frequency_unit_value = fields.Integer(store=True, copy=True)
 
-    test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type')
+    test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type',
+                                   default=_default_test_type_id)
     team_id = fields.Many2one('elw.quality.team', string='Team')
     test_type = fields.Char(related="test_type_id.technical_name", string='Test Type in str')
 
