@@ -76,8 +76,8 @@
                             <group>
                                 <field name="product_id"/>
                                 <field name="measure_on"/>
-                                <field name="alert_ids" invisible="quality_state == 'pass'" readonly = "1">
-                                    <tree>
+                                <field name="alert_ids" invisible="quality_state == 'pass'">
+                                    <tree delete="0" create="0">
                                         <field name="name"/>
                                         <field name="stage_id"/>
                                     </tree>

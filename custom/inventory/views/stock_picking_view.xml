@@ -44,8 +44,9 @@
                     <field name="quality_check_fail" invisible="1"/>
                     <field name="quality_state" invisible="1"/>
                     <field name="is_all_quality_fails_resolved" invisible="not check_ids"/>
-                    <field name="quality_check_ids" invisible="not check_ids" readonly="1" style="width:700px;">
-                        <tree>
+                    <field name="quality_check_ids" invisible="not check_ids" style="width:700px;">
+<!--                        make it to be no deletable and no creatable-->
+                        <tree delete="0" create="0">
                             <field name="product_id"/>
                             <field name="name"/>
                             <field name="quality_state"/>
@@ -80,7 +81,7 @@
                 </xpath>
                 <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']"
                        position="after">
-                    <field name="categ_id"/>
+                    <field name="categ_id" optional="hide"/>
                 </xpath>
 
                 <xpath expr="//field[@name='product_id']" position="attributes">
