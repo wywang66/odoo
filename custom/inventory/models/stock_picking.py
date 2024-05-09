@@ -49,10 +49,17 @@ class Picking(models.Model):
         for rec in self:
             if rec.quality_check_ids:
                 rec.is_all_quality_fails_resolved = False
-                quality_result_list = [res.alert_result for res in rec.quality_check_ids] if rec.quality_check_ids else []
+                quality_result_list = [res.alert_result for res in
+                                       rec.quality_check_ids] if rec.quality_check_ids else []
                 # print("quality_result_list .........", quality_result_list)
-                if all(res == 'Solved' for res in quality_result_list):
+                # returns True if at least one element in the iterable (such as a list, tuple, or set) is True.
+                # False if ['Passed', 'Unsolved', '']
+                if '' in quality_result_list or 'Unsolved' in quality_result_list:
+                    rec.is_all_quality_fails_resolved = False
+                elif all(res == 'Solved' or 'Passed' for res in quality_result_list):
                     rec.is_all_quality_fails_resolved = True
+            else:
+                rec.is_all_quality_fails_resolved = False
 
     @api.depends('quality_alert_ids')
     def _compute_quality_alert_count(self):
@@ -175,14 +182,14 @@ class Picking(models.Model):
     def _create_qa_check_record(self, vals):
         self.ensure_one()
         qa_check_rec = self.env['elw.quality.check'].create(vals)
-        print("created qa_check_rec--------", qa_check_rec, qa_check_rec.id, qa_check_rec.name)
+        # print("created qa_check_rec--------", qa_check_rec, qa_check_rec.id, qa_check_rec.name)
         return qa_check_rec
 
     def _create_qa_check_popup_wizard_record(self, vals):
         self.ensure_one()
         qa_check_popup_wizard_rec = self.env['elw.quality.check.popup.wizard'].create(vals)
-        print("created qa_check_popup_wizard rec--------", qa_check_popup_wizard_rec, qa_check_popup_wizard_rec.id,
-              qa_check_popup_wizard_rec.name)
+        # print("created qa_check_popup_wizard rec--------", qa_check_popup_wizard_rec, qa_check_popup_wizard_rec.id,
+        #       qa_check_popup_wizard_rec.name)
         return qa_check_popup_wizard_rec
 
     @api.depends('qa_check_product_ids', 'check_ids', 'partner_id', 'quality_state', 'quality_alert_ids',
@@ -301,7 +308,7 @@ class Picking(models.Model):
         # after 1st popup window
         elif self.check_ids and self.quality_state != 'pass' and not self.is_all_quality_fails_resolved:
             vals_popup = self._fill_in_vals_popup_after_popup()
-            print("vals_popup ", vals_popup)
+            # print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
             # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
@@ -321,9 +328,6 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
-        # elif self.quality_alert_ids and self.quality_alert_open_count == 0:
-        #     print("trigger here---------")
-        #     return super(Picking, self).button_validate()
         else:
             return super(Picking, self).button_validate()
 

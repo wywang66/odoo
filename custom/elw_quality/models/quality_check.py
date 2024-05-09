@@ -48,6 +48,8 @@ class ElwQualityCheck(models.Model):
                 if len(alert_result_list):
                     if all(res == 'Solved' for res in alert_result_list):
                         rec.alert_result = 'Solved'
+            elif rec.quality_state == 'pass':
+                rec.alert_result = 'Passed'
             else:
                 rec.alert_result = ''
 

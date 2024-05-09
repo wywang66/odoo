@@ -39,7 +39,7 @@
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='backorder_id']" position="after">
-                    <field name="qa_check_product_ids" widget="many2many_tags"/>
+                    <field name="qa_check_product_ids" widget="many2many_tags" invisible = "quality_check_ids"/>
                     <field name="check_ids" widget="many2many_tags" invisible="1"/>
                     <field name="quality_check_fail" invisible="1"/>
                     <field name="quality_state" invisible="1"/>
