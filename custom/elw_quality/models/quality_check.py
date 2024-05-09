@@ -41,7 +41,7 @@ class ElwQualityCheck(models.Model):
     @api.depends('alert_ids')
     def _compute_alert_result(self):
         for rec in self:
-            if rec.quality_state == 'fail' and len(rec.alert_ids):
+            if rec.quality_state == 'fail':
                 rec.alert_result = 'Unsolved'
                 alert_result_list = [alert_res.stage_id.name for alert_res in rec.alert_ids] if rec.quality_state == 'fail' else []
                 # print("alert_result_list=========", alert_result_list)
