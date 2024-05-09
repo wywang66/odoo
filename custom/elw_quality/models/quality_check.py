@@ -30,7 +30,7 @@ class ElwQualityCheck(models.Model):
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
                                      default='none')
     test_type = fields.Char(related='point_id.test_type', string="Test Type")
-    alert_count = fields.Integer(default=0)
+    alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result", string='QA Result')
 
@@ -38,12 +38,18 @@ class ElwQualityCheck(models.Model):
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
 
+    def _compute_alert_cnt(self):
+        for rec in self:
+            # print("rec.........", rec, rec.id, rec.name)
+            rec.alert_count = self.env['elw.quality.alert'].search_count([('check_id', '=', rec.name)])
+
     @api.depends('alert_ids')
     def _compute_alert_result(self):
         for rec in self:
             if rec.quality_state == 'fail':
                 rec.alert_result = 'Unsolved'
-                alert_result_list = [alert_res.stage_id.name for alert_res in rec.alert_ids] if rec.quality_state == 'fail' else []
+                alert_result_list = [alert_res.stage_id.name for alert_res in
+                                     rec.alert_ids] if rec.quality_state == 'fail' else []
                 # print("alert_result_list=========", alert_result_list)
                 if len(alert_result_list):
                     if all(res == 'Solved' for res in alert_result_list):
@@ -113,4 +119,17 @@ class ElwQualityCheck(models.Model):
             'view_mode': 'form',
             'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
             # 'target': 'new',
+        }
+
+    def action_see_alerts(self):
+        return {
+            'name': _('Quality Alert'),
+            'res_model': 'elw.quality.alert',
+            # 'res_id': qa_check_rec.id,  # open the corresponding form
+            'domain': [('id', 'in', self.alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            # commented the following as it will show tree, and form views
+            # 'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            'target': 'current',
         }

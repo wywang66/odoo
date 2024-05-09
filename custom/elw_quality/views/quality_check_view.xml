@@ -69,6 +69,12 @@
                         <field name="quality_state" widget="statusbar" nolabel="1" statusbar_visible="none,pass,fail"/>
                     </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_see_alerts" icon="fa-bell" type="object" class="oe_stat_button"
+                                    invisible="alert_count == 0">
+                                <field name="alert_count" string="Quality Alerts" widget="statinfo"/>
+                            </button>
+                        </div>
                         <h3>
                             <field name="name" readonly="1"/>
                         </h3>
@@ -82,7 +88,7 @@
                                         <field name="stage_id"/>
                                     </tree>
                                 </field>
-<!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
+                                <!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
                             </group>
                             <group>
                                 <field name="picking_id"/>

@@ -352,3 +352,28 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
+
+    def action_open_quality_check_picking(self):
+        return {
+            'name': _('Quality Check'),
+            'res_model': 'elw.quality.check',
+            # 'res_id': qa_check_rec.id,  # open the corresponding form
+            'domain': [('id', 'in', self.quality_check_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            # commented the following as it will show tree, and form views
+            # 'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            'target': 'current',
+        }
+
+    def open_quality_alert_picking(self):
+        return {
+            'name': _('Quality Alerts'),
+            'res_model': 'elw.quality.alert',
+            'domain': [('id', 'in', self.quality_alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            # commented the following as it will show tree, and form views
+            # 'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+            'target': 'current',
+        }

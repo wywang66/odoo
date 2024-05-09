@@ -86,3 +86,7 @@ class QualityAlert(models.Model):
 
     def do_alert(self):
         pass
+
+    # this return to the correct ID in quality.check. not sure why
+    def action_see_check(self):
+        pass
