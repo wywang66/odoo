@@ -17,8 +17,8 @@ class QualityTeam(models.Model):
     color = fields.Integer("Color Index", default=0)
     check_ids = fields.One2many('elw.quality.check', 'team_id', copy=False)
     alert_ids = fields.One2many('elw.quality.alert', 'team_id', copy=False)
-    alert_count = fields.Integer("# Quality Alerts")
-    check_count = fields.Integer("# Quality Checks")
+    alert_count = fields.Integer("# Quality Alerts", compute="_compute_quality_alert_count")
+    check_count = fields.Integer("# Quality Checks", compute="_compute_quality_check_count")
 
     # For the kanban dashboard only
     todo_qa_check_ids = fields.One2many('elw.quality.check', string="QA Requests", copy=False,
@@ -27,6 +27,22 @@ class QualityTeam(models.Model):
     todo_qa_check_count_high_priority = fields.Integer(string="Number of Requests in High Priority",
                                                        compute='_compute_todo_qa_checks')
     todo_qa_check_count_fail = fields.Integer(string="Number of Requests Blocked", compute='_compute_todo_qa_checks')
+
+    @api.depends('alert_ids')
+    def _compute_quality_alert_count(self):
+        for rec in self:
+            if rec.alert_ids.ids:
+                rec.alert_count = len(rec.alert_ids)
+            else:
+                rec.alert_count = 0
+
+    @api.depends('check_ids')
+    def _compute_quality_check_count(self):
+        for rec in self:
+            if rec.check_ids.ids:
+                rec.check_count = len(rec.check_ids)
+            else:
+                rec.check_count = 0
 
     @api.depends('check_ids.quality_state')
     def _compute_todo_qa_checks(self):

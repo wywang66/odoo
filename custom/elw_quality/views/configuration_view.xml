@@ -128,113 +128,57 @@
         </field>
     </record>
 
-<!--    <record id="quality_team_kanban" model="ir.ui.view">-->
-<!--        <field name="name">quality.team.kanban</field>-->
-<!--        <field name="model">elw.quality.team</field>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <kanban class="o_kanban_dashboard o_quality_team_kanban" create="0">-->
-<!--                <field name="name"/>-->
-<!--                <field name="color"/>-->
-<!--                <field name="todo_qa_check_ids"/>-->
-<!--                <field name="todo_qa_check_count"/>-->
-<!--                <field name="todo_qa_check_count_high_priority"/>-->
-<!--                <field name="todo_qa_check_count_fail"/>-->
-<!--                <templates>-->
-<!--                    <t t-name="kanban-box">-->
-<!--                        <div t-attf-class="oe_kanban_global_click">-->
-<!--                            <div>-->
-<!--                                <strong>-->
-<!--                                    <field name="name"/>-->
-<!--                                </strong>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </t>-->
-<!--                    <t t-name="kanban-menu">-->
-<!--                        <div class="container">-->
-<!--                            <div class="row">-->
-<!--                                <div class="col-6 o_kanban_card_manage_section o_kanban_manage_view">-->
-<!--                                    <h5 role="menuitem" class="o_kanban_card_manage_title">-->
-<!--                                        <span>Quality Checks</span>-->
-<!--                                    </h5>-->
-<!--                                    <div role="menuitem">-->
-<!--                                        <a name="%(todo_qa_check_action_from_dashboard)d" type="action">-->
-<!--                                            All-->
-<!--                                        </a>-->
+    <record id="quality_team_kanban" model="ir.ui.view">
+        <field name="name">quality.team.kanban</field>
+        <field name="model">elw.quality.team</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_quality_team_kanban" create="0">
+                <field name="name"/>
+                <field name="color"/>
+                <field name="check_count"/>
+                <field name="alert_count"/>
+<!--                <field name="alias_email"/>-->
+                <templates>
+                    <t t-name="kanban-menu">
+                        <div t-if="widget.editable" role="menuitem">
+                            <a class="dropdown-item ps-0" type="edit">Configuration</a>
+                        </div>
+                        <div t-if="widget.editable" role="menuitem" aria-haspopup="true" class="o_no_padding_kanban_colorpicker">
+                            <ul class="oe_kanban_colorpicker" data-field="color" role="popup"/>
+                        </div>
+                    </t>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="#{kanban_color(record.color.raw_value)}">
+                            <span class="oe_kanban_color_help" t-attf-title="In #{kanban_getcolorname(record.color.raw_value)}" role="img" t-attf-aria-label="In #{kanban_getcolorname(record.color.raw_value)}"/>
+                            <div t-attf-class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="name"/></div>
+<!--                                    <div t-if="record.alias_email.value">-->
+<!--                                        <small><i class="fa fa-envelope-o" role="img" aria-label="Domain alias" title="Domain alias"/>&amp;nbsp; <field name="alias_id"/></small>-->
 <!--                                    </div>-->
-<!--                                    <div role="menuitem">-->
-<!--                                        <a name="%(todo_qa_check_action_from_dashboard)d" type="action"-->
-<!--                                           context="{'search_default_todo': 1}">-->
-<!--                                            To Do-->
-<!--                                        </a>-->
-<!--                                    </div>-->
-<!--                                    <div role="menuitem">-->
-<!--                                        <a name="%(todo_qa_check_action_from_dashboard)d" type="action"-->
-<!--                                           context="{'search_default_fail': 1}">-->
-<!--                                            Fail-->
-<!--                                        </a>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-                                <!--                                <div class="col-6 o_kanban_card_manage_section o_kanban_manage_new">-->
-                                <!--                                    <h5 role="menuitem" class="o_kanban_card_manage_title">-->
-                                <!--                                        <span>Reporting</span>-->
-                                <!--                                    </h5>-->
-                                <!--                                    <div role="menuitem">-->
-                                <!--                                        <a name="%(maintenance_request_action_reports)d" type="action" context="{'search_default_maintenance_team_id': id}">-->
-                                <!--                                        Maintenance Requests-->
-                                <!--                                        </a>-->
-                                <!--                                    </div>-->
-                                <!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div t-if="widget.editable" class="o_kanban_card_manage_settings row">-->
-<!--                                <div class="col-8" role="menuitem" aria-haspopup="true">-->
-<!--                                    <ul role="menu" class="oe_kanban_colorpicker" data-field="color"/>-->
-<!--                                </div>-->
-<!--                                <div role="menuitem" class="col-4">-->
-<!--                                    <a type="edit" class="dropdown-item">Configuration</a>-->
-<!--                                </div>-->
-<!--&lt;!&ndash;                            </div>&ndash;&gt;-->
-<!--                        </div>-->
-<!--                    </t>-->
-<!--                    <t t-name="kanban-box">-->
-<!--                        <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''}">-->
-<!--                            <div t-attf-class="o_kanban_card_header">-->
-<!--                                <div class="o_kanban_card_header_title">-->
-<!--                                    <div class="o_primary">-->
-<!--                                        <a name="%(todo_qa_check_action_from_dashboard)d" type="action">-->
-<!--                                            <field name="name"/>-->
-<!--                                        </a>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-                            <!--                            <div class="container o_kanban_card_content">-->
-                            <!--                                <div class="row">-->
-                            <!--                                    <div class="col-6 o_kanban_primary_left">-->
-                            <!--                                        <button class="btn btn-primary" name="%(todo_qa_check_action_from_dashboard)d" type="action" context="{'search_default_todo': 1}">-->
-                            <!--                                            <t t-esc="record.todo_qa_check_count.value"/> To Do-->
-                            <!--                                        </button>-->
-                            <!--                                    </div>-->
-                            <!--                                    <div class="col-6 o_kanban_primary_right">-->
-                            <!--                                        <div t-if="record.todo_qa_check_count_high_priority.raw_value > 0">-->
-                            <!--                                            <a name="%(todo_qa_check_action_from_dashboard)d" type="action" context="{'search_default_high_priority': 1}">-->
-                            <!--                                                <t t-esc="record.todo_qa_check_count_high_priority.value"/>-->
-                            <!--                                                Top Priorities-->
-                            <!--                                            </a>-->
-                            <!--                                        </div>-->
-                            <!--                                        <div t-if="record.todo_qa_check_count_fail.raw_value > 0">-->
-                            <!--                                            <a name="%(todo_qa_check_action_from_dashboard)d" type="action" context="{'search_default_kanban_state_block': 1}">-->
-                            <!--                                                <t t-esc="record.todo_qa_check_count_fail.raw_value"/>-->
-                            <!--                                                Blocked-->
-                            <!--                                            </a>-->
-                            <!--                                        </div>-->
-                            <!--                                    </div>-->
-                            <!--                                </div>-->
-                            <!--                            </div>-->
-<!--                        </div>-->
-<!--                    </t>-->
-<!--                </templates>-->
-<!--            </kanban>-->
-<!--        </field>-->
-<!--    </record>-->
+                                </div>
+                            </div>
+                            <div class="container o_kanban_card_content">
+                                <div class="row">
+                                    <div class="col-6 o_kanban_primary_left">
+                                        <button class="btn btn-primary" name="%(elw_quality_alert_action_window)d" type="action">
+                                            <span><field name="alert_count"/> Quality Alerts</span>
+                                        </button>
+                                    </div>
+                                    <div class="col-6 o_kanban_primary_right">
+                                         <a class="oe_kanban_stock_picking_type_list" name="%(elw_quality_check_action_window)d" type="action">
+                                            <field name="check_count"/>
+                                            Checks In Progress
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
 
     <!-- quality.team: form views -->
     <record id="quality_team_view_form" model="ir.ui.view">
@@ -270,7 +214,7 @@
     <record id="elw_quality_team_action" model="ir.actions.act_window">
         <field name="name">Teams</field>
         <field name="res_model">elw.quality.team</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <!--        <field name="search_view_id" ref="maintenance_team_view_search"/>-->
         <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('quality_team_view_tree')}),]"/>

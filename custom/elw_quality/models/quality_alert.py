@@ -36,7 +36,7 @@ class QualityAlert(models.Model):
                                ondelete='restrict')
 
     user_id = fields.Many2one('res.users', string='Responsible', store=True)
-    team_id = fields.Many2one('elw.quality.team', string='Team')
+    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id")
     date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
     date_close = fields.Date(string='Date Closed')
     tag_ids = fields.Many2many('elw.quality.tag', string='Tags')
@@ -51,6 +51,16 @@ class QualityAlert(models.Model):
     description = fields.Text('Description')
     action_preventive = fields.Html('Preventive Action', store=True, copy=True)
     action_corrective = fields.Html('Corrective Action', store=True, copy=True)
+
+    # select the same team_id from quality.check
+    @api.depends('check_id')
+    def _get_team_id(self):
+        for rec in self:
+            team_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
+            if team_id_:
+                self.team_id = team_id_.team_id
+            else:
+                self.team_id = None
 
     @api.depends('title')
     def _compute_display_name(self):
