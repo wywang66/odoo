@@ -15,19 +15,34 @@ class QualityTeam(models.Model):
         'res.users', 'quality_team_users_rel', string="Team Members",
         domain="[('company_ids', 'in', company_id)]")
     color = fields.Integer("Color Index", default=0)
+    check_ids = fields.One2many('elw.quality.check', 'team_id', copy=False)
+    alert_ids = fields.One2many('elw.quality.alert', 'team_id', copy=False)
     alert_count = fields.Integer("# Quality Alerts")
-    # member_ids = fields.Many2many('hr.employee', string="Company employee",)
+    check_count = fields.Integer("# Quality Checks")
 
-    # For the dashboard only
-    # todo_request_ids = fields.One2many('maintenance.request', string="Requests", copy=False,
-    #                                    compute='_compute_todo_requests')
-    # todo_request_count = fields.Integer(string="Number of Requests", compute='_compute_todo_requests')
-    # todo_request_count_date = fields.Integer(string="Number of Requests Scheduled", compute='_compute_todo_requests')
-    # todo_request_count_high_priority = fields.Integer(string="Number of Requests in High Priority",
-    #                                                   compute='_compute_todo_requests')
-    # todo_request_count_block = fields.Integer(string="Number of Requests Blocked", compute='_compute_todo_requests')
-    # todo_request_count_unscheduled = fields.Integer(string="Number of Requests Unscheduled",
-    #                                                 compute='_compute_todo_requests')
+    # For the kanban dashboard only
+    todo_qa_check_ids = fields.One2many('elw.quality.check', string="QA Requests", copy=False,
+                                        compute='_compute_todo_qa_checks')
+    todo_qa_check_count = fields.Integer(string="Number of Requests", compute='_compute_todo_qa_checks')
+    todo_qa_check_count_high_priority = fields.Integer(string="Number of Requests in High Priority",
+                                                       compute='_compute_todo_qa_checks')
+    todo_qa_check_count_fail = fields.Integer(string="Number of Requests Blocked", compute='_compute_todo_qa_checks')
+
+    @api.depends('check_ids.quality_state')
+    def _compute_todo_qa_checks(self):
+        for team in self:
+            team.todo_qa_check_ids = self.env['elw.quality.check'].search(
+                [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)])
+            print("team.todo_qa_check_ids...", team.todo_qa_check_ids)
+            data = self.env['elw.quality.check']._read_group(
+                [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)],
+                ['priority', 'quality_state'],
+                ['__count']
+            )
+            team.todo_qa_check_count = sum(count for (_, _, _, count) in data)
+            team.todo_qa_check_count_high_priority = sum(count for (_, priority, _, count) in data if priority == 3)
+            team.todo_qa_check_count_fail = sum(
+                count for (_, _, quality_state, count) in data if quality_state == 'fail')
 
 
 class QualityAlertStage(models.Model):
@@ -84,6 +99,3 @@ class QualityPointTestType(models.Model):
             self.technical_name = 'passfail'
         elif self.name == 'Measure':
             self.technical_name = 'measure'
-
-
-

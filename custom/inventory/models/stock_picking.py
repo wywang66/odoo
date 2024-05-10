@@ -42,7 +42,7 @@ class Picking(models.Model):
 
     quality_check_fail = fields.Boolean(string="Quality Check Fail", compute="_compute_quality_check_fail")
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], )
-    quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality States")
+    quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality Status")
 
     @api.depends('quality_check_ids')
     def _compute_is_all_quality_fails_resolved(self):
