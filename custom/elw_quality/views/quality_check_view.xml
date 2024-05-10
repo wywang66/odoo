@@ -18,7 +18,7 @@
                         <filter string="Status" name="state" context="{'group_by': 'quality_state'}"/>
                         <filter string="Product" name="by_product" context="{'group_by': 'product_id'}"/>
                         <filter string="Control Point" name="groupby_point_id" context="{'group_by': 'point_id'}"/>
-                        <filter string="Team" name="groupby_team_id" context="{'group_by': 'team_id'}"/>
+                        <filter string="Quality Team" name="groupby_team_id" context="{'group_by': 'team_id'}"/>
                     </group>
                 </search>
             </field>

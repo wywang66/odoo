@@ -47,7 +47,7 @@ class QualityCheckPopup(models.TransientModel):
 
     # #  no decorator needed
     def write(self, vals):
-        if not vals.get('name'):
+        if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.popup.wizard.sequence')
         rtn = super(QualityCheckPopup, self).write(vals)

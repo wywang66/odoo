@@ -36,7 +36,7 @@ class QualityAlert(models.Model):
                                ondelete='restrict')
 
     user_id = fields.Many2one('res.users', string='Responsible', store=True)
-    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id")
+    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True)
     date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
     date_close = fields.Date(string='Date Closed')
     tag_ids = fields.Many2many('elw.quality.tag', string='Tags')
@@ -77,7 +77,7 @@ class QualityAlert(models.Model):
 
     # #  no decorator needed
     def write(self, vals):
-        if not vals.get('name'):
+        if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.alert.sequence')
         rtn = super(QualityAlert, self).write(vals)

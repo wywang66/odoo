@@ -69,7 +69,9 @@ class ElwQualityCheck(models.Model):
 
     # #  no decorator needed
     def write(self, vals):
-        if not vals.get('name'):
+        # print("self.name, vals.get('name'), vals", self.name, vals.get('name'), vals) #QC00046 None {'quality_state': 'pass'}
+        # IMPORTANT --- without 'not self.name', Reference keeps rolling
+        if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
         rtn = super(ElwQualityCheck, self).write(vals)

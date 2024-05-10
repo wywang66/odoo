@@ -11,7 +11,7 @@
         <menuitem name="Overview"
                   id="elw_quality_menu_top_overview"
                   parent="elw_quality_menu_root"
-                  action="elw_quality_team_action"
+                  action="elw_quality_team_overview_action"
                   sequence="1"
         />
 

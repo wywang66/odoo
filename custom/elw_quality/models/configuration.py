@@ -31,6 +31,7 @@ class QualityTeam(models.Model):
     @api.depends('alert_ids')
     def _compute_quality_alert_count(self):
         for rec in self:
+            # print("rec.alert_ids.ids", rec.name, rec.alert_ids.ids)
             if rec.alert_ids.ids:
                 rec.alert_count = len(rec.alert_ids)
             else:
@@ -39,6 +40,7 @@ class QualityTeam(models.Model):
     @api.depends('check_ids')
     def _compute_quality_check_count(self):
         for rec in self:
+            # print("rec.check_ids.ids", rec.name, rec.check_ids.ids)
             if rec.check_ids.ids:
                 rec.check_count = len(rec.check_ids)
             else:

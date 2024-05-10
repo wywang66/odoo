@@ -70,7 +70,7 @@ class ElwQualityPoint(models.Model):
     def write(self, vals):
         # print("write Success ............", vals, vals.get(
         #     'state'))  # write the changes when saving
-        if not vals.get('name'):
+        if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.point.sequence')
             # print("write Success 2 ............", vals.get('name'))
