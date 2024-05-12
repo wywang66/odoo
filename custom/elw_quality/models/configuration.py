@@ -30,21 +30,19 @@ class QualityTeam(models.Model):
 
     @api.depends('alert_ids')
     def _compute_quality_alert_count(self):
-        for rec in self:
-            # print("rec.alert_ids.ids", rec.name, rec.alert_ids.ids)
-            if rec.alert_ids.ids:
-                rec.alert_count = len(rec.alert_ids)
-            else:
-                rec.alert_count = 0
+        for team in self:
+            unsolved = 0
+            if team.alert_ids.ids:
+                todo = sum(1 for alert in team.alert_ids if alert.stage_id.name != 'Solved')
+            team.alert_count = todo
 
     @api.depends('check_ids')
     def _compute_quality_check_count(self):
         for rec in self:
-            # print("rec.check_ids.ids", rec.name, rec.check_ids.ids)
+            todo = 0
             if rec.check_ids.ids:
-                rec.check_count = len(rec.check_ids)
-            else:
-                rec.check_count = 0
+                todo = sum(1 for check in rec.check_ids if check.quality_state == 'none')
+            rec.check_count = todo
 
     @api.depends('check_ids.quality_state')
     def _compute_todo_qa_checks(self):

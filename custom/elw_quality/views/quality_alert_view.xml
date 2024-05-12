@@ -189,6 +189,7 @@
             <field name="name">Quality Alert</field>
             <field name="res_model">elw.quality.alert</field>
             <field name="view_mode">kanban,tree,form</field>
+<!--            <field name="context">{'search_default_groupby_team_id': 1,}</field>-->
         </record>
 
 

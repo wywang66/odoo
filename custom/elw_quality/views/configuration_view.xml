@@ -167,7 +167,7 @@
                                 <div class="row">
                                     <div class="col-6 o_kanban_primary_left">
                                         <button class="btn btn-primary" name="%(elw_quality_alert_action_window)d"
-                                                type="action">
+                                                type="action" context="{'search_default_inprogress': 1, 'search_default_groupby_team_id': id,}">
                                             <span>
                                                 <field name="alert_count"/>
                                                 Quality Alerts
@@ -176,7 +176,7 @@
                                     </div>
                                     <div class="col-6 o_kanban_primary_right">
                                         <a class="oe_kanban_stock_picking_type_list"
-                                           name="%(elw_quality_check_action_window)d" type="action">
+                                           name="%(elw_quality_check_action_window)d" type="action"  context="{'search_default_progress': 1,'search_default_team_id': id}">
                                             <field name="check_count"/>
                                             Checks In Progress
                                         </a>
