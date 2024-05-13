@@ -26,9 +26,9 @@ class ElwQualityCheck(models.Model):
     user_id = fields.Many2one('res.users', string='Checked By', store=True)
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', )
     team_id = fields.Many2one('elw.quality.team', string='Team')
-    control_date = fields.Date(string='Checked Date')
+    control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
-                                     default='none')
+                                     default='none', string='Status')
     test_type = fields.Char(related='point_id.test_type', string="Test Type")
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
@@ -69,7 +69,9 @@ class ElwQualityCheck(models.Model):
 
     # #  no decorator needed
     def write(self, vals):
-        if not vals.get('name'):
+        # print("self.name, vals.get('name'), vals", self.name, vals.get('name'), vals) #QC00046 None {'quality_state': 'pass'}
+        # IMPORTANT --- without 'not self.name', Reference keeps rolling
+        if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
         rtn = super(ElwQualityCheck, self).write(vals)

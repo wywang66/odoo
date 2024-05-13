@@ -7,6 +7,7 @@
                 <search>
                     <field name="product_id"/>
                     <field name="picking_id"/>
+                    <field name="lot_id" groups="stock.group_production_lot"/>
                     <field name="team_id"/>
                     <filter string="In Progress" name="progress" domain="[('quality_state', '=', 'none')]"/>
                     <filter string="Passed" name="passed" domain="[('quality_state', '=', 'pass')]"/>
@@ -17,9 +18,61 @@
                         <filter string="Status" name="state" context="{'group_by': 'quality_state'}"/>
                         <filter string="Product" name="by_product" context="{'group_by': 'product_id'}"/>
                         <filter string="Control Point" name="groupby_point_id" context="{'group_by': 'point_id'}"/>
-                        <filter string="Team" name="groupby_team_id" context="{'group_by': 'team_id'}"/>
+                        <filter string="Quality Team" name="groupby_team_id" context="{'group_by': 'team_id'}"/>
                     </group>
                 </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="elw_quality_check_kanban_view">
+            <field name="name">elw.quality.check.kanban.view</field>
+            <field name="model">elw.quality.check</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_small_column" sample="1">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="control_date"/>
+                    <field name="product_id"/>
+                    <field name="lot_id"/>
+                    <field name="quality_state"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <strong>
+                                            <span>
+                                                <t t-esc="record.name.value"/>
+                                            </span>
+                                        </strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong>
+                                            <span t-attf-class="float-end text-end badge #{['none'].indexOf(record.quality_state.raw_value) &gt; -1 ? 'text-bg-secondary' : ['fail'].indexOf(record.quality_state.raw_value) &gt; -1 ? 'text-bg-danger' : ['done'].indexOf(record.quality_state.raw_value) &gt; -1 ? 'text-bg-primary' : 'text-bg-success'}">
+                                                <t t-esc="record.quality_state.value"/>
+                                            </span>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="row text-muted">
+                                    <div class="col-8">
+                                        <span>
+                                            <t t-esc="record.product_id.value"/>
+                                        </span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span>
+                                            <t t-esc="record.lot_id.value"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_bottom_right float-end">
+                                    <field name="user_id" widget="many2one_avatar_user"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
             </field>
         </record>
 
@@ -82,6 +135,8 @@
                             <group>
                                 <field name="product_id"/>
                                 <field name="measure_on"/>
+                                <field name="control_date"/>
+                                <field name="user_id"/>
                                 <field name="alert_ids" invisible="quality_state == 'pass'">
                                     <tree delete="0" create="0">
                                         <field name="name"/>
@@ -122,7 +177,7 @@
         <record model="ir.actions.act_window" id="elw_quality_check_action_window">
             <field name="name">Quality Checks</field>
             <field name="res_model">elw.quality.check</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree,kanban,form</field>
         </record>
     </data>
 </odoo>

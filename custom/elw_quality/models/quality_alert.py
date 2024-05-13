@@ -30,14 +30,14 @@ class QualityAlert(models.Model):
         ('3', 'Very High')], string="Priority", tracking=True, store=True,
         help="1 star: Low, 2 stars: High, 3 stars: Very High")
     check_id = fields.Many2one('elw.quality.check', string='Check', store=True)  # check_id is name of quality.check
-    point_id = fields.Many2one('elw.quality.point', related='check_id.point_id',string='Control Point ID')
+    point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', store=True)
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='restrict')
 
     user_id = fields.Many2one('res.users', string='Responsible', store=True)
-    team_id = fields.Many2one('elw.quality.team', string='Team')
-    date_assign = fields.Date(string='Date Assigned')
+    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True)
+    date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
     date_close = fields.Date(string='Date Closed')
     tag_ids = fields.Many2many('elw.quality.tag', string='Tags')
     reason_id = fields.Many2one('elw.quality.reason', string='Root Cause')
@@ -52,6 +52,22 @@ class QualityAlert(models.Model):
     action_preventive = fields.Html('Preventive Action', store=True, copy=True)
     action_corrective = fields.Html('Corrective Action', store=True, copy=True)
 
+    # select the same team_id from quality.check
+    @api.depends('check_id')
+    def _get_team_id(self):
+        for rec in self:
+            team_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
+            print("team_id_------", team_id_, rec.check_id.id)
+            if team_id_:
+                self.team_id = team_id_.team_id
+            else:
+                self.team_id = None
+
+    @api.depends('title')
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = f"{record.name} {record.title}"
+
     @api.model_create_multi
     def create(self, vals):
         for vals in vals:
@@ -62,7 +78,7 @@ class QualityAlert(models.Model):
 
     # #  no decorator needed
     def write(self, vals):
-        if not vals.get('name'):
+        if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.alert.sequence')
         rtn = super(QualityAlert, self).write(vals)
