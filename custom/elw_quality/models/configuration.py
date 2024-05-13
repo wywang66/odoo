@@ -66,14 +66,14 @@ class QualityTeam(models.Model):
                 groupby=['stage_id', 'priority'],
                 aggregates=['__count']
             )
-            # print("data...", data)  # data = [('fail', 4), ('none', 1)]
+            # print("data...", data)  # data = [(elw.quality.alert.stage(1,), '2', 1), (elw.quality.alert.stage(1,), '3', 1)]
             # when iterating over data, the underscore _ is used to "catch" the first element of each tuple and ignore it.
             team.todo_qa_alert_count = sum(count for (_, _, count) in data)
-            team.todo_qa_alert_count_high_priority = sum(count for (_, priority, count) in data if priority == 0)
+            team.todo_qa_alert_count_high_priority = sum(count for (_, priority, count) in data if priority == '3')
             undone_data = [(stage_id, _, count) for stage_id, _, count in data if stage_id.name != 'Solved']
             team.todo_qa_alert_count_unsolved = sum(
                 count for (_, _, count) in undone_data)
-            # print("data...", team.todo_qa_alert_count, team.todo_qa_alert_count_unsolved)
+            # print("cnt/priority/undone_cnt...", team.todo_qa_alert_count, team.todo_qa_alert_count_high_priority, team.todo_qa_alert_count_unsolved)
 
     @api.depends('check_ids.quality_state')
     def _compute_todo_qa_checks(self):

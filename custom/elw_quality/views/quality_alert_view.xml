@@ -16,6 +16,7 @@
                     <separator/>
                     <filter string="In Progress" name="inprogress" domain="[('stage_id.done', '=', False)]"/>
                     <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <filter string="Unsolved TopPriority" name="unsolved_top_priority" domain="[('priority', '=', '3'),('stage_id.done', '=', False) ]"/>
                     <separator/>
                     <filter name="filter_date_assign" date="date_assign"/>
                     <filter name="filter_date_close" date="date_close"/>

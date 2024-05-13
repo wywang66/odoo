@@ -91,6 +91,12 @@
                                                 Quality Alerts
                                             </span>
                                         </button>
+                                        <a class="oe_kanban_alert_priority_overview"
+                                           name="%(elw_quality_alert_action_window)d" type="action"
+                                           context="{'search_default_unsolved_top_priority': 1,'search_default_team_id': id}">
+                                            <field name="todo_qa_alert_count_high_priority"/>
+                                            Unsolved TopPriority
+                                        </a>
                                     </div>
                                     <div class="col-6 o_kanban_primary_right">
                                         <!--('search_default_groupby_team_id': id) will produce the check group by search resule -->
