@@ -11,6 +11,7 @@
                            filter_domain="[                     '|', '|', ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_id', 'ilike', self)]"/>
                     <field name="tag_ids"/>
                     <field name="user_id"/>
+                    <field name="team_id"/>
                     <filter string="My Alerts" name="myalerts" domain="[('user_id', '=', uid)]"/>
                     <separator/>
                     <filter string="In Progress" name="inprogress" domain="[('stage_id.done', '=', False)]"/>
@@ -189,7 +190,7 @@
             <field name="name">Quality Alert</field>
             <field name="res_model">elw.quality.alert</field>
             <field name="view_mode">kanban,tree,form</field>
-<!--            <field name="context">{'search_default_groupby_team_id': 1,}</field>-->
+<!--            <field name="context">{'search_default_groupby_stage': 1,}</field>-->
         </record>
 
 
