@@ -24,6 +24,28 @@
             </field>
         </record>
 
+        <record id="elw_quality_check_pivot_view" model="ir.ui.view">
+            <field name="name">elw.quality.check.pivot.view</field>
+            <field name="model">elw.quality.check</field>
+            <field name="arch" type="xml">
+                <pivot string="Quality Check Analysis" sample="1">
+                    <field name="control_date" type="col" interval="day"/>
+                    <field name="product_id" type="row"/>
+                </pivot>
+            </field>
+        </record>
+
+        <record id="elw_quality_check_graph_view" model="ir.ui.view">
+            <field name="name">elw.quality.check.graph.view</field>
+            <field name="model">elw.quality.check</field>
+            <field name="arch" type="xml">
+                <graph string="Quality Check Analysis" sample="1">
+                    <field name="control_date" interval="day"/>
+                    <field name="quality_state"/>
+                </graph>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="elw_quality_check_kanban_view">
             <field name="name">elw.quality.check.kanban.view</field>
             <field name="model">elw.quality.check</field>
@@ -177,7 +199,7 @@
         <record model="ir.actions.act_window" id="elw_quality_check_action_window">
             <field name="name">Quality Checks</field>
             <field name="res_model">elw.quality.check</field>
-            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_mode">tree,kanban,form,pivot,graph</field>
         </record>
     </data>
 </odoo>
