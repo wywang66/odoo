@@ -47,25 +47,25 @@
         </record>
 
         <record id="elw_quality_check_activity_view" model="ir.ui.view">
-        <field name="name">elw.quality.check.activity.view</field>
-        <field name="model">elw.quality.check</field>
-        <field name="arch" type="xml">
-            <activity string="Quality Check Activities">
-                <field name="user_id"/>
-                <templates>
-                    <div t-name="activity-box">
-                        <field name="user_id" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
-                        <div class="flex-grow-1 d-block">
-                            <div class="d-flex justify-content-between">
-                                <field name="name" display="full" class="o_text_block o_text_bold"/>
+            <field name="name">elw.quality.check.activity.view</field>
+            <field name="model">elw.quality.check</field>
+            <field name="arch" type="xml">
+                <activity string="Quality Check Activities">
+                    <field name="user_id"/>
+                    <templates>
+                        <div t-name="activity-box">
+                            <field name="user_id" widget="many2one_avatar_user" domain="[('share', '=', False)]"/>
+                            <div class="flex-grow-1 d-block">
+                                <div class="d-flex justify-content-between">
+                                    <field name="name" display="full" class="o_text_block o_text_bold"/>
+                                </div>
+                                <field name="quality_state" muted="1" display="full" class="o_text_block"/>
                             </div>
-                            <field name="quality_state" muted="1" display="full" class="o_text_block"/>
                         </div>
-                    </div>
-                </templates>
-            </activity>
-        </field>
-    </record>
+                    </templates>
+                </activity>
+            </field>
+        </record>
 
         <record model="ir.ui.view" id="elw_quality_check_kanban_view">
             <field name="name">elw.quality.check.kanban.view</field>
@@ -222,5 +222,14 @@
             <field name="res_model">elw.quality.check</field>
             <field name="view_mode">tree,kanban,form,pivot,graph,activity</field>
         </record>
+
+        <record model="ir.actions.act_window" id="elw_quality_check_action_window_reporting">
+            <field name="name">Quality Checks</field>
+            <field name="res_model">elw.quality.check</field>
+            <!--syntax is search_default_name. for both filter and group_by-->
+            <field name="context">{'search_default_state': 1}</field>
+            <field name="view_mode">graph</field>
+        </record>
+
     </data>
 </odoo>
