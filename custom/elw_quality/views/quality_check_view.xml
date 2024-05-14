@@ -128,7 +128,7 @@
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="picking_id"/>
-                    <field name="lot_id"/>
+                    <field name="lot_id" />
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>
                     <field name="quality_state" widget="badge"
@@ -180,7 +180,8 @@
                                 <field name="measure_on"/>
                                 <field name="control_date"/>
                                 <field name="user_id"/>
-                                <field name="lot_id"/>
+                                 <field name="has_lot_id" invisible="1" />
+                                <field name="lot_id" invisible="not has_lot_id"/>
                                 <field name="alert_ids" invisible="quality_state == 'pass'">
                                     <tree delete="0" create="0">
                                         <field name="name"/>
