@@ -180,6 +180,7 @@
                                 <field name="measure_on"/>
                                 <field name="control_date"/>
                                 <field name="user_id"/>
+                                <field name="lot_id"/>
                                 <field name="alert_ids" invisible="quality_state == 'pass'">
                                     <tree delete="0" create="0">
                                         <field name="name"/>

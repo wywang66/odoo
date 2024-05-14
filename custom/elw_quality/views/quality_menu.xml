@@ -85,13 +85,13 @@
                   sequence="30"
         />
 
-        <!-- disable Lots/Serial Numbers for a time being unclear the logic behind this-->
-        <!--        <menuitem name="Lots/Serial Numbers"-->
-        <!--                  id="elw_quality_lots_menu_sub"-->
-        <!--                  parent="elw_quality_menu_top_products"-->
-        <!--                  action="elw_quality_control_point_action_window"-->
-        <!--                  sequence="31"-->
-        <!--        />-->
+        <!-- Products-->
+        <menuitem name="Lots/Serial Numbers"
+                  id="elw_quality_lots_menu_sub"
+                  parent="elw_quality_menu_top_products"
+                  action="stock.action_production_lot_form"
+                  sequence="31"
+        />
 
         <!--        Configurations-->
         <menuitem name="Quality Teams"
