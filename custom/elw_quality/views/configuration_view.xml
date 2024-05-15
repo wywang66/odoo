@@ -45,76 +45,76 @@
         </field>
     </record>
 
-    <record id="quality_team_kanban" model="ir.ui.view">
-        <field name="name">quality.team.kanban</field>
-        <field name="model">elw.quality.team</field>
-        <field name="arch" type="xml">
-            <kanban class="o_kanban_dashboard o_quality_team_kanban" create="0">
-                <field name="name"/>
-                <field name="color"/>
-                <field name="check_count"/>
-                <field name="alert_count"/>
-                <!--                <field name="alias_email"/>-->
-                <templates>
-                    <t t-name="kanban-menu">
-                        <div t-if="widget.editable" role="menuitem">
-                            <a class="dropdown-item ps-0" type="edit">Configuration</a>
-                        </div>
-                        <div t-if="widget.editable" role="menuitem" aria-haspopup="true"
-                             class="o_no_padding_kanban_colorpicker">
-                            <ul class="oe_kanban_colorpicker" data-field="color" role="popup"/>
-                        </div>
-                    </t>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="#{kanban_color(record.color.raw_value)}">
-                            <span class="oe_kanban_color_help"
-                                  t-attf-title="In #{kanban_getcolorname(record.color.raw_value)}" role="img"
-                                  t-attf-aria-label="In #{kanban_getcolorname(record.color.raw_value)}"/>
-                            <div t-attf-class="o_kanban_card_header">
-                                <div class="o_kanban_card_header_title">
-                                    <div class="o_primary">
-                                        <field name="name"/>
-                                    </div>
-                                    <!--                                    <div t-if="record.alias_email.value">-->
-                                    <!--                                        <small><i class="fa fa-envelope-o" role="img" aria-label="Domain alias" title="Domain alias"/>&amp;nbsp; <field name="alias_id"/></small>-->
-                                    <!--                                    </div>-->
-                                </div>
-                            </div>
-                            <div class="container o_kanban_card_content">
-                                <div class="row">
-                                    <div class="col-6 o_kanban_primary_left">
-                                        <button class="btn btn-primary" name="%(elw_quality_alert_action_window)d"
-                                                type="action"
-                                                context="{'search_default_inprogress': 1,'search_default_team_id': id}">
-                                            <span>
-                                                <field name="alert_count"/>
-                                                Quality Alerts
-                                            </span>
-                                        </button>
-                                        <a class="oe_kanban_alert_priority_overview"
-                                           name="%(elw_quality_alert_action_window)d" type="action"
-                                           context="{'search_default_unsolved_top_priority': 1,'search_default_team_id': id}">
-                                            <field name="todo_qa_alert_count_high_priority"/>
-                                            Unsolved TopPriority
-                                        </a>
-                                    </div>
-                                    <div class="col-6 o_kanban_primary_right">
-                                        <!--('search_default_groupby_team_id': id) will produce the check group by search resule -->
-                                        <a class="oe_kanban_check_overview"
-                                           name="%(elw_quality_check_action_window)d" type="action"
-                                           context="{'search_default_progress': 1,'search_default_team_id': id}">
-                                            <field name="check_count"/>
-                                            Checks In Progress
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
+<!--    <record id="quality_team_kanban" model="ir.ui.view">-->
+<!--        <field name="name">quality.team.kanban</field>-->
+<!--        <field name="model">elw.quality.team</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <kanban class="o_kanban_dashboard o_quality_team_kanban" create="0">-->
+<!--                <field name="name"/>-->
+<!--                <field name="color"/>-->
+<!--                <field name="check_count"/>-->
+<!--                <field name="alert_count"/>-->
+<!--                &lt;!&ndash;                <field name="alias_email"/>&ndash;&gt;-->
+<!--                <templates>-->
+<!--                    <t t-name="kanban-menu">-->
+<!--                        <div t-if="widget.editable" role="menuitem">-->
+<!--                            <a class="dropdown-item ps-0" type="edit">Configuration</a>-->
+<!--                        </div>-->
+<!--                        <div t-if="widget.editable" role="menuitem" aria-haspopup="true"-->
+<!--                             class="o_no_padding_kanban_colorpicker">-->
+<!--                            <ul class="oe_kanban_colorpicker" data-field="color" role="popup"/>-->
+<!--                        </div>-->
+<!--                    </t>-->
+<!--                    <t t-name="kanban-box">-->
+<!--                        <div t-attf-class="#{kanban_color(record.color.raw_value)}">-->
+<!--                            <span class="oe_kanban_color_help"-->
+<!--                                  t-attf-title="In #{kanban_getcolorname(record.color.raw_value)}" role="img"-->
+<!--                                  t-attf-aria-label="In #{kanban_getcolorname(record.color.raw_value)}"/>-->
+<!--                            <div t-attf-class="o_kanban_card_header">-->
+<!--                                <div class="o_kanban_card_header_title">-->
+<!--                                    <div class="o_primary">-->
+<!--                                        <field name="name"/>-->
+<!--                                    </div>-->
+<!--                                    &lt;!&ndash;                                    <div t-if="record.alias_email.value">&ndash;&gt;-->
+<!--                                    &lt;!&ndash;                                        <small><i class="fa fa-envelope-o" role="img" aria-label="Domain alias" title="Domain alias"/>&amp;nbsp; <field name="alias_id"/></small>&ndash;&gt;-->
+<!--                                    &lt;!&ndash;                                    </div>&ndash;&gt;-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="container o_kanban_card_content">-->
+<!--                                <div class="row">-->
+<!--                                    <div class="col-6 o_kanban_primary_left">-->
+<!--                                        <button class="btn btn-primary" name="%(elw_quality_alert_action_window)d"-->
+<!--                                                type="action"-->
+<!--                                                context="{'search_default_inprogress': 1,'search_default_team_id': id}">-->
+<!--                                            <span>-->
+<!--                                                <field name="alert_count"/>-->
+<!--                                                Quality Alerts-->
+<!--                                            </span>-->
+<!--                                        </button>-->
+<!--                                        <a class="oe_kanban_alert_priority_overview"-->
+<!--                                           name="%(elw_quality_alert_action_window)d" type="action"-->
+<!--                                           context="{'search_default_unsolved_top_priority': 1,'search_default_team_id': id}">-->
+<!--                                            <field name="todo_qa_alert_count_high_priority"/>-->
+<!--                                            Unsolved TopPriority-->
+<!--                                        </a>-->
+<!--                                    </div>-->
+<!--                                    <div class="col-6 o_kanban_primary_right">-->
+<!--                                        &lt;!&ndash;('search_default_groupby_team_id': id) will produce the check group by search resule &ndash;&gt;-->
+<!--                                        <a class="oe_kanban_check_overview"-->
+<!--                                           name="%(elw_quality_check_action_window)d" type="action"-->
+<!--                                           context="{'search_default_progress': 1,'search_default_team_id': id}">-->
+<!--                                            <field name="check_count"/>-->
+<!--                                            Checks In Progress-->
+<!--                                        </a>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </t>-->
+<!--                </templates>-->
+<!--            </kanban>-->
+<!--        </field>-->
+<!--    </record>-->
 
     <!-- quality.team: form views -->
     <record id="quality_team_view_form" model="ir.ui.view">
@@ -167,7 +167,7 @@
         <field name="name">Quality Status by Teams</field>
         <field name="res_model">elw.quality.team</field>
         <field name="view_mode">kanban,form</field>
-        <field name="view_id" ref="quality_team_kanban"/>
+<!--        <field name="view_id" ref="quality_team_kanban"/>-->
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Add a team in the quality request
