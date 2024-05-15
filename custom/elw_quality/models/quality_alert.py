@@ -32,7 +32,7 @@ class QualityAlert(models.Model):
     check_id = fields.Many2one('elw.quality.check', string='Check Ref#',
                                store=True)  # check_id is name of quality.check
     point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID')
-    lot_ids = fields.Many2many('stock.lot', string='Lot/Serial', compute='_get_lot_ids', store=True)
+    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', compute='_get_lot_id', store=True)
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='restrict')
 
@@ -62,20 +62,20 @@ class QualityAlert(models.Model):
             self.team_id = team_id_.team_id if team_id_ else None
 
     # select the same lot_id from quality.check
-    # @api.depends('check_id')
-    # def _get_lot_id(self):
-    #     for rec in self:
-    #         lot_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
-    #         # print("lot_id_------", lot_id_, rec.check_id.id)
-    #         self.lot_id = lot_id_.lot_id if lot_id_ else None
-
-    # select the same lot_id from quality.check
     @api.depends('check_id')
-    def _get_lot_ids(self):
+    def _get_lot_id(self):
         for rec in self:
-            lot_ids_ = self.env['elw.quality.check'].browse(rec.check_id.id)
-            print("lot_ids_------", lot_ids_, rec.check_id.ids)
-            self.lot_ids = lot_ids_.lot_ids if lot_ids_ else None
+            lot_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
+            # print("lot_id_------", lot_id_, rec.check_id.id)
+            self.lot_id = lot_id_.lot_id if lot_id_ else None
+
+    # # select the same lot_id from quality.check
+    # @api.depends('check_id')
+    # def _get_lot_ids(self):
+    #     for rec in self:
+    #         lot_ids_ = self.env['elw.quality.check'].browse(rec.check_id.id)
+    #         print("lot_ids_------", lot_ids_, rec.check_id.ids)
+    #         self.lot_ids = lot_ids_.lot_ids if lot_ids_ else None
 
     @api.depends('title')
     def _compute_display_name(self):
