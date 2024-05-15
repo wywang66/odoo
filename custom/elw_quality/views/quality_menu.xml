@@ -39,26 +39,42 @@
                   sequence="5"
         />
 
-        <!--        Quality Control-->
+        <!--Quality Control-->
         <menuitem name="Control Points"
                   id="elw_quality_control_point_menu_sub"
                   parent="elw_quality_menu_top_quality_control"
                   action="elw_quality_control_point_action_window"
                   sequence="20"
         />
-
+        <!--Quality Control-->
         <menuitem name="Control Checks"
                   id="elw_quality_check_menu_sub"
                   parent="elw_quality_menu_top_quality_control"
                   action="elw_quality_check_action_window"
                   sequence="21"
         />
-
+        <!--Quality Control-->
         <menuitem name="Control Alerts"
                   id="elw_quality_alert_menu_sub"
                   parent="elw_quality_menu_top_quality_control"
                   action="elw_quality_alert_action_window"
                   sequence="22"
+        />
+
+        <!--Reporting-->
+        <menuitem name="Quality Checks"
+                  id="elw_quality_check_reporting_menu_sub"
+                  parent="elw_quality_menu_top_reporting"
+                  action="elw_quality_check_action_window_reporting"
+                  sequence="40"
+        />
+
+        <!--Reporting-->
+        <menuitem name="Quality Alerts"
+                  id="elw_quality_alert_reporting_menu_sub"
+                  parent="elw_quality_menu_top_reporting"
+                  action="elw_quality_alert_action_window_reporting"
+                  sequence="41"
         />
 
         <!-- Products-->
@@ -69,13 +85,13 @@
                   sequence="30"
         />
 
-        <!-- disable Lots/Serial Numbers for a time being unclear the logic behind this-->
-        <!--        <menuitem name="Lots/Serial Numbers"-->
-        <!--                  id="elw_quality_lots_menu_sub"-->
-        <!--                  parent="elw_quality_menu_top_products"-->
-        <!--                  action="elw_quality_control_point_action_window"-->
-        <!--                  sequence="31"-->
-        <!--        />-->
+        <!-- Products-->
+        <menuitem name="Lots/Serial Numbers"
+                  id="elw_quality_lots_menu_sub"
+                  parent="elw_quality_menu_top_products"
+                  action="stock.action_production_lot_form"
+                  sequence="31"
+        />
 
         <!--        Configurations-->
         <menuitem name="Quality Teams"

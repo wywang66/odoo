@@ -11,10 +11,13 @@
                            filter_domain="[                     '|', '|', ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_id', 'ilike', self)]"/>
                     <field name="tag_ids"/>
                     <field name="user_id"/>
+                    <field name="team_id"/>
                     <filter string="My Alerts" name="myalerts" domain="[('user_id', '=', uid)]"/>
                     <separator/>
                     <filter string="In Progress" name="inprogress" domain="[('stage_id.done', '=', False)]"/>
                     <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <filter string="Unsolved TopPriority" name="unsolved_top_priority"
+                            domain="[('priority', '=', '3'),('stage_id.done', '=', False) ]"/>
                     <separator/>
                     <filter name="filter_date_assign" date="date_assign"/>
                     <filter name="filter_date_close" date="date_close"/>
@@ -37,6 +40,17 @@
                                 context="{'group_by': 'team_id'}"/>
                     </group>
                 </search>
+            </field>
+        </record>
+
+        <record id="elw_quality_alert_graph_view" model="ir.ui.view">
+            <field name="name">elw.quality.alert.graph.view</field>
+            <field name="model">elw.quality.alert</field>
+            <field name="arch" type="xml">
+                <graph string="Quality Alert Analysis" sample="1">
+                    <field name="reason_id"/>
+                    <field name="stage_id"/>
+                </graph>
             </field>
         </record>
 
@@ -189,9 +203,13 @@
             <field name="name">Quality Alert</field>
             <field name="res_model">elw.quality.alert</field>
             <field name="view_mode">kanban,tree,form</field>
-<!--            <field name="context">{'search_default_groupby_team_id': 1,}</field>-->
         </record>
 
+        <record model="ir.actions.act_window" id="elw_quality_alert_action_window_reporting">
+            <field name="name">Quality Alert</field>
+            <field name="res_model">elw.quality.alert</field>
+            <field name="view_mode">graph</field>
+        </record>
 
     </data>
 </odoo>

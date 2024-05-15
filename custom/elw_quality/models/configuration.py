@@ -23,18 +23,26 @@ class QualityTeam(models.Model):
     # For the kanban dashboard only
     todo_qa_check_ids = fields.One2many('elw.quality.check', string="QA Requests", copy=False,
                                         compute='_compute_todo_qa_checks')
-    todo_qa_check_count = fields.Integer(string="Number of Requests", compute='_compute_todo_qa_checks')
-    todo_qa_check_count_high_priority = fields.Integer(string="Number of Requests in High Priority",
-                                                       compute='_compute_todo_qa_checks')
-    todo_qa_check_count_fail = fields.Integer(string="Number of Requests Blocked", compute='_compute_todo_qa_checks')
+
+    todo_qa_check_count = fields.Integer(string="# Requests", compute='_compute_todo_qa_checks')
+    # todo_qa_check_count_high_priority = fields.Integer(string="Number of Requests in High Priority",
+    #                                                    compute='_compute_todo_qa_checks')
+    todo_qa_check_count_fail = fields.Integer(string="# Fail Checks", compute='_compute_todo_qa_checks')
+
+    todo_qa_alert_ids = fields.One2many('elw.quality.alert', string="QA Alerts", copy=False,
+                                        compute='_compute_todo_qa_alerts')
+    todo_qa_alert_count = fields.Integer(string="# Alerts", compute='_compute_todo_qa_alerts')
+    todo_qa_alert_count_high_priority = fields.Integer(string="# Alerts in High Priority",
+                                                       compute='_compute_todo_qa_alerts')
+    todo_qa_alert_count_unsolved = fields.Integer(string="# Unsolved Alerts", compute='_compute_todo_qa_alerts')
 
     @api.depends('alert_ids')
     def _compute_quality_alert_count(self):
         for team in self:
             unsolved = 0
             if team.alert_ids.ids:
-                todo = sum(1 for alert in team.alert_ids if alert.stage_id.name != 'Solved')
-            team.alert_count = todo
+                unsolved = sum(1 for alert in team.alert_ids if alert.stage_id.name != 'Solved')
+            team.alert_count = unsolved
 
     @api.depends('check_ids')
     def _compute_quality_check_count(self):
@@ -44,21 +52,50 @@ class QualityTeam(models.Model):
                 todo = sum(1 for check in rec.check_ids if check.quality_state == 'none')
             rec.check_count = todo
 
+    @api.depends('alert_ids')
+    def _compute_todo_qa_alerts(self):
+        for team in self:
+            team.todo_qa_alert_ids = self.env['elw.quality.alert'].search(
+                [('team_id', '=', team.id), ('stage_id.name', '!=', 'Solved')])
+            # team.todo_qa_check_ids = self.env['elw.quality.check'].search(
+            #     [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)])
+            # print("team.todo_qa_alert_ids...", team.todo_qa_alert_ids, team.id, team.name)
+
+            data = self.env['elw.quality.alert']._read_group(
+                domain=[('team_id', '=', team.id), ('stage_id.name', '!=', 'Solved')],
+                groupby=['stage_id', 'priority'],
+                aggregates=['__count']
+            )
+            # print("data...", data)  # data = [(elw.quality.alert.stage(1,), '2', 1), (elw.quality.alert.stage(1,), '3', 1)]
+            # when iterating over data, the underscore _ is used to "catch" the first element of each tuple and ignore it.
+            team.todo_qa_alert_count = sum(count for (_, _, count) in data)
+            team.todo_qa_alert_count_high_priority = sum(count for (_, priority, count) in data if priority == '3')
+            undone_data = [(stage_id, _, count) for stage_id, _, count in data if stage_id.name != 'Solved']
+            team.todo_qa_alert_count_unsolved = sum(
+                count for (_, _, count) in undone_data)
+            # print("cnt/priority/undone_cnt...", team.todo_qa_alert_count, team.todo_qa_alert_count_high_priority, team.todo_qa_alert_count_unsolved)
+
     @api.depends('check_ids.quality_state')
     def _compute_todo_qa_checks(self):
         for team in self:
             team.todo_qa_check_ids = self.env['elw.quality.check'].search(
-                [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)])
-            print("team.todo_qa_check_ids...", team.todo_qa_check_ids)
+                [('team_id', '=', team.id), ('quality_state', '!=', 'pass')])
+            # team.todo_qa_check_ids = self.env['elw.quality.check'].search(
+            #     [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)])
+            # print("team.todo_qa_check_ids...", team.todo_qa_check_ids, team.id)
+
             data = self.env['elw.quality.check']._read_group(
-                [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)],
-                ['priority', 'quality_state'],
-                ['__count']
+                domain=[('team_id', '=', team.id), ('quality_state', '!=', 'pass')],
+                groupby=['quality_state'],
+                aggregates=['__count']
             )
-            team.todo_qa_check_count = sum(count for (_, _, _, count) in data)
-            team.todo_qa_check_count_high_priority = sum(count for (_, priority, _, count) in data if priority == 3)
+            # print("data...", data)  # data = [('fail', 4), ('none', 1)]
+            #  when iterating over data, the underscore _ is used to "catch" the first element of each tuple and ignore it.
+            team.todo_qa_check_count = sum(count for (_, count) in data)
+            fail_data = [(quality_state, count) for quality_state, count in data if quality_state == 'fail']
             team.todo_qa_check_count_fail = sum(
-                count for (_, _, quality_state, count) in data if quality_state == 'fail')
+                count for (_, count) in fail_data)
+            # print("data...", team.todo_qa_check_count, team.todo_qa_check_count_fail)
 
 
 class QualityAlertStage(models.Model):
