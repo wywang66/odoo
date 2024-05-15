@@ -30,7 +30,7 @@ class ElwQualityPoint(models.Model):
     product_category_ids = fields.Many2many('product.category', string="Product Categories")
     picking_type_ids = fields.Many2many('stock.picking.type', string='Operations', store=True, copy=True, required=True)
     active = fields.Boolean(default=True)
-    user_id = fields.Many2one('res.users', string='Responsible')
+    user_id = fields.Many2one('res.users', string='Responsible', ondelete="cascade")
     measure_on = fields.Selection([('operation', 'Operation'), ('product', 'Product'), ('move_line', 'Quantity')],
                                   required=True, string='Control per',
                                   help='Product = A quality check is requested per product.',

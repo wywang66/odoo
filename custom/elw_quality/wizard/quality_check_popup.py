@@ -11,7 +11,7 @@ class QualityCheckPopup(models.TransientModel):
 
     product_ids = fields.Many2many('product.product', string='Product')
     check_ids = fields.Many2many('elw.quality.check', string="QA Check Reference#")
-    partner_id = fields.Many2one('res.partner', string='Vendor/Customer')
+    partner_id = fields.Many2one('res.partner', string='Vendor/Customer', ondelete='cascade')
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], default='none')
     # quality_alert_ids = fields.Many2many('elw.quality.alert', string="Alerts")
     # quality_alert_open_count = fields.Integer(string="Quality Alert Open Count")
