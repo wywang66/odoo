@@ -7,7 +7,7 @@
                 <search>
                     <field name="product_id"/>
                     <field name="picking_id"/>
-                    <field name="lot_id" groups="stock.group_production_lot"/>
+<!--                    <field name="lot_id" groups="stock.group_production_lot"/>-->
                     <field name="team_id"/>
                     <filter string="In Progress" name="progress" domain="[('quality_state', '=', 'none')]"/>
                     <filter string="Passed" name="passed" domain="[('quality_state', '=', 'pass')]"/>
@@ -76,7 +76,7 @@
                     <field name="user_id"/>
                     <field name="control_date"/>
                     <field name="product_id"/>
-                    <field name="lot_id"/>
+<!--                    <field name="lot_id"/>-->
                     <field name="quality_state"/>
                     <templates>
                         <t t-name="kanban-box">
@@ -105,7 +105,7 @@
                                     </div>
                                     <div class="col-4">
                                         <span>
-                                            <t t-esc="record.lot_id.value"/>
+<!--                                            <t t-esc="record.lot_id.value"/>-->
                                         </span>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="picking_id"/>
-                    <field name="lot_id" optional="hide"/>
+<!--                    <field name="lot_id" optional="hide"/>-->
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>
                     <field name="quality_state" widget="badge"
@@ -182,9 +182,9 @@
                                 <field name="user_id"/>
                                 <field name="has_lot_id" invisible="1"/>
                                 <!-- apply a filter 'product_id' in this m2o field -->
-                                <field name="lot_id" invisible="not has_lot_id"
-                                       domain="[('product_id', '=', product_id)]"/>
-                                <field name="alert_ids" invisible="quality_state == 'pass'">
+<!--                                <field name="lot_id" invisible="not has_lot_id"-->
+<!--                                       />-->
+                                <field name="alert_ids" invisible="quality_state != 'fail'">
                                     <tree delete="0" create="0">
                                         <field name="name"/>
                                         <field name="stage_id"/>

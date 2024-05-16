@@ -32,7 +32,7 @@ class QualityAlert(models.Model):
     check_id = fields.Many2one('elw.quality.check', string='Check Ref#',
                                store=True)  # check_id is name of quality.check
     point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID')
-    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', compute='_get_lot_id', store=True)
+    # lot_id = fields.Many2one('stock.lot', string='Lot/Serial', compute='_get_lot_id', store=True)
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='restrict')
 

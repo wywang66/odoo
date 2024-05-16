@@ -22,11 +22,11 @@ class ElwQualityCheck(models.Model):
     product_id = fields.Many2one('product.product', string='Product', store=True)
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
-    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', store=True, required=True)
+    # lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True, required=True, ondelete='Set NULL')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', )
-    team_id = fields.Many2one('elw.quality.team', string='Team')
+    team_id = fields.Many2one('elw.quality.team', string='Team', stored=True)
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
                                      default='none', string='Status')
