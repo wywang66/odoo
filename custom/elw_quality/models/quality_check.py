@@ -5,6 +5,7 @@ class ElwQualityCheck(models.Model):
     _name = 'elw.quality.check'
     _inherit = ['mail.thread',
                 'mail.activity.mixin',
+
                 ]  # add a chatter
     _description = 'elw quality check'
     _order = 'id desc, name desc'
@@ -22,15 +23,16 @@ class ElwQualityCheck(models.Model):
     product_id = fields.Many2one('product.product', string='Product', store=True)
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
-    # lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True, required=True, ondelete='Set NULL')
+    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
+                             required=True, ondelete='Set NULL')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', )
-    team_id = fields.Many2one('elw.quality.team', string='Team', stored=True)
+    team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='Set NULL')
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
                                      default='none', string='Status')
-    test_type = fields.Char(related='point_id.test_type', string="Test Type")
+    test_type = fields.Char(related='point_id.test_type', string="Test Type Name")
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result", string='QA Result')
