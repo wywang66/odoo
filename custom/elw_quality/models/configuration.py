@@ -3,6 +3,9 @@ from odoo import models, fields, api, _
 
 class QualityTeam(models.Model):
     _name = 'elw.quality.team'
+    _inherit = ['mail.thread',
+                'mail.activity.mixin',
+                ]  # add a chatter
     _description = 'ELW Quality Teams'
     _rec_name = 'name'
 
@@ -19,7 +22,15 @@ class QualityTeam(models.Model):
     alert_ids = fields.One2many('elw.quality.alert', 'team_id', copy=False)
     alert_count = fields.Integer("# Quality Alerts", compute="_compute_quality_alert_count")
     check_count = fields.Integer("# Quality Checks", compute="_compute_quality_check_count")
+    alias_contact = fields.Selection(
+        [('everyone', 'Everyone'), ('partners', 'Authenticated Partners'), ('followers', 'Followers'),
+         ('employees', "Authenticated Employees")], default='everyone')
+    alias_name = fields.Char(string="Alias Name",
+                             help="The name of the email alias, e.g. 'jobs' if you want to catch emails for <jobs@example.odoo.com>")
 
+    alias_domain_id = fields.Many2one('mail.alias.domain', string="Alias Domain")
+    alias_id = fields.Many2one('mail.alias', string="Alias")
+    alias_email = fields.Char(string="Email Alias")
     # For the kanban dashboard only
     todo_qa_check_ids = fields.One2many('elw.quality.check', string="QA Requests", copy=False,
                                         compute='_compute_todo_qa_checks')

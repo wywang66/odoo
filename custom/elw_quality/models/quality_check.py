@@ -23,7 +23,7 @@ class ElwQualityCheck(models.Model):
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', store=True, required=True)
-    has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_ids")
+    has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', )
     team_id = fields.Many2one('elw.quality.team', string='Team')
@@ -41,7 +41,7 @@ class ElwQualityCheck(models.Model):
 
     # Check if this product has lot or serial
     @api.depends('product_id')
-    def _compute_has_lot_ids(self):
+    def _compute_has_lot_id(self):
         for rec in self:
             rec.has_lot_id = rec.product_id.tracking != 'none'
             # print("rec.has_lot_id---------", rec.has_lot_id)
