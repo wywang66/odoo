@@ -36,6 +36,14 @@ class ElwQualityCheck(models.Model):
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result", string='QA Result')
+    fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
+                                                compute='_compute_fail_and_not_alert_created', store=True)
+
+    # check if an alert is created on 'fail' record
+    def _compute_fail_and_not_alert_created(self):
+        for rec in self:
+            rec.fail_and_not_alert_created = True if rec.quality_state == 'fail' and not rec.alert_ids else False
+            print("----------", rec.fail_and_not_alert_created)
 
     # for notebook
     additional_note = fields.Text('Note')

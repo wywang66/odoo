@@ -60,7 +60,8 @@ class QualityTeam(models.Model):
         for rec in self:
             todo = 0
             if rec.check_ids.ids:
-                todo = sum(1 for check in rec.check_ids if check.quality_state == 'none')
+                todo = sum(1 for check in rec.check_ids if
+                           check.quality_state == 'none' or check.fail_and_not_alert_created == True)
             rec.check_count = todo
 
     @api.depends('alert_ids')
