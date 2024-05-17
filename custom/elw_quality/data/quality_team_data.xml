@@ -1,0 +1,9 @@
+<odoo>
+    <data noupdate="1">
+        <!--Quality team demo data-->
+         <record model="elw.quality.team" id="team_1">
+            <field name="name">Team1</field>
+        </record>
+
+    </data>
+</odoo>

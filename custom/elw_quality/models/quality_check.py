@@ -5,6 +5,7 @@ class ElwQualityCheck(models.Model):
     _name = 'elw.quality.check'
     _inherit = ['mail.thread',
                 'mail.activity.mixin',
+
                 ]  # add a chatter
     _description = 'elw quality check'
     _order = 'id desc, name desc'
@@ -16,24 +17,33 @@ class ElwQualityCheck(models.Model):
         readonly=True, required=True,
         help='The company is automatically set from your user preferences.')
     active = fields.Boolean(default=True)
-    point_id = fields.Many2one('elw.quality.point', string='Control Point ID')
+    point_id = fields.Many2one('elw.quality.point', string='Control Point ID', ondelete='set null')
 
-    partner_id = fields.Many2one('res.partner', string='Partner')
+    partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Product', store=True)
-    picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
+    picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
-    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', store=True)
-    has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_ids")
-    user_id = fields.Many2one('res.users', string='Checked By', store=True)
-    test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', )
-    team_id = fields.Many2one('elw.quality.team', string='Team')
+    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
+                             ondelete='restrict')
+    has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
+    user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
+    test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL')
+    team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='cascade')
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
                                      default='none', string='Status')
-    test_type = fields.Char(related='point_id.test_type', string="Test Type")
+    test_type = fields.Char(related='point_id.test_type', string="Test Type Name")
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result", string='QA Result')
+    fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
+                                                compute='_compute_fail_and_not_alert_created', store=True)
+
+    # check if an alert is created on 'fail' record
+    def _compute_fail_and_not_alert_created(self):
+        for rec in self:
+            rec.fail_and_not_alert_created = True if rec.quality_state == 'fail' and not rec.alert_ids else False
+            print("----------", rec.fail_and_not_alert_created)
 
     # for notebook
     additional_note = fields.Text('Note')
@@ -41,7 +51,7 @@ class ElwQualityCheck(models.Model):
 
     # Check if this product has lot or serial
     @api.depends('product_id')
-    def _compute_has_lot_ids(self):
+    def _compute_has_lot_id(self):
         for rec in self:
             rec.has_lot_id = rec.product_id.tracking != 'none'
             # print("rec.has_lot_id---------", rec.has_lot_id)

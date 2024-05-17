@@ -217,6 +217,22 @@ class Picking(models.Model):
                 return v
         raise ValidationError(_(f"Key {key} is not found!"))
 
+    def find_team_id(self):
+        team_obj = self.env['elw.quality.team']
+        team_search = team_obj.search([])
+        if len(team_search):
+            return team_search[0].id
+        else:
+            raise ValidationError(_("Sorry, Please Create a Quality Team First at 'Configurations|Quality Teams'! "))
+
+    # def find_lot_id(self):
+    #     lot_obj = self.env['stock.lot']
+    #     lot_search = lot_obj.search([])
+    #     if len(lot_search):
+    #         return lot_search[0].id
+    #     else:
+    #         raise ValidationError(_("Sorry, Please Create a Lot ID First at 'Products|Lot/Serial Numbers'! "))
+
     @api.depends('check_ids', 'qa_check_product_ids')
     def action_create_quality_check(self):
         self.ensure_one()
@@ -229,6 +245,9 @@ class Picking(models.Model):
 
             # create the elw.quality.check records, and assign vals_popup
             for val in results:
+                # print("val =========", val.get('product_id'), val.get('team_id'))#val ========= 31 None
+                team_id = self.find_team_id()
+                val['team_id'] = team_id
                 # print("val =========", val)
                 qa_check_rec = self._create_qa_check_record(val)
                 vals_popup['product_ids'].append(val['product_id'])

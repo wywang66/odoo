@@ -30,7 +30,7 @@ class ElwQualityPoint(models.Model):
     product_category_ids = fields.Many2many('product.category', string="Product Categories")
     picking_type_ids = fields.Many2many('stock.picking.type', string='Operations', store=True, copy=True, required=True)
     active = fields.Boolean(default=True)
-    user_id = fields.Many2one('res.users', string='Responsible')
+    user_id = fields.Many2one('res.users', string='Responsible', ondelete='set null')
     measure_on = fields.Selection([('operation', 'Operation'), ('product', 'Product'), ('move_line', 'Quantity')],
                                   required=True, string='Control per',
                                   help='Product = A quality check is requested per product.',
@@ -47,8 +47,8 @@ class ElwQualityPoint(models.Model):
     measure_frequency_unit_value = fields.Integer(store=True, copy=True)
 
     test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type',
-                                   default=_default_test_type_id)
-    team_id = fields.Many2one('elw.quality.team', string='Team')
+                                   default=_default_test_type_id, ondelete='restrict')
+    team_id = fields.Many2one('elw.quality.team', string='Team', ondelete='restrict')
     test_type = fields.Char(related="test_type_id.technical_name", string='Test Type in str')
 
     # for notebook
