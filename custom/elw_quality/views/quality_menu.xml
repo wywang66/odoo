@@ -81,7 +81,7 @@
         <menuitem name="Products"
                   id="elw_quality_product_menu_sub"
                   parent="elw_quality_menu_top_products"
-                  action="elw_product_normal_action_quality"
+                  action="elw_product_template_action_quality"
                   sequence="30"
         />
 

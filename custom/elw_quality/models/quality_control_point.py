@@ -26,8 +26,9 @@ class ElwQualityPoint(models.Model):
         help='The company is automatically set from your user preferences.')
 
     title = fields.Char("Title")
-    product_ids = fields.Many2many('product.product', string="Products", domain="[('type','in',('product','consu'))]", )
-    product_category_ids = fields.Many2many('product.category', string="Product Categories")
+    product_ids = fields.Many2many('product.product', string="Products", domain="[('type','in',('product','consu'))]",
+                                   store=True)
+    product_category_ids = fields.Many2many('product.category', string="Product Categories", store=True)
     picking_type_ids = fields.Many2many('stock.picking.type', string='Operations', store=True, copy=True, required=True)
     active = fields.Boolean(default=True)
     user_id = fields.Many2one('res.users', string='Responsible', ondelete='set null')

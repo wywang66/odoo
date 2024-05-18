@@ -20,9 +20,12 @@ class QualityAlert(models.Model):
         readonly=True, required=True,
         help='The company is automatically set from your user preferences.')
     active = fields.Boolean(default=True)
-    partner_id = fields.Many2one('res.partner', string='Vendor', ondelete="cascade")
-    product_id = fields.Many2one('product.product', string='Product', store=True)
-    picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
+    partner_id = fields.Many2one('res.partner', string='Vendor', store=True, ondelete="set null")
+    product_id = fields.Many2one('product.product', string='Product Variant', store=True, ondelete="set null",
+                                 domain="['product_tmpl_id','=', product_tmpl_id]")
+    product_tmpl_id = fields.Many2one('product.template', string='Product', related='product_id.product_tmpl_id',
+                                      store=True, ondelete="set null")
+    picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete="set null")
     priority = fields.Selection([
         ('0', 'Normal'),
         ('1', 'Low'),
@@ -37,7 +40,7 @@ class QualityAlert(models.Model):
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='restrict')
 
-    user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='cascade')
+    user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='set null')
     team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True)
     date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
     date_close = fields.Date(string='Date Closed')
