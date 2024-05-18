@@ -20,7 +20,8 @@ class ElwQualityCheck(models.Model):
     point_id = fields.Many2one('elw.quality.point', string='Control Point ID', ondelete='set null')
 
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade')
-    product_id = fields.Many2one('product.product', string='Product', store=True, ondelete='set null')
+    product_id = fields.Many2one('product.product', string='Product', store=True,
+                                 domain="[('type', 'in', ['product', 'consu'])]", ondelete = 'set null')
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
