@@ -21,7 +21,7 @@ class ElwQualityCheck(models.Model):
 
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade')
     product_id = fields.Many2one('product.product', string='Product', store=True,
-                                 domain="[('type', 'in', ['product', 'consu'])]", ondelete = 'set null')
+                                 domain="[('type', 'in', ['product', 'consu'])]", ondelete='set null')
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
@@ -96,9 +96,6 @@ class ElwQualityCheck(models.Model):
         rtn = super(ElwQualityCheck, self).write(vals)
         return rtn
 
-    def action_see_alerts(self):
-        pass
-
     def do_pass(self):
         for rec in self:
             if rec.quality_state == 'none':
@@ -143,14 +140,40 @@ class ElwQualityCheck(models.Model):
         }
 
     def action_see_alerts(self):
-        return {
-            'name': _('Quality Alert'),
-            'res_model': 'elw.quality.alert',
-            # 'res_id': qa_check_rec.id,  # open the corresponding form
-            'domain': [('id', 'in', self.alert_ids.ids)],
-            'type': 'ir.actions.act_window',
-            'view_mode': 'tree,form',
-            # commented the following as it will show tree, and form views
-            # 'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
-            'target': 'current',
-        }
+        return self._get_action_view_see_alert(self.alert_ids)
+        # Below works and return the matching tree view
+        # return {
+        #     'name': _('Quality Alert'),
+        #     'res_model': 'elw.quality.alert',
+        #     # 'res_id': qa_check_rec.id,  # open the corresponding form
+        #     'domain': [('id', 'in', self.alert_ids.ids)],
+        #     'type': 'ir.actions.act_window',
+        #     'view_mode': 'tree,form',
+        #     # commented the following as it will show tree, and form views
+        #     'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+        #     'target': 'current',
+        # }
+
+    def _get_action_view_see_alert(self, alerts):
+        """ This function returns an action that display existing alert of given check_id. it shows the associated alert
+                """
+        self.ensure_one()
+        result = self.env["ir.actions.actions"]._for_xml_id('elw_quality.elw_quality_alert_action_window')
+        # print("result--------", result)
+        # override the context to get rid of the default filtering on operation type
+        result['context'] = {'default_partner_id': self.partner_id.id, 'default_origin': self.name,
+                             'default_check_id': self.id}
+        # print("result--------", result) # 'context': {'default_partner_id': 14, 'default_origin': 'QC00040', 'default_check_id': 37}, 'res_id': 0,
+        # # choose the view_mode accordingly
+        if not alerts or len(alerts) > 1:
+            result['domain'] = [('id', 'in', alerts.ids)]
+        elif len(alerts) == 1:
+            res = self.env.ref('elw_quality.elw_quality_alert_form_view', False)
+            # print("res-------", res) #res------- ir.ui.view(1952,)
+            form_view = [(res and res.id or False, 'form')]
+            # print("form_view-------", form_view)  #form_view------- [(1952, 'form')]
+            result['views'] = form_view + [(state, view) for state, view in result.get('views', []) if view != 'form']
+            result['res_id'] = alerts.id
+            # print("result--------", result)
+        return result
+

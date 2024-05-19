@@ -63,7 +63,7 @@ class QualityAlert(models.Model):
         for rec in self:
             team_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
             # print("team_id_------", team_id_, rec.check_id.id)
-            self.team_id = team_id_.team_id if team_id_ else None
+            rec.team_id = team_id_.team_id if team_id_ else None
 
     # select the same lot_id from quality.check
     @api.depends('check_id')
@@ -71,7 +71,7 @@ class QualityAlert(models.Model):
         for rec in self:
             lot_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
             # print("lot_id_------", lot_id_, rec.check_id.id)
-            self.lot_id = lot_id_.lot_id if lot_id_ else None
+            rec.lot_id = lot_id_.lot_id if lot_id_ else None
 
     # # select the same lot_id from quality.check
     # @api.depends('check_id')
