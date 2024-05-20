@@ -179,14 +179,12 @@
                         <group>
                             <group>
                                 <field name="product_id"/>
-                                <field name="measure_on"/>
+                                <field name="measure_on" readonly="point_id"/>
                                 <field name="control_date"/>
                                 <field name="user_id"/>
                                 <field name="has_lot_id" invisible="1"/>
-                                apply a filter 'product_id' in this m2o field
-                                <field name="lot_id" invisible="not has_lot_id"
-                                />
-                                <field name="alert_ids" invisible="quality_state != 'fail'">
+                                <field name="lot_id" invisible="not has_lot_id" required="has_lot_id"/>
+                                <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">
                                         <field name="name"/>
                                         <field name="stage_id"/>

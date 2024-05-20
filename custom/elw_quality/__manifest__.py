@@ -26,6 +26,7 @@ Long description of module's purpose
     'data': [
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
+        'data/quality_team_data.xml',
         'data/quality_test_type_data.xml',
         'data/quality_reason_data.xml',
         'data/quality_alert_stage_data.xml',
@@ -38,6 +39,9 @@ Long description of module's purpose
         'views/quality_menu.xml',
     ],
     # only loaded in demonstration mode
+    # 'demo': [
+    #     'demo/demo_data.xml',
+    # ],
 
     'license': 'LGPL-3',
 }

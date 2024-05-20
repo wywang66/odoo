@@ -20,9 +20,12 @@ class QualityAlert(models.Model):
         readonly=True, required=True,
         help='The company is automatically set from your user preferences.')
     active = fields.Boolean(default=True)
-    partner_id = fields.Many2one('res.partner', string='Vendor', ondelete="cascade")
-    product_id = fields.Many2one('product.product', string='Product', store=True)
-    picking_id = fields.Many2one('stock.picking', string='Picking', store=True)
+    partner_id = fields.Many2one('res.partner', string='Vendor', store=True, ondelete="set null")
+    product_id = fields.Many2one('product.product', string='Product Variant', store=True, ondelete="set null",
+                                 domain="['&', ('product_tmpl_id', '=', product_tmpl_id), ('type', 'in', ['product', 'consu'])]")
+    product_tmpl_id = fields.Many2one('product.template', string='Product', related='product_id.product_tmpl_id',
+                                      store=True, ondelete="set null")
+    picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete="set null")
     priority = fields.Selection([
         ('0', 'Normal'),
         ('1', 'Low'),
@@ -31,12 +34,13 @@ class QualityAlert(models.Model):
         help="1 star: Low, 2 stars: High, 3 stars: Very High")
     check_id = fields.Many2one('elw.quality.check', string='Check Ref#',
                                store=True)  # check_id is name of quality.check
-    point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID')
+    point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID',
+                               ondelete='set null')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', compute='_get_lot_id', store=True)
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='restrict')
 
-    user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='cascade')
+    user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='set null')
     team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True)
     date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
     date_close = fields.Date(string='Date Closed')
@@ -59,7 +63,7 @@ class QualityAlert(models.Model):
         for rec in self:
             team_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
             # print("team_id_------", team_id_, rec.check_id.id)
-            self.team_id = team_id_.team_id if team_id_ else None
+            rec.team_id = team_id_.team_id if team_id_ else None
 
     # select the same lot_id from quality.check
     @api.depends('check_id')
@@ -67,7 +71,7 @@ class QualityAlert(models.Model):
         for rec in self:
             lot_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
             # print("lot_id_------", lot_id_, rec.check_id.id)
-            self.lot_id = lot_id_.lot_id if lot_id_ else None
+            rec.lot_id = lot_id_.lot_id if lot_id_ else None
 
     # # select the same lot_id from quality.check
     # @api.depends('check_id')
