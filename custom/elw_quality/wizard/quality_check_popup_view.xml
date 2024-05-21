@@ -23,11 +23,8 @@
                                 <!--                                <field name="quality_alert_ids" widget="many2many_tags"-->
                                 <!--                                       invisible="not quality_alert_ids"/>-->
                                 <!--                                <field name="quality_alert_open_count" invisible="1"/>-->
-                                <field name="is_all_quality_fails_resolved" invisible="quality_state not in ('fail')"/>
-                                <field name="info_fail" style="color:Red; font-weight:bold;width:500px;"
-                                       invisible="quality_state !='fail'"/>
-                                <field name="info" style="color:Blue; font-weight:bold; width:500px;"
-                                       invisible="quality_state !='none'"/>
+<!--                                <field name="is_all_quality_fails_resolved" invisible="quality_state not in ('fail')"/>-->
+                                <field name="info" style="color:Red; font-weight:bold; width:500px;" />
                             </group>
                         </group>
                     </sheet>

@@ -93,8 +93,8 @@
                                            default='days'/>
                                 </div>
                                 <field name="test_type" invisible="1"/>
-                                <field string="Type" name="test_type_id"/>
-                                <field name="team_id"/>
+                                <field string="Type" name="test_type_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field name="team_id" options="{'no_open': True, 'no_create': True}"/>
                             </group>
                         </group>
                         <notebook>

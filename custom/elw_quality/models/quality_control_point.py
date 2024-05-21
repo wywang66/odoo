@@ -38,7 +38,7 @@ class ElwQualityPoint(models.Model):
                                   #  Operation = One quality check is requested at the operation level.
                                   # ' Quantity = A quality check is requested for each new product quantity registered,'
                                   # 'with partial quantity checks also possible.'
-                                  default='product',
+                                  default='operation',
                                   )
     measure_frequency_type = fields.Selection([('all', 'All'), ('random', 'Randomly'), ('periodical', 'Periodically')],
                                               required=True, string='Control Frequency Type', default='all')

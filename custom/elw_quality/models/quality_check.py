@@ -36,7 +36,7 @@ class ElwQualityCheck(models.Model):
     test_type = fields.Char(related='point_id.test_type', string="Test Type Name")
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
-    alert_result = fields.Char(compute="_compute_alert_result", string='QA Result')
+    alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result')
     fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
                                                 compute='_compute_fail_and_not_alert_created', store=True)
 
@@ -142,15 +142,15 @@ class ElwQualityCheck(models.Model):
     def action_see_alerts(self):
         return self._get_action_view_see_alert(self.alert_ids)
         # Below works and return the matching tree view
+        # print("self.alert_ids.id", self.alert_ids.id) #self.alert_ids.id 15
         # return {
         #     'name': _('Quality Alert'),
         #     'res_model': 'elw.quality.alert',
-        #     # 'res_id': qa_check_rec.id,  # open the corresponding form
-        #     'domain': [('id', 'in', self.alert_ids.ids)],
+        #     'res_id': self.alert_ids.id,  # open the corresponding form
+        #     # 'domain': [('id', '=', self.alert_ids.ids)],
         #     'type': 'ir.actions.act_window',
-        #     'view_mode': 'tree,form',
-        #     # commented the following as it will show tree, and form views
-        #     'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+        #     'view_mode': 'form',
+        #     # 'view_mode': 'tree,form',
         #     'target': 'current',
         # }
 

@@ -41,7 +41,7 @@ class QualityAlert(models.Model):
                                ondelete='restrict')
 
     user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='set null')
-    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True)
+    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True, readonly=False)
     date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
     date_close = fields.Date(string='Date Closed')
     tag_ids = fields.Many2many('elw.quality.tag', string='Tags', ondelete='restrict')
@@ -53,7 +53,7 @@ class QualityAlert(models.Model):
     # for notebook
     # additional_note = fields.Text('Note')
     # note = fields.Html('Instructions')
-    description = fields.Text('Description')
+    description = fields.Html('Description')
     action_preventive = fields.Html('Preventive Action', store=True, copy=True)
     action_corrective = fields.Html('Corrective Action', store=True, copy=True)
 
