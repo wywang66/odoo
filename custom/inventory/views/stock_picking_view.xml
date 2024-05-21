@@ -79,11 +79,6 @@
                             invisible="not quality_check_fail or quality_alert_ids" string="Create Alert"
                             data-hotkey="g"/>
                 </xpath>
-                <xpath expr="//button[@name='button_validate']" position="after">
-                    <!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight"-->
-                    <!--                            invisible="not qa_check_product_ids or state in ('done','cancel')"/>-->
-                    <!--                    <button name="button_eval" string="Btn eval" type="object" class="oe_highlight" />-->
-                </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>
                 </xpath>
