@@ -56,7 +56,12 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <div class="oe_button_box" name="button_box"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_see_quality_checks" icon="fa-check" type="object"
+                                    class="oe_stat_button">
+                                <field name="quality_check_count" string="Quality Checks" widget="statinfo"/>
+                            </button>
+                        </div>
                         <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                         <h3>
                             <field name="name" readonly="1"/>
@@ -93,7 +98,8 @@
                                            default='days'/>
                                 </div>
                                 <field name="test_type" invisible="1"/>
-                                <field string="Type" name="test_type_id" options="{'no_open': True, 'no_create': True}"/>
+                                <field string="Type" name="test_type_id"
+                                       options="{'no_open': True, 'no_create': True}"/>
                                 <field name="team_id" options="{'no_open': True, 'no_create': True}"/>
                             </group>
                         </group>
@@ -103,6 +109,18 @@
                             </page>
                             <page string="Message If Failure">
                                 <field name="note"/>
+                            </page>
+                            <page string="Measure Data" >
+                                <field name="measure_data_ids">
+                                    <tree delete="0" create="0">
+                                        <field name="name"/>
+                                        <field name="target_value"/>
+                                        <field name="target_value_unit"/>
+                                        <field name="tolerance_max"/>
+                                        <field name="tolerance_min"/>
+<!--                                        <field name="within_tolerance" />-->
+                                    </tree>
+                                </field>
                             </page>
                             <page string="Notes">
                                 <field name="note"

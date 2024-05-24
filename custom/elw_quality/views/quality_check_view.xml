@@ -204,6 +204,9 @@
                                 <field name="partner_id" invisible="not partner_id"/>
                             </group>
                         </group>
+                        <group invisible="test_type != 'picture'">
+                            <field name="picture" widget="image"/>
+                        </group>
                         <notebook>
                             <page string="Notes" name="notes">
                                 <group>

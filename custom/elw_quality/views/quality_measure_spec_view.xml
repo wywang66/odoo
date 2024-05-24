@@ -1,0 +1,24 @@
+<odoo>
+    <!-- elw.quality.reason-->
+    <record model="ir.ui.view" id="elw_quality_measure_spec_tree_view">
+        <field name="name">elw.quality.measure.spec.tree.view</field>
+        <field name="model">elw.quality.measure.spec</field>
+        <field name="arch" type="xml">
+            <tree string="Quality Measure Spec" editable="bottom">
+                <field name="name"/>
+                <field name="target_value"/>
+                <field name="target_value_unit"/>
+                <field name="tolerance_max"/>
+                <field name="tolerance_min"/>
+                <field name="within_tolerance" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="elw_quality_measure_spec_action_window">
+        <field name="name">Quality Measure Specifications</field>
+        <field name="res_model">elw.quality.measure.spec</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

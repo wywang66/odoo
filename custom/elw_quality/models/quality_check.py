@@ -19,11 +19,15 @@ class ElwQualityCheck(models.Model):
     active = fields.Boolean(default=True)
     point_id = fields.Many2one('elw.quality.point', string='Control Point ID', ondelete='set null')
 
-    partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade')
+    partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', store=True,
                                  domain="[('type', 'in', ['product', 'consu'])]", ondelete='set null')
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
-    measure_on = fields.Selection(related='point_id.measure_on', string='Control per')
+    measure_on = fields.Selection(related='point_id.measure_on', string='Control per', required=True, store=True,
+                                  help='Product = A quality check is requested per product.'
+                                       ' Operation = One quality check is requested at the operation level.'
+                                       ' Quantity = A quality check is requested for each new product quantity registered,'
+                                       'with partial quantity checks also possible.', )
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
                              ondelete='restrict')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
@@ -40,15 +44,17 @@ class ElwQualityCheck(models.Model):
     fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
                                                 compute='_compute_fail_and_not_alert_created', store=True)
 
-    # check if an alert is created on 'fail' record
-    def _compute_fail_and_not_alert_created(self):
-        for rec in self:
-            rec.fail_and_not_alert_created = True if rec.quality_state == 'fail' and not rec.alert_ids else False
-            print("----------", rec.fail_and_not_alert_created)
-
+    picture = fields.Binary(string="Picture", store=True)
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
+
+    # check if an alert is created on 'fail' record
+    @api.depends('alert_ids', 'quality_state')
+    def _compute_fail_and_not_alert_created(self):
+        for rec in self:
+            rec.fail_and_not_alert_created = True if rec.quality_state == 'fail' and not rec.alert_ids else False
+            # print("----------", rec.fail_and_not_alert_created)
 
     # Check if this product has lot or serial
     @api.depends('product_id')
@@ -62,7 +68,7 @@ class ElwQualityCheck(models.Model):
             # print("rec.........", rec, rec.id, rec.name)
             rec.alert_count = self.env['elw.quality.alert'].search_count([('check_id', '=', rec.name)])
 
-    @api.depends('alert_ids')
+    @api.depends('alert_ids', 'quality_state')
     def _compute_alert_result(self):
         for rec in self:
             if rec.quality_state == 'fail':
@@ -96,11 +102,13 @@ class ElwQualityCheck(models.Model):
         rtn = super(ElwQualityCheck, self).write(vals)
         return rtn
 
+    @api.depends('quality_state')
     def do_pass(self):
         for rec in self:
             if rec.quality_state == 'none':
                 rec.quality_state = 'pass'
 
+    @api.depends('quality_state')
     def do_fail(self):
         for rec in self:
             if rec.quality_state == 'none':
@@ -109,10 +117,11 @@ class ElwQualityCheck(models.Model):
     def do_measure(self):
         pass
 
+    @api.model
     def _create_qa_alert_record(self, vals):
         self.ensure_one()
         qa_alert_rec = self.env['elw.quality.alert'].create(vals)
-        print("created qa_alert_rec--------", qa_alert_rec, qa_alert_rec.id, qa_alert_rec.name)
+        # print("created qa_alert_rec--------", qa_alert_rec, qa_alert_rec.id, qa_alert_rec.name)
         return qa_alert_rec
 
     def do_alert(self):
@@ -176,4 +185,3 @@ class ElwQualityCheck(models.Model):
             result['res_id'] = alerts.id
             # print("result--------", result)
         return result
-

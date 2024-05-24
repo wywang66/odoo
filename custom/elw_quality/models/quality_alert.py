@@ -105,11 +105,13 @@ class QualityAlert(models.Model):
     def action_see_alerts(self):
         pass
 
+    @api.depends('quality_state')
     def do_pass(self):
         for rec in self:
             if rec.quality_state == 'none':
                 rec.quality_state = 'pass'
 
+    @api.depends('quality_state')
     def do_fail(self):
         for rec in self:
             if rec.quality_state == 'none':
