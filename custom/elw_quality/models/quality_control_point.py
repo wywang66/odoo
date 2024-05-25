@@ -52,13 +52,12 @@ class ElwQualityPoint(models.Model):
                                    default=_default_test_type_id, ondelete='restrict', store=True,
                                    help="Defines the type of the quality control point.")
     team_id = fields.Many2one('elw.quality.team', string='Team', ondelete='restrict')
-    test_type = fields.Char(related="test_type_id.technical_name", string='Test Type in str')
     quality_check_count = fields.Integer(string="Check Count", compute="_compute_quality_check_count")
     check_ids = fields.One2many('elw.quality.check', 'point_id', string="Check IDS")
     # for notebook
     note = fields.Html('Note')
     #  measure data
-    measure_data_ids = fields.One2many('elw.quality.measure.spec','point_id')
+    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
 
     @api.depends('check_ids')
     def _compute_quality_check_count(self):
@@ -68,7 +67,7 @@ class ElwQualityPoint(models.Model):
             else:
                 rec.quality_check_count = 0
             # print("rec.quality_check_count", rec.quality_check_count)
-        print("-----", self.test_type_id.id, self.test_type_id.name)
+
 
     @api.depends('product_category_ids')
     def _get_product_from_category(self):

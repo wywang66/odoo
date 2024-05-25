@@ -77,6 +77,7 @@
                                 <field name="picking_type_ids" widget="many2many_tags"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="user_id"/>
+                                <field name="user_id"/>
                             </group>
                             <group>
                                 <field name="measure_on"/>
@@ -97,7 +98,6 @@
                                     <field name="measure_frequency_unit" nolable="1" class="oe_inline"
                                            default='days'/>
                                 </div>
-                                <field name="test_type" invisible="1"/>
                                 <field string="Type" name="test_type_id"
                                        options="{'no_open': True, 'no_create': True}"/>
                                 <field name="team_id" options="{'no_open': True, 'no_create': True}"/>
@@ -110,15 +110,17 @@
                             <page string="Message If Failure">
                                 <field name="note"/>
                             </page>
-                            <page string="Measure Data" >
+                            <page string="Measurement Setting" invisible="test_type_id !=5">
                                 <field name="measure_data_ids">
-                                    <tree delete="0" create="0">
+                                    <tree string="Measure Settings " editable="top">
                                         <field name="name"/>
+                                        <field name="measure_name"/>
                                         <field name="target_value"/>
                                         <field name="target_value_unit"/>
-                                        <field name="tolerance_max"/>
-                                        <field name="tolerance_min"/>
-<!--                                        <field name="within_tolerance" />-->
+                                        <field name="upper_limit"/>
+                                        <field name="lower_limit"/>
+                                        <field name="within_tolerance" optional="hide"/>
+                                        <field name="point_id" optional="hide"/>
                                     </tree>
                                 </field>
                             </page>

@@ -27,7 +27,7 @@ class ElwQualityCheck(models.Model):
                                   help='Product = A quality check is requested per product.'
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
-                                       'with partial quantity checks also possible.', default="operation")
+                                      'with partial quantity checks also possible.', default='operation')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
                              ondelete='restrict')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
@@ -37,7 +37,6 @@ class ElwQualityCheck(models.Model):
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
                                      default='none', string='Status')
-    test_type = fields.Char(related='point_id.test_type', string="Test Type Name")
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result')
@@ -48,6 +47,38 @@ class ElwQualityCheck(models.Model):
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
+    # use related to get measurement settings defined in quality.point, readonly=false so this field is editable
+    # commented domain as it report "test_type_id" error
+    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
+                                       readonly=False,
+                                       # domain=[('test_type_id', '=', 'self.test_type_id')],
+                                       compute="_compute_measured_data")
+    measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
+
+    def _compute_measured_data(self):
+        for rec in self:
+            if rec.test_type_id.id == 5:
+                data = self.env['elw.quality.point'].browse(rec.point_id.id)
+                measure_ids = []
+                # print(data, data.measure_data_ids) #elw.quality.point(4,) elw.quality.measure.spec(7, 6)
+                for one_measure_setting in data.measure_data_ids:
+                    # print(one_measure_setting.id, one_measure_setting.name, one_measure_setting.measure_name,
+                    #       one_measure_setting.upper_limit,
+                    #       one_measure_setting.lower_limit)
+                    measure_ids.append(one_measure_setting.id)
+
+                rec.measure_data_ids = self.env['elw.quality.measure.spec'].browse(measure_ids)
+            else:
+                rec.measure_data_ids = None
+
+    @api.depends('measure_data_ids')
+    def _compute_measure_data_count(self):
+        for rec in self:
+            num_data = 0
+            if rec.measure_data_ids:
+                num_data = sum(1 for data in rec.measure_data_ids if
+                               data.measure_name != '' and data.target_value_unit != '')
+            rec.measure_data_count = num_data
 
     # check if an alert is created on 'fail' record
     @api.depends('alert_ids', 'quality_state')

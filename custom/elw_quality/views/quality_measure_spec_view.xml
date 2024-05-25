@@ -7,10 +7,12 @@
             <tree string="Quality Measure Spec" editable="bottom">
                 <field name="name"/>
                 <field name="target_value"/>
+                <field name="measured_value"/>
                 <field name="target_value_unit"/>
-                <field name="tolerance_max"/>
-                <field name="tolerance_min"/>
+                <field name="upper_limit"/>
+                <field name="lower_limit"/>
                 <field name="within_tolerance" optional="hide"/>
+                <field name="point_id" optional="hide"/>
             </tree>
         </field>
     </record>
