@@ -27,7 +27,7 @@ class ElwQualityCheck(models.Model):
                                   help='Product = A quality check is requested per product.'
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
-                                       'with partial quantity checks also possible.', )
+                                       'with partial quantity checks also possible.', default="operation")
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
                              ondelete='restrict')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
