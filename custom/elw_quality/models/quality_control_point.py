@@ -49,7 +49,7 @@ class ElwQualityPoint(models.Model):
     measure_frequency_unit_value = fields.Integer(store=True, copy=True)
 
     test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type',
-                                   default=_default_test_type_id, ondelete='restrict', store=True,
+                                   default=_default_test_type_id, ondelete='restrict', store=True, tracking=True,
                                    help="Defines the type of the quality control point.")
     team_id = fields.Many2one('elw.quality.team', string='Team', ondelete='restrict')
     quality_check_count = fields.Integer(string="Check Count", compute="_compute_quality_check_count")

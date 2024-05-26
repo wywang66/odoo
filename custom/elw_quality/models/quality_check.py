@@ -51,6 +51,7 @@ class ElwQualityCheck(models.Model):
     # commented domain as it report "test_type_id" error
     measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
                                        readonly=False,
+                                       # related='point_id.measure_data_ids')
                                        # domain=[('test_type_id', '=', 'self.test_type_id')],
                                        compute="_compute_measured_data")
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
@@ -70,6 +71,8 @@ class ElwQualityCheck(models.Model):
                 rec.measure_data_ids = self.env['elw.quality.measure.spec'].browse(measure_ids)
             else:
                 rec.measure_data_ids = None
+
+
 
     @api.depends('measure_data_ids')
     def _compute_measure_data_count(self):
@@ -166,7 +169,7 @@ class ElwQualityCheck(models.Model):
             'team_id': self.team_id.id,
             'user_id': self.user_id.id,
         }
-        print("vals in quality.check---------", vals)
+        # print("vals in quality.check---------", vals)
         qa_alert_rec = self._create_qa_alert_record(vals)
 
         return {
