@@ -1,5 +1,26 @@
 <odoo>
     <data>
+        <record model="ir.ui.view" id="elw_quality_point_search_view">
+            <field name="name">elw.quality.point.search.view</field>
+            <field name="model">elw.quality.point</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Control Point"
+                           filter_domain="[                     '|', '|', ('name', 'ilike', self), ('title', 'ilike', self), ('product_ids', 'ilike', self)]"/>
+                    <field name="product_ids"/>
+                    <field name="picking_type_ids"/>
+                    <field name="test_type_id"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Test Type" name="groupby_test_type" context="{'group_by': 'test_type_id'}"/>
+                        <filter string="Control per" name="groupby_measure_on" context="{'group_by': 'measure_on'}"/>
+                        <filter string="Team" name="groupby_team_id" context="{'group_by': 'team_id'}"/>
+                        <filter string="Responsible" name="groupby_user_id" context="{'group_by': 'user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="elw_quality_point_tree_view">
             <field name="name">elw.quality.point.tree.view</field>
             <field name="model">elw.quality.point</field>
@@ -7,7 +28,7 @@
                 <tree>
                     <field name="name"/>
                     <field name="title"/>
-                    <field name="product_ids" widget="many2many_tags" optional="show"/>
+                    <field name="product_ids" widget="many2many_tags" optional="show" />
                     <field name="product_category_ids" widget="many2many_tags" optional="hide"/>
                     <field name="picking_type_ids" widget="many2many_tags" optional="show"/>
                     <field name="measure_on" optional="show"/>
@@ -77,7 +98,6 @@
                                 <field name="picking_type_ids" widget="many2many_tags"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="user_id"/>
-                                <field name="user_id"/>
                             </group>
                             <group>
                                 <field name="measure_on"/>
@@ -111,7 +131,7 @@
                                 <field name="note"/>
                             </page>
                             <page string="Measurement Setting" invisible="test_type_id !=5">
-                                <field name="measure_data_ids">
+                                <field name="measure_data_ids" required="test_type_id ==5">
                                     <tree string="Measure Settings " editable="top">
                                         <field name="name"/>
                                         <field name="measure_name"/>

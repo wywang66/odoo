@@ -27,7 +27,7 @@ class ElwQualityPoint(models.Model):
 
     title = fields.Char("Title")
     product_ids = fields.Many2many('product.product', string="Products", domain="[('type','in',('product','consu'))]",
-                                   store=True, compute="_get_product_from_category", readonly=False,
+                                   store=True, required=True, compute="_get_product_from_category", readonly=False,
                                    help="Quality Point will apply to every selected Products.")
     product_category_ids = fields.Many2many('product.category', string="Product Categories", store=True,
                                             help="Quality Point will apply to every Products in the selected Product Categories.")
@@ -67,7 +67,6 @@ class ElwQualityPoint(models.Model):
             else:
                 rec.quality_check_count = 0
             # print("rec.quality_check_count", rec.quality_check_count)
-
 
     @api.depends('product_category_ids')
     def _get_product_from_category(self):
