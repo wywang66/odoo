@@ -178,6 +178,7 @@
                         </h3>
                         <group>
                             <group>
+                                <field name="title"/>
                                 <field name="product_id"/>
                                 <field name="measure_on" readonly="point_id"/>
                                 <field name="control_date"/>
@@ -192,13 +193,13 @@
                                 </field>
                                 <!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
                                 <!--                                <field name="fail_and_not_alert_created"/>-->
-                                <field name="measure_data_count"/>
+<!--                                <field name="measure_data_count"/>-->
                             </group>
                             <group>
                                 <field name="picking_id"/>
-                                <field name="point_id"/>
+                                <field name="point_id" options="{'no_create': True}"/>
                                 <field name="test_type_id"/>
-                                <field name="team_id"/>
+                                <field name="team_id" options="{'no_create': True}"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="user_id" string="Control Person" invisible="1"/>
                                 <field name="partner_id" invisible="not partner_id"/>
