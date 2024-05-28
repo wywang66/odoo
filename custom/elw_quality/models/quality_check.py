@@ -142,15 +142,15 @@ class ElwQualityCheck(models.Model):
     def action_see_alerts(self):
         return self._get_action_view_see_alert(self.alert_ids)
         # Below works and return the matching tree view
+        # print("self.alert_ids.id", self.alert_ids.id) #self.alert_ids.id 15
         # return {
         #     'name': _('Quality Alert'),
         #     'res_model': 'elw.quality.alert',
-        #     # 'res_id': qa_check_rec.id,  # open the corresponding form
-        #     'domain': [('id', 'in', self.alert_ids.ids)],
+        #     'res_id': self.alert_ids.id,  # open the corresponding form
+        #     # 'domain': [('id', '=', self.alert_ids.ids)],
         #     'type': 'ir.actions.act_window',
-        #     'view_mode': 'tree,form',
-        #     # commented the following as it will show tree, and form views
-        #     'view_id': self.env.ref('elw_quality.elw_quality_alert_form_view').id,
+        #     'view_mode': 'form',
+        #     # 'view_mode': 'tree,form',
         #     'target': 'current',
         # }
 

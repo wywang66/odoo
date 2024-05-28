@@ -108,7 +108,11 @@
                     <field name="team_id" optional="show"/>
                     <field name="user_id" optional="show" widget="many2one_avatar_user"/>
                     <field name="check_id" optional="show"/>
-                    <field name="stage_id" optional="show"/>
+                    <field name="stage_id" optional="show" widget="badge"
+                           decoration-success="stage_id == 4"
+                           decoration-info="stage_id == 3"
+                           decoration-warning="stage_id == 2"
+                           decoration-danger="stage_id ==1 "/>
                     <field name="tag_ids" optional="hide" widget="many2many_tags"/>
                     <field name="reason_id" optional="hide"/>
                     <field name="priority" optional="hide"/>
@@ -153,7 +157,7 @@
                                 <field name="product_tmpl_id"/>
                                 <!--         group_product_variant is a bool  -->
                                 <field name="product_id" groups="product.group_product_variant"/>
-                                <field name="lot_id" context="{'default_product_id': product_id}" groups="stock.group_production_lot"/>
+                                <field name="lot_id" context="{'default_product_id': product_id}" groups="stock.group_production_lot" invisible="not lot_id"/>
                                 <field name="picking_id"/>
                                 <field name="check_id"/>
                                 <field name="point_id"/>
