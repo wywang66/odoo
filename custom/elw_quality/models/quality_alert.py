@@ -38,10 +38,10 @@ class QualityAlert(models.Model):
                                ondelete='set null')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', compute='_get_lot_id', store=True)
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
-                               ondelete='restrict')
+                               ondelete='set null')
 
     user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='set null')
-    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True)
+    team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True, readonly=False)
     date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
     date_close = fields.Date(string='Date Closed')
     tag_ids = fields.Many2many('elw.quality.tag', string='Tags', ondelete='restrict')
@@ -53,7 +53,7 @@ class QualityAlert(models.Model):
     # for notebook
     # additional_note = fields.Text('Note')
     # note = fields.Html('Instructions')
-    description = fields.Text('Description')
+    description = fields.Html('Description')
     action_preventive = fields.Html('Preventive Action', store=True, copy=True)
     action_corrective = fields.Html('Corrective Action', store=True, copy=True)
 
@@ -105,11 +105,13 @@ class QualityAlert(models.Model):
     def action_see_alerts(self):
         pass
 
+    @api.depends('quality_state')
     def do_pass(self):
         for rec in self:
             if rec.quality_state == 'none':
                 rec.quality_state = 'pass'
 
+    @api.depends('quality_state')
     def do_fail(self):
         for rec in self:
             if rec.quality_state == 'none':
