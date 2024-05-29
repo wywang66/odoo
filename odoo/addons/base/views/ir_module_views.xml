@@ -181,6 +181,7 @@
                           <h4 class="o_kanban_record_title">
                             <field name="shortdesc"/>&amp;nbsp;
                           </h4>
+<!--                            <span>Category ID: <field name="category_id"/> </span>-->
                           <p class="oe_module_name">
                             <field groups="!base.group_no_one" name="summary"/>
                             <code groups="base.group_no_one"><field name="name"/></code>
