@@ -1,0 +1,33 @@
+<odoo>
+    <data>
+
+        <!-- display installed and uninstalled modules -->
+        <record id="base_view_view_search_inherit" model="ir.ui.view">
+            <field name="name">base.view.view.search.inherit</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.view_module_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='app']" position="attributes">
+                    <attribute name="domain">[('application', '=', True), ('state', 'in', ['installed',
+                        'to upgrade', 'to remove', 'uninstalled', 'to install'])]
+                    </attribute>
+                </xpath>
+            </field>
+        </record>
+
+<!--&lt;!&ndash;Below does not work   ERROR AssertionError: Element odoo has extra content: data, line 2     &ndash;&gt;-->
+<!--        <record id="base_open_module_tree_inherit" model="ir.actions.act_window">-->
+<!--            <field name="name">base.open.module.tree.inherit</field>-->
+<!--            <field name="model">ir.module.module</field>-->
+<!--            <field name="inherit_id" ref="base.open_module_tree"/>-->
+<!--&lt;!&ndash;            <field name="arch" type="xml">&ndash;&gt;-->
+<!--&lt;!&ndash;                <field name="context">{'search_default_app':1}</field>&ndash;&gt;-->
+<!--                <xpath expr="//field[@name='context']" position="attributes">-->
+<!--                    <attribute name="context">{'search_default_app':1, 'search_default_installed':1}-->
+<!--                    </attribute>-->
+<!--                </xpath>-->
+<!--&lt;!&ndash;            </field>&ndash;&gt;-->
+<!--        </record>-->
+
+    </data>
+</odoo>
