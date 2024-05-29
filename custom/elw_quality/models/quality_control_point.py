@@ -99,6 +99,12 @@ class ElwQualityPoint(models.Model):
         # print("write return ............", rtn)
         return rtn
 
+    def unlink(self):
+        for rec in self:
+            if rec.quality_check_count:
+                raise ValidationError(_("Can delete the record that links to Quality Check"))
+        return super(ElwQualityPoint, self).unlink()
+
     def action_see_quality_checks(self):
         return {
             'name': _('Quality Check'),

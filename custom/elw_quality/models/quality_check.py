@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class ElwQualityCheck(models.Model):
@@ -100,6 +101,12 @@ class ElwQualityCheck(models.Model):
                 'elw.quality.check.sequence')
         rtn = super(ElwQualityCheck, self).write(vals)
         return rtn
+
+    def unlink(self):
+        for rec in self:
+            if rec.quality_state != 'none' or rec.picking_id:
+                raise ValidationError(_("Can delete the record that is not in 'To Do' or has Deliveries/Receipts order"))
+        return super(ElwQualityCheck, self).unlink()
 
     @api.depends('quality_state')
     def do_pass(self):

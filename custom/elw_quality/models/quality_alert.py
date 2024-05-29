@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class QualityAlert(models.Model):
@@ -101,6 +102,12 @@ class QualityAlert(models.Model):
                 'elw.quality.alert.sequence')
         rtn = super(QualityAlert, self).write(vals)
         return rtn
+
+    def unlink(self):
+        for rec in self:
+            if rec.check_id or rec.picking_id:
+                raise ValidationError(_("Can delete the record that links to Quality Check or Deliveries/Receipts"))
+        return super(QualityAlert, self).unlink()
 
     def action_see_alerts(self):
         pass
