@@ -200,8 +200,7 @@ class Picking(models.Model):
         #       qa_check_popup_wizard_rec.name)
         return qa_check_popup_wizard_rec
 
-    @api.depends('qa_check_product_ids', 'check_ids', 'partner_id', 'quality_state', 'quality_alert_ids',
-                 'quality_alert_open_count', 'quality_check_ids')
+    @api.depends('qa_check_product_ids', 'check_ids', 'partner_id', 'quality_state')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
         vals_popup = {'product_ids': self.qa_check_product_ids,
@@ -214,6 +213,7 @@ class Picking(models.Model):
                       }
         return vals_popup
 
+    @api.model
     def find_team_id(self):
         team_obj = self.env['elw.quality.team']
         team_search = team_obj.search([])
@@ -276,13 +276,13 @@ class Picking(models.Model):
             }
 
     # display the created quality.check record
-    @api.depends('check_ids', 'qa_check_product_ids')
+    @api.depends('check_ids')
     def action_quality_check(self):
         self.ensure_one()
         if self.check_ids:
             vals_popup = self._fill_in_vals_popup_after_popup()
 
-            print("action_quality_check vals_popup ", vals_popup)
+            # print("action_quality_check vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
 
             show_name = 'Status of Quality Check on Delivery: ' + self.name
@@ -298,11 +298,7 @@ class Picking(models.Model):
         else:
             raise ValidationError(_("Sorry, Please Click 'Quality Check' First! "))
 
-    def button_eval(self):
-        print("eval btn ------")
-
-    @api.depends('check_ids', 'quality_state', 'qa_check_product_ids', 'quality_alert_open_count', 'quality_alert_ids',
-                 'quality_check_fail')
+    @api.depends('check_ids', 'quality_state', 'qa_check_product_ids', 'is_all_quality_fails_resolved')
     def button_validate(self):
         self.ensure_one()
         # print("trigger here-----self.quality_alert_open_count----", self.quality_alert_open_count)
@@ -350,6 +346,7 @@ class Picking(models.Model):
                 'target': 'new',
             }
 
+    @api.depends('quality_check_ids.ids')
     def action_open_quality_check_picking(self):
         return {
             'name': _('Quality Check'),
@@ -361,6 +358,7 @@ class Picking(models.Model):
             'target': 'current',
         }
 
+    @api.depends('quality_alert_ids.ids')
     def open_quality_alert_picking(self):
         return {
             'name': _('Quality Alerts'),

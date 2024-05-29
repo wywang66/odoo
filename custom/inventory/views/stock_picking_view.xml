@@ -75,9 +75,9 @@
 <!--                    <button name="action_quality_check"-->
 <!--                            invisible="not check_ids or state in ('done','cancel') or quality_state in ('fail','pass')"-->
 <!--                            string="Quality Check" type="object" class="oe_highlight"/>-->
-                    <button name="do_alert" type="object" class="btn-primary"
-                            invisible="not quality_check_fail or quality_alert_ids" string="Create Alert"
-                            data-hotkey="g"/>
+<!--                    <button name="do_alert" type="object" class="btn-primary"-->
+<!--                            invisible="not quality_check_fail or quality_alert_ids" string="Create Alert"-->
+<!--                            data-hotkey="g"/>-->
                 </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>
