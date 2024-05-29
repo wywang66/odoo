@@ -1,5 +1,26 @@
 <odoo>
     <data>
+        <record model="ir.ui.view" id="elw_quality_point_search_view">
+            <field name="name">elw.quality.point.search.view</field>
+            <field name="model">elw.quality.point</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Control Point"
+                           filter_domain="[                     '|', '|', ('name', 'ilike', self), ('title', 'ilike', self), ('product_ids', 'ilike', self)]"/>
+                    <field name="product_ids"/>
+                    <field name="picking_type_ids"/>
+                    <field name="test_type_id"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="Test Type" name="groupby_test_type" context="{'group_by': 'test_type_id'}"/>
+                        <filter string="Control per" name="groupby_measure_on" context="{'group_by': 'measure_on'}"/>
+                        <filter string="Team" name="groupby_team_id" context="{'group_by': 'team_id'}"/>
+                        <filter string="Responsible" name="groupby_user_id" context="{'group_by': 'user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="elw_quality_point_tree_view">
             <field name="name">elw.quality.point.tree.view</field>
             <field name="model">elw.quality.point</field>
@@ -56,7 +77,12 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <div class="oe_button_box" name="button_box"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_see_quality_checks" icon="fa-check" type="object"
+                                    class="oe_stat_button">
+                                <field name="quality_check_count" string="Quality Checks" widget="statinfo"/>
+                            </button>
+                        </div>
                         <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                         <h3>
                             <field name="name" readonly="1"/>
@@ -92,9 +118,9 @@
                                     <field name="measure_frequency_unit" nolable="1" class="oe_inline"
                                            default='days'/>
                                 </div>
-                                <field name="test_type" invisible="1"/>
-                                <field string="Type" name="test_type_id"/>
-                                <field name="team_id"/>
+                                <field string="Type" name="test_type_id"
+                                       options="{'no_open': True, 'no_create': True}"/>
+                                <field name="team_id" options="{'no_open': True, 'no_create': True}"/>
                             </group>
                         </group>
                         <notebook>

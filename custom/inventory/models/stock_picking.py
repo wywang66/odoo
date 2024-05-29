@@ -176,6 +176,9 @@ class Picking(models.Model):
         vals = self._compute_qa_check_product_ids()
         results = []
         # print("vals-------", vals)#vals------- {'picking_id': 24, 'quality_state': 'none', 'partner_id': 47, 'product_id': [5, 31], 'point_id': [2, 1]}
+        if vals is None:
+            raise ValidationError(_("Sorry, No Quality Control Point found for this product! Please create it first! "))
+
         for i in range(max(len(vals['product_id']), len(vals['point_id']))):
             new_val = {}
             for key, value in vals.items():
@@ -200,8 +203,7 @@ class Picking(models.Model):
         #       qa_check_popup_wizard_rec.name)
         return qa_check_popup_wizard_rec
 
-    @api.depends('qa_check_product_ids', 'check_ids', 'partner_id', 'quality_state', 'quality_alert_ids',
-                 'quality_alert_open_count', 'quality_check_ids')
+    @api.depends('qa_check_product_ids', 'check_ids', 'partner_id', 'quality_state')
     def _fill_in_vals_popup_after_popup(self):
         self.ensure_one()
         vals_popup = {'product_ids': self.qa_check_product_ids,
@@ -214,6 +216,7 @@ class Picking(models.Model):
                       }
         return vals_popup
 
+    @api.model
     def find_team_id(self):
         team_obj = self.env['elw.quality.team']
         team_search = team_obj.search([])
@@ -276,13 +279,13 @@ class Picking(models.Model):
             }
 
     # display the created quality.check record
-    @api.depends('check_ids', 'qa_check_product_ids')
+    @api.depends('check_ids')
     def action_quality_check(self):
         self.ensure_one()
         if self.check_ids:
             vals_popup = self._fill_in_vals_popup_after_popup()
 
-            print("action_quality_check vals_popup ", vals_popup)
+            # print("action_quality_check vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
 
             show_name = 'Status of Quality Check on Delivery: ' + self.name
@@ -298,11 +301,7 @@ class Picking(models.Model):
         else:
             raise ValidationError(_("Sorry, Please Click 'Quality Check' First! "))
 
-    def button_eval(self):
-        print("eval btn ------")
-
-    @api.depends('check_ids', 'quality_state', 'qa_check_product_ids', 'quality_alert_open_count', 'quality_alert_ids',
-                 'quality_check_fail')
+    @api.depends('check_ids', 'quality_state', 'qa_check_product_ids', 'is_all_quality_fails_resolved')
     def button_validate(self):
         self.ensure_one()
         # print("trigger here-----self.quality_alert_open_count----", self.quality_alert_open_count)
@@ -335,7 +334,7 @@ class Picking(models.Model):
         self.ensure_one()
         if self.check_ids and self.quality_check_fail:
             vals_popup = self._fill_in_vals_popup_after_popup()
-            # print("do_alert vals_popup ", vals_popup)
+            print("do_alert vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
             # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
 
@@ -350,6 +349,7 @@ class Picking(models.Model):
                 'target': 'new',
             }
 
+    @api.depends('quality_check_ids.ids')
     def action_open_quality_check_picking(self):
         return {
             'name': _('Quality Check'),
@@ -361,6 +361,7 @@ class Picking(models.Model):
             'target': 'current',
         }
 
+    @api.depends('quality_alert_ids.ids')
     def open_quality_alert_picking(self):
         return {
             'name': _('Quality Alerts'),
