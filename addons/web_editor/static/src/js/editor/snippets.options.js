@@ -1206,7 +1206,7 @@ const UnitUserValueWidget = UserValueWidget.extend({
         const activeValue = this._super(...arguments);
 
         const params = this._methodsParams;
-        if (!params.unit) {
+        if (!this._isNumeric()) {
             return activeValue;
         }
 
@@ -1230,7 +1230,7 @@ const UnitUserValueWidget = UserValueWidget.extend({
         const defaultValue = this._super(...arguments);
 
         const params = this._methodsParams;
-        if (!params.unit) {
+        if (!this._isNumeric()) {
             return defaultValue;
         }
 
@@ -1246,8 +1246,7 @@ const UnitUserValueWidget = UserValueWidget.extend({
      */
     isActive: function () {
         const isSuperActive = this._super(...arguments);
-        const params = this._methodsParams;
-        if (!params.unit) {
+        if (!this._isNumeric()) {
             return isSuperActive;
         }
         return isSuperActive && (
@@ -1261,7 +1260,7 @@ const UnitUserValueWidget = UserValueWidget.extend({
      */
     async setValue(value, methodName) {
         const params = this._methodsParams;
-        if (params.unit) {
+        if (this._isNumeric()) {
             value = value.split(' ').map(v => {
                 const numValue = weUtils.convertValueToUnit(v, params.unit, params.cssProperty, this.$target);
                 if (isNaN(numValue)) {
@@ -1287,6 +1286,16 @@ const UnitUserValueWidget = UserValueWidget.extend({
     _floatToStr: function (value) {
         return `${parseFloat(value.toFixed(5))}`;
     },
+    /**
+     * Checks whether the widget contains a numeric value.
+     *
+     * @private
+     * @returns {Boolean} true if the value is numeric, false otherwise.
+     */
+    _isNumeric() {
+        const params = this._methodsParams || this.el.dataset;
+        return !!params.unit;
+    },
 });
 
 const InputUserValueWidget = UnitUserValueWidget.extend({
@@ -1305,12 +1314,11 @@ const InputUserValueWidget = UnitUserValueWidget.extend({
         await this._super(...arguments);
 
         const unit = this.el.dataset.unit;
-        const step = this.el.dataset.step;
         this.inputEl = document.createElement('input');
         this.inputEl.setAttribute('type', 'text');
         this.inputEl.setAttribute('autocomplete', 'chrome-off');
         this.inputEl.setAttribute('placeholder', this.el.getAttribute('placeholder') || '');
-        const useNumberAlignment = !!step || !!unit || !!this.el.dataset.fakeUnit || !!this.el.dataset.hideUnit;
+        const useNumberAlignment = this._isNumeric() || !!this.el.dataset.hideUnit;
         this.inputEl.classList.toggle('text-start', !useNumberAlignment);
         this.inputEl.classList.toggle('text-end', useNumberAlignment);
         this.containerEl.appendChild(this.inputEl);
@@ -1349,6 +1357,14 @@ const InputUserValueWidget = UnitUserValueWidget.extend({
      */
     _getFocusableElement() {
         return this.inputEl;
+    },
+    /**
+     * @override
+     */
+    _isNumeric() {
+        const isNumeric = this._super(...arguments);
+        const params = this._methodsParams || this.el.dataset;
+        return isNumeric || !!params.fakeUnit || !!params.step;
     },
 
     //--------------------------------------------------------------------------
@@ -1423,7 +1439,7 @@ const InputUserValueWidget = UnitUserValueWidget.extend({
      */
     _onInputKeydown: function (ev) {
         const params = this._methodsParams;
-        if (!params.unit && !params.step) {
+        if (!this._isNumeric()) {
             return;
         }
         switch (ev.key) {
@@ -1941,8 +1957,8 @@ const MediapickerUserValueWidget = UserValueWidget.extend({
             noIcons: true,
             noDocuments: true,
             isForBgVideo: true,
-            vimeoPreviewIds: ['299225971', '414790269', '420192073', '368484050', '334729960', '417478345',
-                '312451183', '415226028', '367762632', '340475898', '374265101', '370467553'],
+            vimeoPreviewIds: ['528686125', '430330731', '509869821', '397142251', '763851966', '486931161',
+                '499761556', '392935303', '728584384', '865314310', '511727912', '466830211'],
             'res_model': $editable.data('oe-model'),
             'res_id': $editable.data('oe-id'),
             save,
@@ -6580,10 +6596,14 @@ registry.ImageTools = ImageHandlerOption.extend({
         const playState = this.$target[0].style.animationPlayState;
         const transition = this.$target[0].style.transition;
         this.$target.transfo({document});
+        const destroyTransfo = () => {
+            this.$target.transfo('destroy');
+            $(document).off('mousedown', mousedown);
+            window.document.removeEventListener('keydown', keydown);
+        }
         const mousedown = mousedownEvent => {
             if (!$(mousedownEvent.target).closest('.transfo-container').length) {
-                this.$target.transfo('destroy');
-                $(document).off('mousedown', mousedown);
+                destroyTransfo();
                 // Restore animation css properties potentially affected by the
                 // jQuery transfo plugin.
                 this.$target[0].style.animationPlayState = playState;
@@ -6591,6 +6611,13 @@ registry.ImageTools = ImageHandlerOption.extend({
             }
         };
         $(document).on('mousedown', mousedown);
+        const keydown = keydownEvent => {
+            if (keydownEvent.key === 'Escape') {
+                keydownEvent.stopImmediatePropagation();
+                destroyTransfo();
+            }
+        };
+        window.document.addEventListener('keydown', keydown);
 
         await new Promise(resolve => {
             document.addEventListener('mouseup', resolve, {once: true});
@@ -6777,6 +6804,9 @@ registry.ImageTools = ImageHandlerOption.extend({
             }
         }
         await this._reapplyCurrentShape();
+        // TODO in master, adapt the '_reapplyCurrentShape()' method to add the
+        // 'o_modified_image_to_save' class on the image.
+        imgEl.classList.add("o_modified_image_to_save");
         // When the hover effects are first activated from the "animationMode"
         // function of the "WebsiteAnimate" class, the history was paused to
         // avoid recording intermediate steps. That's why we unpause it here.
@@ -6792,6 +6822,7 @@ registry.ImageTools = ImageHandlerOption.extend({
         await this._super(...arguments);
         if (["hoverEffectIntensity", "hoverEffectStrokeWidth"].includes(params.attributeName)) {
             await this._reapplyCurrentShape();
+            this._getImg().classList.add("o_modified_image_to_save");
         }
     },
     /**
@@ -6808,6 +6839,7 @@ registry.ImageTools = ImageHandlerOption.extend({
             defaultColor = "primary";
         }
         img.dataset.hoverEffectColor = this._getCSSColorValue(widgetValue || defaultColor);
+        img.classList.add("o_modified_image_to_save");
         await this._reapplyCurrentShape();
     },
 

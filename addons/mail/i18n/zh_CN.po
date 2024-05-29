@@ -4738,7 +4738,7 @@ msgstr "能编辑"
 #: model:ir.model.fields,field_description:mail.field_mail_compose_message__is_mail_template_editor
 #: model:ir.model.fields,field_description:mail.field_mail_composer_mixin__is_mail_template_editor
 msgid "Is Editor"
-msgstr "是编辑者"
+msgstr "是编辑器"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_discuss_channel__message_is_follower
@@ -10271,6 +10271,13 @@ msgstr "您可以对这个模版附加文件，可以附加到所有基于此模
 #, python-format
 msgid "You may not define a template on an abstract model: %s"
 msgstr "无法在抽象模型上定义模板：%s"
+
+#. module: mail
+#. odoo-python
+#: code:addons/mail/models/ir_attachment.py:0
+#, python-format
+msgid "You may not unlink attachments from other people's messages"
+msgstr ""
 
 #. module: mail
 #. odoo-javascript

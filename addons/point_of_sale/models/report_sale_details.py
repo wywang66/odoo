@@ -189,7 +189,7 @@ class ReportSaleDetails(models.AbstractModel):
                         payment['cash_moves'] = cash_in_out_list
                         payment['count'] = True
             if not is_cash_method:
-                cash_name = 'Cash ' + str(session.name)
+                cash_name = _('Cash') + ' ' + str(session.name)
                 payments.insert(0, {
                     'name': cash_name,
                     'total': 0,
@@ -273,6 +273,10 @@ class ReportSaleDetails(models.AbstractModel):
                 'invoices': session._get_invoice_total_list(),
             })
             invoiceTotal += session._get_total_invoice()
+
+        for payment in payments:
+            if payment.get('id'):
+                payment['name'] = self.env['pos.payment.method'].browse(payment['id']).name + ' ' + self.env['pos.session'].browse(payment['session']).name
 
         return {
             'opening_note': sessions[0].opening_notes if len(sessions) == 1 else False,

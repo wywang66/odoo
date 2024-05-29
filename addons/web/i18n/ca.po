@@ -24,11 +24,11 @@
 # Harcogourmet, 2023
 # Jonatan Gk, 2023
 # Arnau Ros, 2023
-# Óscar Fonseca <tecnico@pyming.com>, 2023
 # jabiri7, 2023
 # Ivan Espinola, 2023
 # Manel Fernandez Ramirez <manelfera@outlook.com>, 2024
 # Josep Anton Belchi, 2024
+# Óscar Fonseca <tecnico@pyming.com>, 2024
 # Santiago Payà <santiagopim@gmail.com>, 2024
 # 
 msgid ""
@@ -1842,12 +1842,12 @@ msgstr ""
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/core/datetime/datetime_picker_popover.xml:0
 #: code:addons/web/static/src/core/debug/debug_menu_items.xml:0
 #: code:addons/web/static/src/core/debug/debug_menu_items.xml:0
 #: code:addons/web/static/src/core/dialog/dialog.xml:0
 #: code:addons/web/static/src/core/dialog/dialog.xml:0
 #: code:addons/web/static/src/core/domain_selector_dialog/domain_selector_dialog.xml:0
-#: code:addons/web/static/src/core/errors/error_dialogs.xml:0
 #: code:addons/web/static/src/core/errors/error_dialogs.xml:0
 #: code:addons/web/static/src/core/errors/error_dialogs.xml:0
 #: code:addons/web/static/src/core/errors/error_dialogs.xml:0
@@ -3776,7 +3776,7 @@ msgstr ""
 #: code:addons/web/static/src/webclient/settings_form_view/widgets/res_config_invite_users.js:0
 #, python-format
 msgid "Invite"
-msgstr "Invitar"
+msgstr "Convidar"
 
 #. module: web
 #. odoo-javascript
@@ -5942,9 +5942,9 @@ msgstr ""
 #: code:addons/web/static/src/core/confirmation_dialog/confirmation_dialog.js:0
 #, python-format
 msgid ""
-"Ready to make your record disappear into thin air? Are you sure?\n"
-"It will be gone forever!\n"
-"\n"
+"Ready to make your record disappear into thin air? Are you sure?\r\n"
+"It will be gone forever!\r\n"
+"\r\n"
 "Think twice before you click that 'Delete' button!"
 msgstr ""
 
@@ -6898,6 +6898,7 @@ msgstr "samarreta"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/core/commands/command_items.xml:0
 #: code:addons/web/static/src/webclient/user_menu/user_menu_items.xml:0
 #, python-format
 msgid "TIP"
@@ -7091,16 +7092,6 @@ msgid ""
 "The style compilation failed. This is an administrator or developer error "
 "that must be fixed for the entire database before continuing working. See "
 "browser console or server logs for details."
-msgstr ""
-
-#. module: web
-#. odoo-javascript
-#: code:addons/web/static/src/core/errors/error_dialogs.xml:0
-#, python-format
-msgid ""
-"The style compilation failed, see the error below. This is an administrator "
-"or developer error that must be fixed for the entire database before "
-"continuing working."
 msgstr ""
 
 #. module: web
@@ -8566,6 +8557,7 @@ msgstr "àncora"
 
 #. module: web
 #. odoo-javascript
+#: code:addons/web/static/src/core/commands/command_items.xml:0
 #: code:addons/web/static/src/core/domain_selector/utils.js:0
 #: code:addons/web/static/src/core/tree_editor/utils.js:0
 #, python-format
@@ -19175,7 +19167,7 @@ msgstr "és entre"
 #: code:addons/web/static/src/core/tree_editor/tree_editor_operator_editor.js:0
 #, python-format
 msgid "is in"
-msgstr ""
+msgstr "és dins"
 
 #. module: web
 #. odoo-javascript
@@ -19189,7 +19181,7 @@ msgstr "no és"
 #: code:addons/web/static/src/core/tree_editor/tree_editor_operator_editor.js:0
 #, python-format
 msgid "is not in"
-msgstr ""
+msgstr "no és dins"
 
 #. module: web
 #. odoo-javascript
@@ -24672,7 +24664,7 @@ msgstr "persona que pren bany"
 #: code:addons/web/static/src/core/emoji_picker/emoji_data.js:0
 #, python-format
 msgid "person tipping hand"
-msgstr "persona que apunta a la mà"
+msgstr "persona amb la palma cap amunt"
 
 #. module: web
 #. odoo-javascript
@@ -33545,6 +33537,13 @@ msgstr "zombi"
 #, python-format
 msgid "— press"
 msgstr "— pressiona"
+
+#. module: web
+#. odoo-javascript
+#: code:addons/web/static/src/core/commands/command_items.xml:0
+#, python-format
+msgid "— search for"
+msgstr ""
 
 #. module: web
 #. odoo-javascript

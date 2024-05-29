@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
-# Copyright (c) 2005-2006 Axelor SARL. (http://www.axelor.com)
-
 import logging
 import pytz
 
@@ -684,9 +679,9 @@ class HolidaysRequest(models.Model):
     @api.depends_context('uid')
     @api.depends('state', 'employee_id')
     def _compute_can_cancel(self):
-        now = fields.Datetime.now()
+        now = fields.Datetime.now().date()
         for leave in self:
-            leave.can_cancel = leave.id and leave.employee_id.user_id == self.env.user and leave.state in ['validate', 'validate1'] and leave.date_from and leave.date_from > now
+            leave.can_cancel = leave.id and leave.employee_id.user_id == self.env.user and leave.state in ['validate', 'validate1'] and leave.date_from and leave.date_from.date() >= now
 
     @api.depends('state')
     def _compute_is_hatched(self):
@@ -1015,13 +1010,13 @@ Attempting to double-book your time off won't magically make your vacation 2x be
     def _unlink_if_correct_states(self):
         error_message = _('You cannot delete a time off which is in %s state')
         state_description_values = {elem[0]: elem[1] for elem in self._fields['state']._description_selection(self.env)}
-        now = fields.Datetime.now()
+        now = fields.Datetime.now().date()
 
         if not self.user_has_groups('hr_holidays.group_hr_holidays_user'):
             for hol in self:
                 if hol.state not in ['draft', 'confirm', 'validate1']:
                     raise UserError(error_message % state_description_values.get(self[:1].state))
-                if hol.date_from < now:
+                if hol.date_from.date() < now:
                     raise UserError(_('You cannot delete a time off which is in the past'))
                 if hol.sudo().employee_ids and not hol.employee_id:
                     raise UserError(_('You cannot delete a time off assigned to several employees'))
@@ -1773,8 +1768,11 @@ Attempting to double-book your time off won't magically make your vacation 2x be
             .sorted('date_from', reverse=True)
         reason = _("the accruated amount is insufficient for that duration.")
         for leave in concerned_leaves:
-            to_recheck_leaves_per_leave_type = concerned_leaves.employee_id._get_consumed_leaves(leave.holiday_status_id)[1]
-            exceeding_duration = to_recheck_leaves_per_leave_type[leave.employee_id][leave.holiday_status_id]['exceeding_duration']
-            if not exceeding_duration:
+            leave_type = leave.holiday_status_id
+            date = leave.date_from.date()
+            leave_type_data = leave_type.get_allocation_data(leave.employee_id, date)
+            exceeding_duration = leave_type_data[leave.employee_id][0][1]['total_virtual_excess']
+            excess_limit = leave_type.max_allowed_negative if leave_type.allows_negative else 0
+            if exceeding_duration <= excess_limit:
                 continue
             leave._force_cancel(reason, 'mail.mt_note')

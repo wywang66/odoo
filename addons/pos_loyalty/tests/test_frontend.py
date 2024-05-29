@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import date, timedelta
 
-from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
-from odoo.tests import tagged
 from odoo import Command
+from odoo.tests import tagged
+
+from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 
 
 @tagged("post_install", "-at_install")
@@ -1599,7 +1599,7 @@ class TestUi(TestPointOfSaleHttpCommon):
             {
                 'name': 'Free Product B',
                 'type': 'product',
-                'list_price': 1,
+                'list_price': 5,
                 'available_in_pos': True,
                 'taxes_id': False,
                 'product_tag_ids': [(4, free_product_tag.id)],
@@ -1631,3 +1631,94 @@ class TestUi(TestPointOfSaleHttpCommon):
             "PosLoyaltyTour12",
             login="pos_user",
         )
+
+    def test_promotion_with_min_amount_and_specific_product_rule(self):
+        """
+        Test that the discount is applied iff the min amount is reached for the specified product.
+        """
+        self.env['loyalty.program'].search([]).action_archive()
+        self.product_a = self.env['product.product'].create({
+            'name': "Product A",
+            'type': 'product',
+            'list_price': 20,
+            'available_in_pos': True,
+            'taxes_id': False,
+        })
+        self.env['product.product'].create({
+            'name': "Product B",
+            'type': 'product',
+            'list_price': 30,
+            'available_in_pos': True,
+            'taxes_id': False,
+        })
+        self.env['loyalty.program'].create({
+            'name': "Discount on specific products",
+            'program_type': 'promotion',
+            'trigger': 'auto',
+            'applies_on': 'current',
+            'rule_ids': [Command.create({
+                'minimum_amount': 40,
+                'product_ids': [Command.set(self.product_a.ids)],
+            })],
+            'reward_ids': [Command.create({
+                'reward_type': 'discount',
+                'discount': 10,
+                'discount_mode': 'percent',
+                'discount_applicability': 'specific',
+                'discount_product_ids': [Command.set(self.product_a.ids)],
+            })],
+            'pos_config_ids': [Command.link(self.main_pos_config.id)],
+        })
+
+        self.main_pos_config.open_ui()
+        self.start_tour(
+            '/pos/web?config_id=%d' % self.main_pos_config.id,
+            'PosLoyaltyMinAmountAndSpecificProductTour',
+            login='pos_user',
+        )
+
+    def test_dont_grant_points_reward_order_lines(self):
+        """
+        Make sure that points granted per unit are only given
+        for the product -non reward- lines!
+        """
+        self.env['loyalty.program'].search([]).write({'active': False})
+
+        loyalty_program = self.env['loyalty.program'].create({
+            'name': 'Loyalty Program',
+            'program_type': 'loyalty',
+            'applies_on': 'both',
+            'trigger': 'auto',
+            'rule_ids': [(0, 0, {
+                'reward_point_amount': 1,
+                'reward_point_mode': 'unit',
+                'minimum_qty': 2,
+            })],
+            'reward_ids': [(0, 0, {
+                'reward_type': 'discount',
+                'discount': 100,
+                'discount_mode': 'percent',
+                'discount_applicability': 'cheapest',
+                'required_points': 2,
+            })],
+        })
+
+        partner = self.env['res.partner'].create({'name': 'Test Partner'})
+
+        self.pos_user.write({
+            'groups_id': [
+                (4, self.env.ref('stock.group_stock_user').id),
+            ]
+        })
+
+        self.main_pos_config.open_ui()
+        self.start_tour(
+            "/pos/web?config_id=%d" % self.main_pos_config.id,
+            "PosLoyaltyDontGrantPointsForRewardOrderLines",
+            login="pos_user",
+        )
+
+        loyalty_card = loyalty_program.coupon_ids.filtered(lambda coupon: coupon.partner_id.id == partner.id)
+
+        self.assertTrue(loyalty_card)
+        self.assertFalse(loyalty_card.points)

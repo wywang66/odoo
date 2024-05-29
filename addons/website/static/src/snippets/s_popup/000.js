@@ -59,7 +59,7 @@ const SharedPopupWidget = publicWidget.Widget.extend({
             // '_hideBottomFixedElements' method and re-display any bottom fixed
             // elements that may have been hidden (e.g. the live chat button
             // hidden when the cookies bar is open).
-            $().getScrollingElement()[0].dispatchEvent(new Event('scroll'));
+            $().getScrollingTarget()[0].dispatchEvent(new Event('scroll'));
         }
 
         this.el.classList.add('d-none');
@@ -177,8 +177,7 @@ const PopupWidget = publicWidget.Widget.extend({
     /**
      * @private
      */
-    _showPopupOnClick() {
-        const hash = window.location.hash;
+    _showPopupOnClick(hash = window.location.hash) {
         // If a hash exists in the URL and it corresponds to the ID of the modal,
         // then we open the modal.
         if (hash && hash.substring(1) === this.modalShownOnClickEl.id) {
@@ -245,8 +244,16 @@ const PopupWidget = publicWidget.Widget.extend({
     /**
      * @private
      */
-    _onHashChange() {
-        this._showPopupOnClick();
+    _onHashChange(ev) {
+        if (ev && ev.newURL) {
+            // Keep the new hash from the event to avoid conflict with the eCommerce
+            // hash attributes managing.
+            // TODO : it should not have been a hash at all for ecommerce, but a
+            // query string parameter
+            this._showPopupOnClick(new URL(ev.newURL).hash);
+        } else {
+            this._showPopupOnClick();
+        }
     },
 });
 

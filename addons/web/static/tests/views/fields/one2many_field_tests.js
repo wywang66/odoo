@@ -2678,6 +2678,31 @@ QUnit.module("Fields", (hooks) => {
         ]);
     });
 
+    QUnit.test("one2many list order with handle widget", async (assert) => {
+        await makeView({
+            type: "form",
+            resModel: "partner",
+            serverData,
+            arch: `
+                <form>
+                    <field name="p">
+                        <tree editable="top">
+                            <field name="int_field" widget="handle"/>
+                            <field name="foo"/>
+                        </tree>
+                    </field>
+                </form>`,
+            resId: 1,
+            mockRPC(route, args) {
+                if (args.method === "web_read") {
+                    assert.step(`web_read`);
+                    assert.strictEqual(args.kwargs.specification.p.order, "int_field ASC, id ASC");
+                }
+            },
+        });
+        assert.verifySteps(["web_read"]);
+    });
+
     QUnit.test("one2many field when using the pager", async function (assert) {
         const ids = [];
         for (let i = 0; i < 45; i++) {
@@ -13960,6 +13985,41 @@ QUnit.module("Fields", (hooks) => {
         await nextTick();
 
         assert.containsOnce(target, ".modal .o_data_row td[name=display_name]");
+    });
+
+    QUnit.test("one2many, form view dialog with custom footer", async function (assert) {
+        serverData.models.partner.records[0].p = [1];
+
+        await makeView({
+            type: "form",
+            resModel: "partner",
+            serverData,
+            arch: `
+                <form>
+                    <field name="p">
+                        <tree>
+                            <field name="display_name"/>
+                        </tree>
+                        <form>
+                            <field name="display_name"/>
+                            <footer>
+                                <span class="my_span">Hello</span>
+                            </footer>
+                        </form>
+                    </field>
+                </form>`,
+            resId: 1,
+        });
+
+        await click(target.querySelector(".o_data_row td[name=display_name]"));
+        assert.containsOnce(target, ".modal-footer .my_span");
+
+        await click(target.querySelector(".modal-header .btn-close"));
+        assert.containsNone(target, ".modal");
+
+        // open it again
+        await click(target.querySelector(".o_data_row td[name=display_name]"));
+        assert.containsOnce(target, ".modal-footer .my_span");
     });
 
     QUnit.test('Add a line, click on "Save & New" with an invalid form', async function (assert) {

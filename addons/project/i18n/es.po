@@ -491,7 +491,7 @@ msgstr ""
 #. module: project
 #: model_terms:ir.ui.view,arch_db:project.view_project_kanban
 msgid "<span class=\"fa fa-user me-2\" aria-label=\"Partner\" title=\"Partner\"/>"
-msgstr "<span class=\"fa fa-user me-2\" aria-label=\"Partner\" title=\"Partner\"/>"
+msgstr "<span class=\"fa fa-user me-2\" aria-label=\"Empresa\" title=\"Empresa\"/>"
 
 #. module: project
 #: model_terms:ir.ui.view,arch_db:project.project_milestone_view_form
@@ -890,7 +890,7 @@ msgid ""
 "An analytic account is required in order to use timesheets."
 msgstr ""
 "La cuenta analítica a la que están vinculados este proyecto, sus tareas y sus hojas de asistencia. \n"
-"Lleve el seguimiento de los costes e ingresos de su proyecto al establecer esta cuenta analítica en sus documentos relacionados (por ejemplo, órdenes de venta, facturas, órdenes de compra, facturas de proveedor, gastos, etc.).\n"
+"Lleve el seguimiento de los costes e ingresos de su proyecto al establecer esta cuenta analítica en sus documentos relacionados (por ejemplo, pedidos de venta, facturas, pedidos de compra, facturas de proveedor, gastos, etc.).\n"
 "Esta cuenta analítica se puede cambiar en cada tarea de forma individual si es necesario.\n"
 "Se necesita una cuenta analítica para usar hojas de asistencia."
 
@@ -902,7 +902,7 @@ msgid ""
 "By default, the analytic account of the project is set. However, it can be changed on each task individually if necessary."
 msgstr ""
 "La cuenta analítica a la que están vinculados este proyecto, sus tareas y sus hojas de asistencia. \n"
-"Lleve el seguimiento de los costes e ingresos de su proyecto al establecer esta cuenta analítica en sus documentos relacionados (por ejemplo, órdenes de venta, facturas, órdenes de compra, facturas de proveedor, gastos, etc.).\n"
+"Lleve el seguimiento de los costes e ingresos de su proyecto al establecer esta cuenta analítica en sus documentos relacionados (por ejemplo, pedidos de venta, facturas, pedidos de compra, facturas de proveedor, gastos, etc.).\n"
 "Por defecto, se establece la cuenta analítica de este proyecto. Sin embargo, puede ser cambiada de manera individual en cada tarea si fuera necesario."
 
 #. module: project
@@ -1853,7 +1853,7 @@ msgid ""
 "it to a sales order item."
 msgstr ""
 "Ofrezca sus servicios automáticamente cada vez que se alcance un hito, se "
-"puede hacer vinculándolo a un artículo de la orden de venta."
+"puede hacer vinculándolo a un elemento del pedido de venta."
 
 #. module: project
 #. odoo-javascript
@@ -2261,9 +2261,9 @@ msgid ""
 "Grant employees access to your project or tasks by adding them as followers."
 " Employees automatically get access to the tasks they are assigned to."
 msgstr ""
-"Permita que los empleados accedan a su proyecto o tareas agregándolos como "
-"seguidores, tendrán acceso de forma automática a las tareas a las que están "
-"asignados."
+"Conceda a los empleados acceso a su proyecto o tareas agregándolos como "
+"seguidores. Los empleados obtienen automáticamente acceso a las tareas a las"
+" que están asignados."
 
 #. module: project
 #. odoo-python
@@ -2274,9 +2274,9 @@ msgid ""
 "followers. Customers automatically get access to their tasks in their "
 "portal."
 msgstr ""
-"Permita que los usuarios del portal accedan a su proyecto o tareas "
-"agregándolos como seguidores, tendrán acceso de forma automática a sus "
-"tareas en su portal."
+"Conceda a los usuarios del portal acceso a su proyecto o tareas agregándolos"
+" como seguidores. Los clientes obtienen automáticamente acceso a sus tareas "
+"en su portal."
 
 #. module: project
 #: model_terms:ir.ui.view,arch_db:project.project_collaborator_view_search
@@ -2464,7 +2464,7 @@ msgid ""
 "instead of the default message."
 msgstr ""
 "Si se configura, este contenido se enviará automáticamente a usuarios no "
-"autorizados en lugar del mensaje predeterminado."
+"autorizados en lugar del mensaje por defecto."
 
 #. module: project
 #: model:ir.model.fields,help:project.field_project_project__active
@@ -5045,7 +5045,7 @@ msgid ""
 msgstr ""
 "Pueden editar tareas compartidas de proyectos y ver documentos específicos "
 "en modo de solo lectura desde su sitio web. Esto incluye leads y "
-"oportunidades, presupuestos y órdenes de venta, órdenes de compra, facturas,"
+"oportunidades, presupuestos y pedidos de venta, pedidos de compra, facturas,"
 " hojas de asistencia y tickets."
 
 #. module: project
@@ -5456,9 +5456,9 @@ msgid ""
 "customers. Add new people to the followers' list to make them aware of the "
 "main changes about this task."
 msgstr ""
-"Utilice el chatter para <b>enviar correos electrónicos</b> y comunicarse de "
-"manera eficiente con sus clientes. Agregue nuevas personas en la lista de "
-"seguidores para que estén al tanto de los cambios principales de esta tarea."
+"Utilice el chatter para <b>enviar correos electrónicos</b> y comunicarse "
+"eficazmente con sus clientes. Agregue nuevas personas en la lista de "
+"seguidores para que conozcan los principales cambios sobre esta tarea."
 
 #. module: project
 #: model:ir.model.fields,help:project.field_project_task__display_name

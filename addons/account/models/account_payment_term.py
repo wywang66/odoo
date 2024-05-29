@@ -12,6 +12,7 @@ class AccountPaymentTerm(models.Model):
     _name = "account.payment.term"
     _description = "Payment Terms"
     _order = "sequence, id"
+    _check_company_domain = models.check_company_domain_parent_of
 
     def _default_line_ids(self):
         return [Command.create({'value': 'percent', 'value_amount': 100.0, 'nb_days': 0})]
@@ -62,10 +63,10 @@ class AccountPaymentTerm(models.Model):
         if self.early_discount:
             percentage = self.discount_percentage / 100.0
             if self.early_pay_discount_computation in ('excluded', 'mixed'):
-                discount_amount_currency = self.currency_id.round((total_amount - untaxed_amount) * percentage)
+                discount_amount_currency = (total_amount - untaxed_amount) * percentage
             else:
-                discount_amount_currency = self.currency_id.round(total_amount - (total_amount * (1 - (percentage))))
-            return total_amount - discount_amount_currency
+                discount_amount_currency = total_amount * percentage
+            return self.currency_id.round(total_amount - discount_amount_currency)
         return total_amount
 
     @api.depends('company_id')

@@ -88,7 +88,7 @@ msgstr "%s por orden"
 #: code:addons/loyalty/models/loyalty_reward.py:0
 #, python-format
 msgid "%s per order on "
-msgstr "%s por pedido sobre "
+msgstr "%s por orden sobre "
 
 #. module: loyalty
 #. odoo-python
@@ -1626,7 +1626,7 @@ msgid ""
 "Product used in the sales order to apply the discount. Each reward has its "
 "own product for reporting purpose"
 msgstr ""
-"Producto usado en órdenes de ventas para aplicar el descuento. Cada "
+"Producto usado en pedidos de venta para aplicar el descuento. Cada "
 "recompensa tiene su propio producto y propósito de informe."
 
 #. module: loyalty

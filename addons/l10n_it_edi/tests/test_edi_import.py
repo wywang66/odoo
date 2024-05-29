@@ -47,12 +47,28 @@ class TestItEdiImport(TestItEdi):
         https://www.fatturapa.gov.it/export/documenti/fatturapa/v1.2/IT01234567890_FPR01.xml
         """
         self._assert_import_invoice('IT01234567890_FPR01.xml', [{
+            'move_type': 'in_invoice',
             'invoice_date': fields.Date.from_string('2014-12-18'),
             'amount_untaxed': 5.0,
             'amount_tax': 1.1,
             'invoice_line_ids': [{
                 'quantity': 5.0,
                 'price_unit': 1.0,
+                'debit': 5.0,
+            }],
+        }])
+
+    def test_receive_negative_vendor_bill(self):
+        """ Same vendor bill as test_receive_vendor_bill but negative unit price """
+        self._assert_import_invoice('IT01234567890_FPR02.xml', [{
+            'move_type': 'in_invoice',
+            'invoice_date': fields.Date.from_string('2014-12-18'),
+            'amount_untaxed': -5.0,
+            'amount_tax': -1.1,
+            'invoice_line_ids': [{
+                'quantity': 5.0,
+                'price_unit': -1.0,
+                'credit': 5.0,
             }],
         }])
 
@@ -164,7 +180,7 @@ class TestItEdiImport(TestItEdi):
               patch.object(sql_db.Cursor, "commit", mock_commit),
               tools.mute_logger("odoo.addons.l10n_it_edi.models.account_move")):
             for dummy in range(2):
-                self.env['account.move']._l10n_it_edi_process_downloads({
+                processed = self.env['account.move']._l10n_it_edi_process_downloads({
                     '999999999': {
                         'filename': filename,
                         'file': self.fake_test_content,
@@ -172,6 +188,8 @@ class TestItEdiImport(TestItEdi):
                     }},
                     proxy_user,
                 )
+                # The Proxy ACK must be sent in both cases of import success and failure.
+                self.assertEqual(processed['proxy_acks'], ['999999999'])
 
         # There should be one attachement with this filename
         attachments = self.env['ir.attachment'].search([

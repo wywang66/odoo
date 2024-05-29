@@ -75,6 +75,7 @@ class HrExpense(models.Model):
     product_has_tax = fields.Boolean(string="Whether tax is defined on a selected product", compute='_compute_from_product')
     quantity = fields.Float(required=True, digits='Product Unit of Measure', default=1)
     description = fields.Text(string="Internal Notes")
+    message_main_attachment_checksum = fields.Char(related='message_main_attachment_id.checksum')
     nb_attachment = fields.Integer(string="Number of Attachments", compute='_compute_nb_attachment')
     attachment_ids = fields.One2many(
         comodel_name='ir.attachment',
@@ -394,7 +395,7 @@ class HrExpense(models.Model):
             else:  # Mono-currency case computation shortcut
                 expense.tax_amount = expense.tax_amount_currency
 
-    @api.depends('total_amount', 'total_amount_currency', 'nb_attachment')
+    @api.depends('total_amount', 'total_amount_currency')
     def _compute_price_unit(self):
         """
            The price_unit is the unit price of the product if no product is set and no attachment overrides it.
@@ -405,7 +406,7 @@ class HrExpense(models.Model):
             if expense.state not in {'draft', 'reported'}:
                 continue
             product_id = expense.product_id
-            if product_id and expense.product_has_cost and not expense.nb_attachment:
+            if expense._needs_product_price_computation():
                 expense.price_unit = product_id._price_compute(
                     'standard_price',
                     uom=expense.product_uom_id,
@@ -413,6 +414,11 @@ class HrExpense(models.Model):
                 )[product_id.id]
             else:
                 expense.price_unit = expense.company_currency_id.round(expense.total_amount / expense.quantity) if expense.quantity else 0.
+
+    def _needs_product_price_computation(self):
+        # Hook to be overridden.
+        self.ensure_one()
+        return self.product_has_cost
 
     @api.depends('product_id', 'company_id')
     def _compute_account_id(self):
@@ -920,11 +926,7 @@ class HrExpense(models.Model):
     @api.model
     def message_new(self, msg_dict, custom_values=None):
         email_address = email_split(msg_dict.get('email_from', False))[0]
-
-        employee = self.env['hr.employee'].search(
-            ['|', ('work_email', 'ilike', email_address), ('user_id.email', 'ilike', email_address)],
-            limit=1,
-        )
+        employee = self._get_employee_from_email(email_address)
 
         if not employee:
             return super().message_new(msg_dict, custom_values=custom_values)
@@ -965,6 +967,29 @@ class HrExpense(models.Model):
         expense = super().message_new(msg_dict, dict(custom_values or {}, **vals))
         self._send_expense_success_mail(msg_dict, expense)
         return expense
+
+    @api.model
+    def _get_employee_from_email(self, email_address):
+        employee = self.env['hr.employee'].search([
+            ('user_id', '!=', False),
+            '|',
+            ('work_email', 'ilike', email_address),
+            ('user_id.email', 'ilike', email_address),
+        ])
+
+        if len(employee) > 1:
+            # Several employees can be linked to the same user.
+            # In that case, we only keep the employee that matched the user's company.
+            return employee.filtered(lambda e: e.company_id == e.user_id.company_id)
+
+        if not employee:
+            # An employee does not always have a user.
+            return self.env['hr.employee'].search([
+                ('user_id', '=', False),
+                ('work_email', 'ilike', email_address),
+            ], limit=1)
+
+        return employee
 
     @api.model
     def _parse_product(self, expense_description):

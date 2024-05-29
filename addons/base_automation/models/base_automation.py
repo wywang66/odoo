@@ -680,7 +680,7 @@ class BaseAutomation(models.Model):
             # all fields are implicit triggers
             return True
 
-        if not self._context.get('old_values'):
+        if self._context.get('old_values') is None:
             # this is a create: all fields are considered modified
             return True
 
@@ -926,7 +926,7 @@ class BaseAutomation(models.Model):
         # retrieve all the automation rules to run based on a timed condition
         for automation in self.with_context(active_test=True).search([('trigger', 'in', TIME_TRIGGERS)]):
             _logger.info("Starting time-based automation rule `%s`.", automation.name)
-            last_run = fields.Datetime.from_string(automation.last_run) or datetime.datetime.utcfromtimestamp(0)
+            last_run = fields.Datetime.from_string(automation.last_run) or datetime.datetime.fromtimestamp(0, tz=None)
             eval_context = automation._get_eval_context()
 
             # retrieve all the records that satisfy the automation's condition
