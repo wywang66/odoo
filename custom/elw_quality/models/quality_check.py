@@ -18,11 +18,11 @@ class ElwQualityCheck(models.Model):
         help='The company is automatically set from your user preferences.')
     active = fields.Boolean(default=True)
     title = fields.Char("Title")
-    point_id = fields.Many2one('elw.quality.point', string='Control Point ID', ondelete='set null')
+    point_id = fields.Many2one('elw.quality.point', string='Control Point ID', ondelete='cascade', required=True)
 
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade', readonly=True)
-    product_id = fields.Many2one('product.product', string='Product', store=True,
-                                 domain="[('type', 'in', ['product', 'consu'])]", ondelete='set null')
+    product_id = fields.Many2one('product.product', string='Product', store=True, required=True,
+                                 domain="[('type', 'in', ['product', 'consu'])]", ondelete='cascade')
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per', required=True, store=True,
                                   help='Product = A quality check is requested per product.'
