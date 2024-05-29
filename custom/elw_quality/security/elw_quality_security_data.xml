@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="base.module_category_elw_elw_quality" model="ir.module.category">
+            <field name="description">Helps you manage your elw modules, etc.</field>
+            <field name="sequence">9</field>
+        </record>
+
+        <record id="group_quality_control" model="res.groups">
+            <field name="name">Quality Control Group</field>
+           <field name="category_id" ref="base.module_category_elw_elw_quality"/>
+        </record>
+        <!--    <record id="group_stock_multi_locations" model="res.groups">-->
+        <!--        <field name="name">Manage Multiple Stock Locations</field>-->
+        <!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+        <!--    </record>-->
+
+        <!--    <record id="group_reception_report" model="res.groups">-->
+        <!--        <field name="name">Use Reception Report</field>-->
+        <!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+        <!--    </record>-->
+
+        <!--    <record id="group_stock_picking_wave" model="res.groups">-->
+        <!--        <field name="name">Use wave pickings</field>-->
+        <!--        <field name="category_id" ref="base.module_category_hidden"/>-->
+        <!--    </record>-->
+    </data>
+
+</odoo>
