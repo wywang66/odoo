@@ -38,6 +38,7 @@ Long description of module's purpose
         'views/quality_alert_view.xml',
         'views/configuration_view.xml',
         'views/quality_menu.xml',
+        'views/quality_measure_spec_view.xml',
     ],
     # only loaded in demonstration mode
     # 'demo': [

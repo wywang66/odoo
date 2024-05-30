@@ -29,6 +29,7 @@ class ElwQualityPoint(models.Model):
     product_ids = fields.Many2many('product.product', string="Products", domain="[('type','in',('product','consu'))]",
                                    store=True, required=True, compute="_get_product_from_category", readonly=False,
                                    help="Quality Point will apply to every selected Products.")
+    product_id = fields.Many2one('product.product', compute='_compute_product_id_for_measure')
     product_category_ids = fields.Many2many('product.category', string="Product Categories", store=True,
                                             help="Quality Point will apply to every Products in the selected Product Categories.")
     picking_type_ids = fields.Many2many('stock.picking.type', string='Operations', store=True, copy=True, required=True)
@@ -56,9 +57,35 @@ class ElwQualityPoint(models.Model):
     check_ids = fields.One2many('elw.quality.check', 'point_id', string="Check IDS")
     # for notebook
     note = fields.Html('Note')
-    
+
     #  measure data
-    #measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
+    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
+
+    # @api.constrains('product_ids')
+    # def _check_if_product_ids_is_single(self):
+    #     for rec in self:
+    #         if rec.test_type_id.id == 5 and len(rec.product_ids) != 1:
+    #             raise ValidationError(_("Set one product for 'Measure' Test Type"))
+
+    # product_ids must be one if test_type_id == 5. measure spec applies to one product
+    # below is to sync up product_id on quality.measure.spec. one product for test_type_id=5
+    # api.depend or api.onchange run earlier than api.constraints
+    @api.depends('product_ids', 'test_type_id')
+    def _compute_product_id_for_measure(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and len(rec.product_ids) == 1:
+                rec.product_id = rec.env['product.product'].browse(rec.product_ids.ids)
+            elif rec.test_type_id.id == 5 and len(rec.product_ids) != 1:
+                raise ValidationError(_("Set one product for 'Measure' Test Type."))
+            else:
+                rec.product_id = None
+
+    # measure_data_ids must be filled if test_type_id == 5
+    @api.constrains('measure_data_ids')
+    def _check_if_measure_data_ids_empty(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and not len(rec.measure_data_ids):
+                raise ValidationError(_("Please fill in Measurement Settings."))
 
     @api.depends('check_ids')
     def _compute_quality_check_count(self):

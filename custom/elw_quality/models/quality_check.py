@@ -29,7 +29,7 @@ class ElwQualityCheck(models.Model):
                                   help='Product = A quality check is requested per product.'
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
-                                       'with partial quantity checks also possible.', default='operation')
+                                       'with partial quantity checks also possible.')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
                              ondelete='restrict')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
@@ -50,12 +50,14 @@ class ElwQualityCheck(models.Model):
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
 
-    # if creating a qa check by selecting qa.point, make sure the product is in qa.point
+    # if manually creating a qa check by selecting qa.point, make sure the product is in qa.point
+    @api.constrains('product_id')
     def _check_if_product_in_quality_point(self):
         for rec in self:
             if rec.product_id.id not in rec.point_id.product_ids.ids:
-                raise ValidationError(_("Current product mismatches with the product %s in Control Point ID",
-                                        rec.point_id.product_ids.mapped('name')))
+                raise ValidationError(
+                    _("Current product is not found in Control Point ID %s that has %s. Please reselect the product.",
+                      rec.point_id.name, rec.point_id.product_ids.mapped('name')))
 
     # check if an alert is created on 'fail' record
     @api.depends('alert_ids', 'quality_state')
@@ -97,9 +99,7 @@ class ElwQualityCheck(models.Model):
         for vals in vals:
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
-
             rtn = super(ElwQualityCheck, self).create(vals)
-            self._check_if_product_in_quality_point()
             return rtn
 
     # #  no decorator needed
@@ -109,9 +109,7 @@ class ElwQualityCheck(models.Model):
         if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
-
         rtn = super(ElwQualityCheck, self).write(vals)
-        self._check_if_product_in_quality_point()
         return rtn
 
     def unlink(self):
@@ -200,7 +198,8 @@ class ElwQualityCheck(models.Model):
             # print("res-------", res) #res------- ir.ui.view(1952,)
             form_view = [(res and res.id or False, 'form')]
             # print("form_view-------", form_view)  #form_view------- [(1952, 'form')]
-            result['views'] = form_view + [(state, view) for state, view in result.get('views', []) if view != 'form']
+            result['views'] = form_view + [(state, view) for state, view in result.get('views', []) if
+                                           view != 'form']
             result['res_id'] = alerts.id
             # print("result--------", result)
         return result
