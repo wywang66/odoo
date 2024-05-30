@@ -160,9 +160,9 @@ class Picking(models.Model):
                                 vals['partner_id'] = rec.partner_id.id
                                 qa_check_product_ids_buf.append(qa_product_id)
                                 qa_check_point_ids_buf.append(qa_product_ids_obj.id)
-                                print("Found: qa_product_id, partner_id, rec.picking_type_id.id----------",
-                                      qa_product_id, rec.partner_id, rec.id, rec.name, rec.picking_type_id.id,
-                                      rec.picking_type_id.name)
+                                # print("Found: qa_product_id, partner_id, rec.picking_type_id.id----------",
+                                #       qa_product_id, rec.partner_id, rec.id, rec.name, rec.picking_type_id.id,
+                                #       rec.picking_type_id.name)
                                 # len(qa_check_product_ids) can be >1
                                 vals['product_id'] = qa_check_product_ids_buf
                                 vals['point_id'] = qa_check_point_ids_buf
@@ -176,6 +176,9 @@ class Picking(models.Model):
         vals = self._compute_qa_check_product_ids()
         results = []
         # print("vals-------", vals)#vals------- {'picking_id': 24, 'quality_state': 'none', 'partner_id': 47, 'product_id': [5, 31], 'point_id': [2, 1]}
+        if vals is None:
+            raise ValidationError(_("Sorry, No Quality Control Point found for this product! Please create it first! "))
+
         for i in range(max(len(vals['product_id']), len(vals['point_id']))):
             new_val = {}
             for key, value in vals.items():

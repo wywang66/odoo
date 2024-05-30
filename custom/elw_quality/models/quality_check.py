@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class ElwQualityCheck(models.Model):
@@ -21,14 +22,14 @@ class ElwQualityCheck(models.Model):
     point_id = fields.Many2one('elw.quality.point', string='Control Point ID', ondelete='cascade', required=True)
 
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade', readonly=True)
-    product_id = fields.Many2one('product.product', string='Product', store=True, required=True,
+    product_id = fields.Many2one('product.product', string='Product', required=True, store=True,
                                  domain="[('type', 'in', ['product', 'consu'])]", ondelete='cascade')
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
     measure_on = fields.Selection(related='point_id.measure_on', string='Control per', required=True, store=True,
                                   help='Product = A quality check is requested per product.'
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
-                                      'with partial quantity checks also possible.', default='operation')
+                                       'with partial quantity checks also possible.', default='operation')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
                              ondelete='restrict')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
@@ -48,6 +49,16 @@ class ElwQualityCheck(models.Model):
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
+
+    # if creating a qa check by selecting qa.point, make sure the product is in qa.point
+    @api.constrains('product_id')
+    def _check_if_product_in_quality_point(self):
+        for rec in self:
+            if rec.product_id.id not in rec.point_id.product_ids.ids:
+                raise ValidationError(
+                    _("Current product is not found in Control Point ID %s that has %s. Please reselect the product.",
+                      rec.point_id.name, rec.point_id.product_ids.mapped('name')))
+
     # check if an alert is created on 'fail' record
     @api.depends('alert_ids', 'quality_state')
     def _compute_fail_and_not_alert_created(self):
@@ -100,6 +111,13 @@ class ElwQualityCheck(models.Model):
                 'elw.quality.check.sequence')
         rtn = super(ElwQualityCheck, self).write(vals)
         return rtn
+
+    def unlink(self):
+        for rec in self:
+            if rec.quality_state != 'none' or rec.picking_id:
+                raise ValidationError(
+                    _("Can delete the record that is not in 'To Do' or has Deliveries/Receipts order"))
+        return super(ElwQualityCheck, self).unlink()
 
     @api.depends('quality_state')
     def do_pass(self):
@@ -180,8 +198,8 @@ class ElwQualityCheck(models.Model):
             # print("res-------", res) #res------- ir.ui.view(1952,)
             form_view = [(res and res.id or False, 'form')]
             # print("form_view-------", form_view)  #form_view------- [(1952, 'form')]
-            result['views'] = form_view + [(state, view) for state, view in result.get('views', []) if view != 'form']
+            result['views'] = form_view + [(state, view) for state, view in result.get('views', []) if
+                                           view != 'form']
             result['res_id'] = alerts.id
             # print("result--------", result)
         return result
-
