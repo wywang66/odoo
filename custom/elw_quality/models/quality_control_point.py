@@ -58,7 +58,21 @@ class ElwQualityPoint(models.Model):
     note = fields.Html('Note')
     
     #  measure data
-    #measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
+    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
+
+    # measure_data_ids must be filled if test_type_id == 5
+    @api.constrains('measure_data_ids')
+    def _check_if_measure_data_ids_empty(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and not len(rec.measure_data_ids):
+                raise ValidationError(_("Please fill in Measurement Settings"))
+
+    # product_ids must be one if test_type_id == 5. measure spec applies to one product
+    @api.constrains('product_ids')
+    def _check_if_product_ids_is_single(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and len(rec.product_ids) != 1:
+                raise ValidationError(_("Set one product for 'Measure' Test Type"))
 
     @api.depends('check_ids')
     def _compute_quality_check_count(self):
