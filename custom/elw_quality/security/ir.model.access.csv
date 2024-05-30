@@ -8,3 +8,4 @@ access_elw_quality_tag,elw.quality.tag,model_elw_quality_tag,base.group_user,1,1
 access_elw_quality_reason,elw.quality.reason,model_elw_quality_reason,base.group_user,1,1,1,1
 access_elw_quality_alert_stage,elw.quality.alert.stage,model_elw_quality_alert_stage,base.group_user,1,1,1,1
 access_elw_quality_check_popup_wizard,elw.quality.check.popup.wizard,model_elw_quality_check_popup_wizard,base.group_user,1,1,1,1
+access_elw_quality_measure_spec,elw.quality.measure.spec,model_elw_quality_measure_spec,base.group_user,1,1,1,1

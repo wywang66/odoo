@@ -29,7 +29,7 @@ class ElwQualityCheck(models.Model):
                                   help='Product = A quality check is requested per product.'
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
-                                       'with partial quantity checks also possible.', default='operation')
+                                       'with partial quantity checks also possible.')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
                              ondelete='restrict')
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
@@ -50,7 +50,7 @@ class ElwQualityCheck(models.Model):
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
 
-    # if creating a qa check by selecting qa.point, make sure the product is in qa.point
+    # if manually creating a qa check by selecting qa.point, make sure the product is in qa.point
     @api.constrains('product_id')
     def _check_if_product_in_quality_point(self):
         for rec in self:
