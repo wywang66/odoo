@@ -25,7 +25,7 @@ class ElwQualityCheck(models.Model):
     product_id = fields.Many2one('product.product', string='Product', required=True, store=True,
                                  domain="[('type', 'in', ['product', 'consu'])]", ondelete='cascade')
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
-    measure_on = fields.Selection(related='point_id.measure_on', string='Control per', required=True, store=True,
+    measure_on = fields.Selection(related='point_id.measure_on', string='Control per', store=True,
                                   help='Product = A quality check is requested per product.'
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
