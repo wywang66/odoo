@@ -44,31 +44,31 @@ class QualityMeasureSpec(models.Model):
             if rec.upper_limit < rec.lower_limit:
                 raise ValidationError(_("The upper_limit must be > lower_limit"))
 
-    @api.model_create_multi
-    def create(self, vals):
-        for vals in vals:
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'elw.quality.measure.spec.sequence')
-            rtn = super(QualityMeasureSpec, self).create(vals)
-            return rtn
+    # @api.model_create_multi
+    # def create(self, vals):
+    #     for vals in vals:
+    #         vals['name'] = self.env['ir.sequence'].next_by_code(
+    #             'elw.quality.measure.spec.sequence')
+    #         rtn = super(QualityMeasureSpec, self).create(vals)
+    #         return rtn
 
     # #  no decorator needed
     # To Show tracking in chatter Add tracking=True https://www.odoo.com/forum/help-1/how-to-use-track-visibility-onchange-on-order-lines-fields-odoo14-211204
-    def write(self, vals):
-        if not self.name and not vals.get('name'):
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'elw.quality.measure.spec.sequence')
-        rtn = super(QualityMeasureSpec, self).write(vals)
-        # Error on _get_tracked_fields
-        # if set(vals) & set(self._get_tracked_fields(vals)):
-        #     self._track_changes(self.point_id)
-        return rtn
+    # def write(self, vals):
+    #     if not self.name and not vals.get('name'):
+    #         vals['name'] = self.env['ir.sequence'].next_by_code(
+    #             'elw.quality.measure.spec.sequence')
+    #     rtn = super(QualityMeasureSpec, self).write(vals)
+    #     # Error on _get_tracked_fields
+    #     # if set(vals) & set(self._get_tracked_fields(vals)):
+    #     #     self._track_changes(self.point_id)
+    #     return rtn
 
-    def _track_changes(self, field_to_track):
-        if self.message_ids:
-            message_id = field_to_track.message_post(
-                body=f'{self._description}: {self.display_name}').id
-            trackings = self.env['mail.tracking.value'].sudo().search(
-                [('mail_message_id', '=', self.message_ids[0].id)])
-            for tracking in trackings:
-                tracking.copy({'mail_message_id': message_id})
+    # def _track_changes(self, field_to_track):
+    #     if self.message_ids:
+    #         message_id = field_to_track.message_post(
+    #             body=f'{self._description}: {self.display_name}').id
+    #         trackings = self.env['mail.tracking.value'].sudo().search(
+    #             [('mail_message_id', '=', self.message_ids[0].id)])
+    #         for tracking in trackings:
+    #             tracking.copy({'mail_message_id': message_id})
