@@ -93,7 +93,7 @@ class QualityAlert(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.alert.sequence')
             rtn = super(QualityAlert, self).create(vals)
-            return rtn
+        return rtn
 
     # #  no decorator needed
     def write(self, vals):

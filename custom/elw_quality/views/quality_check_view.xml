@@ -130,7 +130,11 @@
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="picking_id"/>
-                    <field name="alert_result"/>
+                    <field name="alert_result" widget="badge"
+                           decoration-success="alert_result == 'Passed'"
+                           decoration-info="alert_result == 'Solved'"
+                           decoration-danger="quality_state =='Unsolved'"
+                    />
                     <field name="lot_id" optional="hide"/>
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>

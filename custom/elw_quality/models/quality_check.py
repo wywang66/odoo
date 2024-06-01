@@ -100,7 +100,7 @@ class ElwQualityCheck(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
             rtn = super(ElwQualityCheck, self).create(vals)
-            return rtn
+        return rtn
 
     # #  no decorator needed
     def write(self, vals):

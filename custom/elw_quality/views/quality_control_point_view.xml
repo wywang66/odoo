@@ -121,7 +121,6 @@
                                        options="{'no_open': True, 'no_create': True}"/>
                                 <field name="user_id"/>
                                 <field name="team_id" options="{'no_open': True, 'no_create': True}"/>
-                                <field name="measure_data_ids" widget="many2many_tags" invisible="not measure_data_ids"/>
                             </group>
                         </group>
                         <notebook>
