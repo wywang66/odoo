@@ -128,7 +128,7 @@ class Picking(models.Model):
         are matched those the quality check points view, Btn "Quality Check" is visible and the pending
         quality check products are shown. It does not create record for quality.check.
         """
-        qa_checkpoint_lists = self.env['elw.quality.point'].search([])
+        qa_checkpoint_lists = self.env['elw.quality.point'].sudo().search([])
         for rec in self:
             rec.qa_check_product_ids = None
             vals = {}
@@ -146,7 +146,7 @@ class Picking(models.Model):
                 for qa_checkpoint_list in qa_checkpoint_lists:
                     #  first check if picking_type_id is found in picking_type_ids of elw.quality.point
                     if rec.picking_type_id.id in qa_checkpoint_list.picking_type_ids.ids:  # picking_type_ids.ids : [1,2]
-                        qa_product_ids_obj = rec.env['elw.quality.point'].browse(qa_checkpoint_list.id)
+                        qa_product_ids_obj = rec.env['elw.quality.point'].sudo().browse(qa_checkpoint_list.id)
                         # print("qa_product_ids ========", qa_product_ids_obj.product_ids.ids, qa_checkpoint_list.id,
                         #       qa_checkpoint_list.name)
                         # then check if each qa_product_id of elw.quality.point is found in delivery_product_ids
@@ -167,7 +167,7 @@ class Picking(models.Model):
                                 vals['product_id'] = qa_check_product_ids_buf
                                 vals['point_id'] = qa_check_point_ids_buf
 
-                rec.qa_check_product_ids = self.env['product.product'].browse(qa_check_product_ids_buf)
+                rec.qa_check_product_ids = self.env['product.product'].sudo().browse(qa_check_product_ids_buf)
                 return vals
 
     # parse vals and return result list consisting of new_val elements
@@ -219,7 +219,7 @@ class Picking(models.Model):
     @api.model
     def find_team_id(self):
         team_obj = self.env['elw.quality.team']
-        team_search = team_obj.search([])
+        team_search = team_obj.sudo().search([])
         if len(team_search):
             return team_search[0].id
         else:
@@ -227,7 +227,7 @@ class Picking(models.Model):
 
     # def find_lot_id(self):
     #     lot_obj = self.env['stock.lot']
-    #     lot_search = lot_obj.search([])
+    #     lot_search = lot_obj.sudo().search([])
     #     if len(lot_search):
     #         return lot_search[0].id
     #     else:
@@ -255,7 +255,7 @@ class Picking(models.Model):
                 vals_popup['quality_state'] = 'none'
                 vals_popup['partner_id'] = (val['partner_id'])
 
-            self.check_ids = self.env['elw.quality.check'].browse(vals_popup['check_ids'])
+            self.check_ids = self.env['elw.quality.check'].sudo().browse(vals_popup['check_ids'])
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
 
             # print("self.check_ids, =========", self.check_ids, self.check_ids.id)
