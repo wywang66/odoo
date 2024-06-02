@@ -107,7 +107,7 @@ class ElwQualityCheck(models.Model):
                                data.measure_name != '' and data.target_value_unit != '')
             rec.measure_data_count = num_data
 
-    # update check_id in elw.quality.measure.spec and save the records
+    # update check_id in elw.quality.measure.spec and save the records, then archived the records
     @api.depends('measure_data_ids')
     def action_measure_data_confirm(self):
         for line in self.measure_data_ids:
@@ -116,27 +116,16 @@ class ElwQualityCheck(models.Model):
                 raise ValidationError(
                     _("You have not updated Measured Value in Measure name: %s",
                       line.measure_name))
-            elif line.check_id.id != self.id:
-                # line.check_id = self.id
+            elif not line.check_id or line.check_id.id != self.id:
+                line.check_id = self.id
                 print("line", line, line.check_id.id, line.check_id.name)
-                vals = {
-                    'measure_name': line.measure_name,
-                    'target_value': line.target_value,
-                    'measured_value': line.measured_value,
-                    'target_value_unit': line.target_value_unit,
-                    'target_value_unit': line.target_value_unit,
-                    'upper_limit': line.upper_limit,
-                    'lower_limit': line.lower_limit,
-                    'within_tolerance': line.within_tolerance,
-                    'point_id': line.point_id.id,
-                    'check_id': self.id,
-                }
-                print("vals----------", vals)
-                # obj = self.env['elw.quality.measure.spec']
-                create_id = line.create(vals)
-                print("create_id", create_id)
-                # archive the record once 'Confirm' is clicked
-                create_id.active = False
+                copy_id = line.copy()
+                copy_id.active = False
+                # reset the line value
+                # line.measured_value = 0
+                line.check_id = None
+
+
 
     # if manually creating a qa check by selecting qa.point, make sure the product is in qa.point
     @api.constrains('product_id')
@@ -187,6 +176,7 @@ class ElwQualityCheck(models.Model):
         for vals in vals:
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
+            self.action_measure_data_confirm()
             rtn = super(ElwQualityCheck, self).create(vals)
         return rtn
 
@@ -197,6 +187,7 @@ class ElwQualityCheck(models.Model):
         if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
+        self.action_measure_data_confirm()
         rtn = super(ElwQualityCheck, self).write(vals)
         return rtn
 
