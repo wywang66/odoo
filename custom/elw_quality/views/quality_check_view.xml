@@ -133,7 +133,7 @@
                     <field name="alert_result" widget="badge"
                            decoration-success="alert_result == 'Passed'"
                            decoration-info="alert_result == 'Solved'"
-                           decoration-danger="quality_state =='Unsolved'"
+                           decoration-danger="alert_result =='Unsolved'"
                     />
                     <field name="lot_id" optional="hide"/>
                     <field name="control_date"/>

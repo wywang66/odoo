@@ -123,6 +123,7 @@ class ElwQualityPoint(models.Model):
                 'elw.quality.point.sequence')
             # print("Success ............", vals.get('name'))
             # print("create Success ............", vals)
+            # one2many field include multiple records in vals. vals is a single record
             rtn = super(ElwQualityPoint, self).create(vals)
             # print("create return ............", rtn)
         return rtn
