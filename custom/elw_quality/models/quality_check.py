@@ -58,15 +58,15 @@ class ElwQualityCheck(models.Model):
                                        compute="_compute_measured_data")
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
 
-    # measure_data_ids must be filled if test_type_id == 5
-    @api.constrains('measure_data_ids')
-    def _check_if_measure_data_ids_empty(self):
-        for rec in self:
-            if rec.test_type_id.id == 5:
-                for each in rec.measure_data_ids:
-                    if not each.measured_value:
-                        raise ValidationError(
-                            _("You have not updated Measured Value on %s in 'Measurement Data' tag", each.measure_name))
+    # # measure_data_ids must be filled if test_type_id == 5
+    # @api.constrains('measure_data_ids')
+    # def _check_if_measure_data_ids_empty(self):
+    #     for rec in self:
+    #         if rec.test_type_id.id == 5:
+    #             for each in rec.measure_data_ids:
+    #                 if not each.measured_value:
+    #                     raise ValidationError(
+    #                         _("You have not updated Measured Value on %s in 'Measurement Data' tag", each.measure_name))
 
     def _compute_measured_data(self):
         for rec in self:
@@ -81,8 +81,19 @@ class ElwQualityCheck(models.Model):
                     # set the measured_value=0 when loading the measure_data_ids from quality.point
                     # one_measure_setting.measured_value = 0
                     # one_measure_setting.within_tolerance = False
+                    # if the quality.point record has 'check_id'
+                    # print("one_measure_setting.check_id.name---", one_measure_setting.check_id.name)
+                    # if not one_measure_setting.check_id.name:
                     measure_ids.append(one_measure_setting.id)
-
+                    # else:
+                    #     id = self.env['elw.quality.measure.spec'].
+                    #     measure_ids.append(one_measure_setting.id)
+                    #
+                    #     line = self.env['elw.quality.measure.spec'].browse(one_measure_setting.id)
+                    #     print("line-----", line)
+                    #     new_line_id = line.copy()
+                    #     new_line_id.measured_value = 0
+                    #     measure_ids.append(new_line_id.id)
                 rec.measure_data_ids = self.env['elw.quality.measure.spec'].browse(measure_ids)
             else:
                 rec.measure_data_ids = None
@@ -95,6 +106,37 @@ class ElwQualityCheck(models.Model):
                 num_data = sum(1 for data in rec.measure_data_ids if
                                data.measure_name != '' and data.target_value_unit != '')
             rec.measure_data_count = num_data
+
+    # update check_id in elw.quality.measure.spec and save the records
+    @api.depends('measure_data_ids')
+    def action_measure_data_confirm(self):
+        for line in self.measure_data_ids:
+            print('line.id, line.name', line.id, line.name, self.id, line.check_id)
+            if not line.measured_value:
+                raise ValidationError(
+                    _("You have not updated Measured Value in Measure name: %s",
+                      line.measure_name))
+            elif line.check_id.id != self.id:
+                # line.check_id = self.id
+                print("line", line, line.check_id.id, line.check_id.name)
+                vals = {
+                    'measure_name': line.measure_name,
+                    'target_value': line.target_value,
+                    'measured_value': line.measured_value,
+                    'target_value_unit': line.target_value_unit,
+                    'target_value_unit': line.target_value_unit,
+                    'upper_limit': line.upper_limit,
+                    'lower_limit': line.lower_limit,
+                    'within_tolerance': line.within_tolerance,
+                    'point_id': line.point_id.id,
+                    'check_id': self.id,
+                }
+                print("vals----------", vals)
+                # obj = self.env['elw.quality.measure.spec']
+                create_id = line.create(vals)
+                print("create_id", create_id)
+                # archive the record once 'Confirm' is clicked
+                create_id.active = False
 
     # if manually creating a qa check by selecting qa.point, make sure the product is in qa.point
     @api.constrains('product_id')

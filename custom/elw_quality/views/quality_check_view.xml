@@ -188,7 +188,8 @@
                                 <field name="control_date"/>
                                 <field name="user_id"/>
                                 <field name="has_lot_id" invisible="1"/>
-                                <field name="lot_id" invisible="not has_lot_id or not product_id" required="has_lot_id"/>
+                                <field name="lot_id" invisible="not has_lot_id or not product_id"
+                                       required="has_lot_id"/>
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">
                                         <field name="name"/>
@@ -197,7 +198,7 @@
                                 </field>
                                 <!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
                                 <!--                                <field name="fail_and_not_alert_created"/>-->
-<!--                                <field name="measure_data_count"/>-->
+                                <!--                                <field name="measure_data_count"/>-->
                             </group>
                             <group>
                                 <field name="picking_id"/>
@@ -221,6 +222,10 @@
                                 </group>
                             </page>
                             <page string="Measurement Data" invisible="test_type_id !=5">
+                                <header>
+                                    <button name="action_measure_data_confirm" type="object" class="btn-primary"
+                                            string="Confirm"/>
+                                </header>
                                 <field name="measure_data_ids">
                                     <tree string="Measure Settings " editable="bottom">
                                         <field name="name"/>
@@ -230,7 +235,7 @@
                                         <field name="target_value_unit"/>
                                         <field name="upper_limit"/>
                                         <field name="lower_limit"/>
-                                        <field name="within_tolerance" />
+                                        <field name="within_tolerance"/>
                                     </tree>
                                 </field>
                             </page>

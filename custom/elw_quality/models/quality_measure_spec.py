@@ -21,6 +21,16 @@ class QualityMeasureSpec(models.Model):
     product_id = fields.Many2one('product.product', string="Products", domain="[('type','in',('product','consu'))]",
                                  store=True, related="point_id.product_id")
     date_created = fields.Date(string="Date Created", default=fields.Date.context_today)
+    check_id = fields.Many2one('elw.quality.check', string='Check Ref#',
+                               store=True)  # check_id is name of quality.check
+
+    @api.depends('point_id', 'check_id')
+    def _compute_display_name(self):
+        for rec in self:
+            if rec.check_id.name:
+                rec.display_name = rec.name + ':' + rec.point_id.name + ':' + rec.check_id.name
+            else:
+                rec.display_name = rec.name + ':' + rec.point_id.name
 
     @api.onchange('measured_value')
     def onchange_measured_value(self):
@@ -61,5 +71,3 @@ class QualityMeasureSpec(models.Model):
         # print("write  ............", vals)
         rtn = super(QualityMeasureSpec, self).write(vals)
         return rtn
-
-
