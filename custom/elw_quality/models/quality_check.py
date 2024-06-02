@@ -44,11 +44,57 @@ class ElwQualityCheck(models.Model):
     alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result')
     fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
                                                 compute='_compute_fail_and_not_alert_created', store=True)
-
     picture = fields.Binary(string="Picture", store=True)
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
+
+    # use related to get measurement settings defined in quality.point, readonly=false so this field is editable
+    # commented domain as it report "test_type_id" error
+    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
+                                       readonly=False,
+                                       # related='point_id.measure_data_ids')
+                                       # domain=[('test_type_id', '=', 'self.test_type_id')],
+                                       compute="_compute_measured_data")
+    measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
+
+    # measure_data_ids must be filled if test_type_id == 5
+    @api.constrains('measure_data_ids')
+    def _check_if_measure_data_ids_empty(self):
+        for rec in self:
+            if rec.test_type_id.id == 5:
+                for each in rec.measure_data_ids:
+                    if not each.measured_value:
+                        raise ValidationError(
+                            _("You have not updated Measured Value on %s in 'Measurement Data' tag", each.measure_name))
+
+    def _compute_measured_data(self):
+        for rec in self:
+            if rec.test_type_id.id == 5:
+                data = self.env['elw.quality.point'].browse(rec.point_id.id)
+                measure_ids = []
+                # print(data, data.measure_data_ids) #elw.quality.point(4,) elw.quality.measure.spec(7, 6)
+                for one_measure_setting in data.measure_data_ids:
+                    # print(one_measure_setting.id, one_measure_setting.name, one_measure_setting.measure_name,
+                    #       one_measure_setting.upper_limit,
+                    #       one_measure_setting.lower_limit)
+                    # set the measured_value=0 when loading the measure_data_ids from quality.point
+                    # one_measure_setting.measured_value = 0
+                    # one_measure_setting.within_tolerance = False
+                    measure_ids.append(one_measure_setting.id)
+
+                rec.measure_data_ids = self.env['elw.quality.measure.spec'].browse(measure_ids)
+            else:
+                rec.measure_data_ids = None
+
+    @api.depends('measure_data_ids')
+    def _compute_measure_data_count(self):
+        for rec in self:
+            num_data = 0
+            if rec.measure_data_ids:
+                num_data = sum(1 for data in rec.measure_data_ids if
+                               data.measure_name != '' and data.target_value_unit != '')
+            rec.measure_data_count = num_data
 
     # if manually creating a qa check by selecting qa.point, make sure the product is in qa.point
     @api.constrains('product_id')

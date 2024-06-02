@@ -106,7 +106,7 @@ class QualityAlert(models.Model):
     def unlink(self):
         for rec in self:
             if rec.check_id or rec.picking_id:
-                raise ValidationError(_("Can delete the record that links to Quality Check or Deliveries/Receipts"))
+                raise ValidationError(_("Can not delete the record that links to Quality Check or Deliveries/Receipts"))
         return super(QualityAlert, self).unlink()
 
     def action_see_alerts(self):

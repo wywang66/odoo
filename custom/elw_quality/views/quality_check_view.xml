@@ -220,6 +220,20 @@
                                     <field string="Notes" name="additional_note" widget="text"/>
                                 </group>
                             </page>
+                            <page string="Measurement Data" invisible="test_type_id !=5">
+                                <field name="measure_data_ids">
+                                    <tree string="Measure Settings " editable="bottom">
+                                        <field name="name"/>
+                                        <field name="measure_name"/>
+                                        <field name="measured_value"/>
+                                        <field name="target_value"/>
+                                        <field name="target_value_unit"/>
+                                        <field name="upper_limit"/>
+                                        <field name="lower_limit"/>
+                                        <field name="within_tolerance" />
+                                    </tree>
+                                </field>
+                            </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
