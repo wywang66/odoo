@@ -56,7 +56,7 @@ class ElwQualityPoint(models.Model):
     quality_check_count = fields.Integer(string="Check Count", compute="_compute_quality_check_count")
     check_ids = fields.One2many('elw.quality.check', 'point_id', string="Check IDS")
     #  measure data are child data angit addd put in parent quality.point model
-    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
+    measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
 
     # for notebook
     note = fields.Html('Note')
@@ -92,11 +92,11 @@ class ElwQualityPoint(models.Model):
             else:
                 rec.product_id = None
 
-    # measure_data_ids must be filled if test_type_id == 5
-    @api.constrains('measure_data_ids')
-    def _check_if_measure_data_ids_empty(self):
+    # measure_spec_ids must be filled if test_type_id == 5
+    @api.constrains('measure_spec_ids')
+    def _check_if_measure_spec_ids_empty(self):
         for rec in self:
-            if rec.test_type_id.id == 5 and not len(rec.measure_data_ids):
+            if rec.test_type_id.id == 5 and not len(rec.measure_spec_ids):
                 raise ValidationError(_("Please fill in Measurement Settings Tag."))
 
     @api.depends('check_ids')
@@ -145,9 +145,9 @@ class ElwQualityPoint(models.Model):
         for rec in self:
             if rec.quality_check_count:
                 raise ValidationError(_("Can not delete the record that links to Quality Check"))
-            elif len(rec.measure_data_ids) > 0:
+            elif len(rec.measure_spec_ids) > 0:
                 # unlink child's records
-                rec.measure_data_ids.unlink()
+                rec.measure_spec_ids.unlink()
         return super(ElwQualityPoint, self).unlink()
 
     def action_see_quality_checks(self):

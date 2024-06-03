@@ -51,19 +51,19 @@ class ElwQualityCheck(models.Model):
 
     # use related to get measurement settings defined in quality.point, readonly=false so this field is editable
     # commented domain as it report "test_type_id" error
-    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
+    measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
                                        readonly=False,
-                                       # related='point_id.measure_data_ids')
+                                       # related='point_id.measure_spec_ids')
                                        # domain=[('test_type_id', '=', 'self.test_type_id')],
                                        compute="_compute_measured_data")
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
 
-    # # measure_data_ids must be filled if test_type_id == 5
-    # @api.constrains('measure_data_ids')
-    # def _check_if_measure_data_ids_empty(self):
+    # # measure_spec_ids must be filled if test_type_id == 5
+    # @api.constrains('measure_spec_ids')
+    # def _check_if_measure_spec_ids_empty(self):
     #     for rec in self:
     #         if rec.test_type_id.id == 5:
-    #             for each in rec.measure_data_ids:
+    #             for each in rec.measure_spec_ids:
     #                 if not each.measured_value:
     #                     raise ValidationError(
     #                         _("You have not updated Measured Value on %s in 'Measurement Data' tag", each.measure_name))
@@ -73,31 +73,31 @@ class ElwQualityCheck(models.Model):
             if rec.test_type_id.id == 5:
                 data = self.env['elw.quality.point'].browse(rec.point_id.id)
                 measure_ids = []
-                # print(data, data.measure_data_ids) #elw.quality.point(4,) elw.quality.measure.spec(7, 6)
-                for one_measure_setting in data.measure_data_ids:
+                # print(data, data.measure_spec_ids) #elw.quality.point(4,) elw.quality.measure.spec(7, 6)
+                for one_measure_setting in data.measure_spec_ids:
                     measure_ids.append(one_measure_setting.id)
                     # else:
                     #     # measure_obj = self.env['elw.quality.measure.spec']
                     #     a_id = self.env['elw.quality.measure.spec'].search([('check_id.name', '=', self.name)])
                     #     print("", a_id.id)
                     #     measure_ids.append(a_id.id)
-                rec.measure_data_ids = self.env['elw.quality.measure.spec'].browse(measure_ids)
+                rec.measure_spec_ids = self.env['elw.quality.measure.spec'].browse(measure_ids)
             else:
-                rec.measure_data_ids = None
+                rec.measure_spec_ids = None
 
-    @api.depends('measure_data_ids')
+    @api.depends('measure_spec_ids')
     def _compute_measure_data_count(self):
         for rec in self:
             num_data = 0
-            if rec.measure_data_ids:
-                num_data = sum(1 for data in rec.measure_data_ids if
+            if rec.measure_spec_ids:
+                num_data = sum(1 for data in rec.measure_spec_ids if
                                data.measure_name != '' and data.target_value_unit != '')
             rec.measure_data_count = num_data
 
     # update measured_value in elw.quality.measure.spec and save the records in measure.data
-    @api.depends('measure_data_ids')
+    @api.depends('measure_spec_ids')
     def action_measure_data_confirm(self):
-        for line in self.measure_data_ids:
+        for line in self.measure_spec_ids:
             # print('line.id, line.name', line.id, line.name, self.id, line.check_id)
             if not line.measured_value:
                 raise ValidationError(

@@ -34,7 +34,7 @@ class QualityMeasureSpec(models.Model):
 
     @api.onchange('measured_value')
     def onchange_measured_value(self):
-        for line in self.point_id.measure_data_ids:
+        for line in self.point_id.measure_spec_ids:
             if line.lower_limit <= line.measured_value <= line.upper_limit:
                 vals = {
                     'within_tolerance': True,
@@ -97,7 +97,7 @@ class QualityMeasureData(models.Model):
 
     @api.onchange('measured_value')
     def onchange_measured_value(self):
-        for line in self.point_id.measure_data_ids:
+        for line in self.point_id.measure_spec_ids:
             if line.lower_limit <= line.measured_value <= line.upper_limit:
                 vals = {
                     'within_tolerance': True,

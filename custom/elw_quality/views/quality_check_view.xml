@@ -226,7 +226,7 @@
                                     <button name="action_measure_data_confirm" type="object" class="btn-primary"
                                             string="Confirm"/>
                                 </header>
-                                <field name="measure_data_ids">
+                                <field name="measure_spec_ids">
                                     <tree string="Measure Settings " editable="bottom">
                                         <field name="name"/>
                                         <field name="measure_name"/>
