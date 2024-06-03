@@ -54,9 +54,11 @@ class ElwQualityCheck(models.Model):
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
                                        readonly=False,
                                        # related='point_id.measure_spec_ids')
-                                       # domain=[('test_type_id', '=', 'self.test_type_id')],
-                                       compute="_compute_measured_data")
+                                       domain=[('test_type_id', '=', 5)],
+                                       compute="_compute_measured_spec")
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
+    measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
+                                       compute="_compute_measured_data")
 
     # # measure_spec_ids must be filled if test_type_id == 5
     # @api.constrains('measure_spec_ids')
@@ -71,6 +73,15 @@ class ElwQualityCheck(models.Model):
     def _compute_measured_data(self):
         for rec in self:
             if rec.test_type_id.id == 5:
+                data = self.env['elw.quality.measure.data'].search([('check_id', '=', rec.id)])
+                # print("data------", data)
+                rec.measure_data_ids = data
+            else:
+                rec.measure_data_ids = None
+
+    def _compute_measured_spec(self):
+        for rec in self:
+            if rec.test_type_id.id == 5:
                 data = self.env['elw.quality.measure.spec'].search([('point_id', '=', rec.point_id.id)])
                 rec.measure_spec_ids = data
             else:
@@ -79,7 +90,8 @@ class ElwQualityCheck(models.Model):
     @api.depends('measure_spec_ids')
     def _compute_measure_data_count(self):
         for rec in self:
-            rec.measure_data_count = self.env['elw.quality.measure.spec'].search_count([('point_id', '=', rec.point_id.id)])
+            rec.measure_data_count = self.env['elw.quality.measure.spec'].search_count(
+                [('point_id', '=', rec.point_id.id)])
 
     # update measured_value in elw.quality.measure.spec and save the records in measure.data
     @api.depends('measure_spec_ids')
@@ -267,9 +279,8 @@ class ElwQualityCheck(models.Model):
     def action_see_quality_measure_data(self):
         return {
             'name': _('Quality Measurement Data'),
-            'res_model': 'elw.quality.measure.spec',
-            # 'res_id': self.alert_ids.id,
-            'domain': [('id', '=', self.measure_spec_ids.ids)],
+            'res_model': 'elw.quality.measure.data',
+            'domain': [('id', '=', self.measure_data_ids.ids)],
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',
             'target': 'current',
