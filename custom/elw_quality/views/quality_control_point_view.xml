@@ -132,7 +132,7 @@
                             </page>
                             <page string="Measurement Settings" invisible="test_type_id !=5">
                                 <field name="measure_spec_ids">
-                                    <tree string="Measure Settings " editable="top">
+                                    <tree string="Measure Settings " editable="bottom">
                                         <field name="name"/>
                                         <field name="measure_name"/>
                                         <field name="target_value"/>

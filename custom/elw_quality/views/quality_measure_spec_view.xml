@@ -106,7 +106,7 @@
             <tree string="Quality Measure data" delete="0" create="0">
                 <field name="name"/>
                 <!--                <field name="active" invisible="1"/>-->
-                <!--                <field name="display_name"/>-->
+<!--                <field name="spec_id"/>-->
                 <field name="point_id"/>
                 <field name="check_id"/>
                 <field name="product_id"/>
@@ -135,7 +135,7 @@
                     </div>
                     <group>
                         <field name="active" invisible="1"/>
-<!--                        <field name="display_name"/>-->
+<!--                        <field name="spec_id"/>-->
                         <field name="point_id"/>
                         <field name="check_id"/>
                         <field name="product_id"/>

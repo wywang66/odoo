@@ -181,7 +181,7 @@
                             <field name="active" invisible="1"/>
                             <div class="oe_button_box" name="button_box">
                                 <button name="action_see_quality_measure_data" icon="fa-book" type="object"
-                                        class="oe_stat_button">
+                                        class="oe_stat_button" invisible="not measure_data_ids">
                                     <field name="measure_data_count" string="Quality Measurement Data"
                                            widget="statinfo"/>
                                 </button>
@@ -232,7 +232,7 @@
                                     <field string="Notes" name="additional_note" widget="text"/>
                                 </group>
                             </page>
-                            <page string="Measurement Spec" invisible="measure_data_ids">
+                            <page string="Measurement Spec" invisible="measure_data_ids or test_type_id != 5">
                                 <header>
                                     <button name="action_measure_data_confirm" type="object" class="btn-primary"
                                             string="Confirm"/>
@@ -255,6 +255,7 @@
                                 <field name="measure_data_ids">
                                     <tree string="Measure Data " editable="bottom">
                                         <field name="name"/>
+<!--                                        <field name="spec_id"/>-->
                                         <field name="measure_name"/>
                                         <field name="measured_value"/>
                                         <field name="target_value"/>

@@ -49,12 +49,8 @@ class ElwQualityCheck(models.Model):
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
 
-    # use related to get measurement settings defined in quality.point, readonly=false so this field is editable
-    # commented domain as it report "test_type_id" error
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
                                        readonly=False,
-                                       # related='point_id.measure_spec_ids')
-                                       domain=[('test_type_id', '=', 5)],
                                        compute="_compute_measured_spec")
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
@@ -108,7 +104,6 @@ class ElwQualityCheck(models.Model):
                     'target_value': line.target_value,
                     'measured_value': line.measured_value,
                     'target_value_unit': line.target_value_unit,
-                    'target_value_unit': line.target_value_unit,
                     'upper_limit': line.upper_limit,
                     'lower_limit': line.lower_limit,
                     'within_tolerance': line.within_tolerance,
@@ -121,6 +116,7 @@ class ElwQualityCheck(models.Model):
                 # print("create_id", create_id, create_id.id)
                 # reset
                 line.measured_value = 0
+                line.within_tolerance = False
 
     # if manually creating a qa check by selecting qa.point, make sure the product is in qa.point
     @api.constrains('product_id')
