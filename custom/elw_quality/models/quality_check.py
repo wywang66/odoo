@@ -51,7 +51,7 @@ class ElwQualityCheck(models.Model):
 
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
                                        readonly=False,
-                                       compute="_compute_measured_spec")
+                                       compute="_compute_measured_spec", store=False)
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
                                        compute="_compute_measured_data")
@@ -66,6 +66,7 @@ class ElwQualityCheck(models.Model):
     #                     raise ValidationError(
     #                         _("You have not updated Measured Value on %s in 'Measurement Data' tag", each.measure_name))
 
+    @api.depends('test_type_id')
     def _compute_measured_data(self):
         for rec in self:
             if rec.test_type_id.id == 5:
@@ -75,10 +76,13 @@ class ElwQualityCheck(models.Model):
             else:
                 rec.measure_data_ids = None
 
+    @api.depends('test_type_id', 'point_id')
     def _compute_measured_spec(self):
         for rec in self:
             if rec.test_type_id.id == 5:
                 data = self.env['elw.quality.measure.spec'].search([('point_id', '=', rec.point_id.id)])
+                # data = self.env['elw.quality.measure.spec'].browse(rec.point_id.id)
+                # print()
                 rec.measure_spec_ids = data
             else:
                 rec.measure_spec_ids = None
@@ -167,6 +171,7 @@ class ElwQualityCheck(models.Model):
         for vals in vals:
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
+            print("before create vals", vals)
             rtn = super(ElwQualityCheck, self).create(vals)
         return rtn
 

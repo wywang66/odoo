@@ -97,7 +97,7 @@ class QualityMeasureData(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char('Sequence', readonly=True)
-    spec_id = fields.Many2one('elw.quality.measure.spec', string="Measure Spec Ref#")
+    # spec_id = fields.Many2one('elw.quality.measure.spec', string="Measure Spec Ref#")
     measure_name = fields.Char('Measure Name', required=True, translate=True, tracking=True, store=True)
     target_value = fields.Float(string="Target Value")
     measured_value = fields.Float(string="Measured Value", tracking=True, store=True)
@@ -112,9 +112,9 @@ class QualityMeasureData(models.Model):
     check_id = fields.Many2one('elw.quality.check', string='Check Ref#',
                                store=True)  # check_id is name of quality.check
 
-    def _get_spec_id(self):
-        for line in self:
-            line.spec_id = self.env['elw.quality.measure.spec'].search([('point_id', '=', line.point_id)])
+    # def _get_spec_id(self):
+    #     for line in self:
+    #         line.spec_id = self.env['elw.quality.measure.spec'].search([('point_id', '=', line.point_id)])
 
     # @api.onchange, it just not support one2many
     @api.depends('measured_value', 'lower_limit', 'upper_limit')
