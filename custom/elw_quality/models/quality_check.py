@@ -71,28 +71,15 @@ class ElwQualityCheck(models.Model):
     def _compute_measured_data(self):
         for rec in self:
             if rec.test_type_id.id == 5:
-                data = self.env['elw.quality.point'].browse(rec.point_id.id)
-                measure_ids = []
-                # print(data, data.measure_spec_ids) #elw.quality.point(4,) elw.quality.measure.spec(7, 6)
-                for one_measure_setting in data.measure_spec_ids:
-                    measure_ids.append(one_measure_setting.id)
-                    # else:
-                    #     # measure_obj = self.env['elw.quality.measure.spec']
-                    #     a_id = self.env['elw.quality.measure.spec'].search([('check_id.name', '=', self.name)])
-                    #     print("", a_id.id)
-                    #     measure_ids.append(a_id.id)
-                rec.measure_spec_ids = self.env['elw.quality.measure.spec'].browse(measure_ids)
+                data = self.env['elw.quality.measure.spec'].search([('point_id', '=', rec.point_id.id)])
+                rec.measure_spec_ids = data
             else:
                 rec.measure_spec_ids = None
 
     @api.depends('measure_spec_ids')
     def _compute_measure_data_count(self):
         for rec in self:
-            num_data = 0
-            if rec.measure_spec_ids:
-                num_data = sum(1 for data in rec.measure_spec_ids if
-                               data.measure_name != '' and data.target_value_unit != '')
-            rec.measure_data_count = num_data
+            rec.measure_data_count = self.env['elw.quality.measure.spec'].search_count([('point_id', '=', rec.point_id.id)])
 
     # update measured_value in elw.quality.measure.spec and save the records in measure.data
     @api.depends('measure_spec_ids')
@@ -276,3 +263,14 @@ class ElwQualityCheck(models.Model):
             result['res_id'] = alerts.id
             # print("result--------", result)
         return result
+
+    def action_see_quality_measure_data(self):
+        return {
+            'name': _('Quality Measurement Data'),
+            'res_model': 'elw.quality.measure.spec',
+            # 'res_id': self.alert_ids.id,
+            'domain': [('id', '=', self.measure_spec_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'target': 'current',
+        }

@@ -152,6 +152,8 @@
             <field name="model">elw.quality.check</field>
             <field name="arch" type="xml">
                 <form>
+
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <header>
                         <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none'"
                                 string="Pass" data-hotkey="q"/>
@@ -176,6 +178,14 @@
                                     invisible="alert_count == 0">
                                 <field name="alert_count" string="Quality Alerts" widget="statinfo"/>
                             </button>
+                            <field name="active" invisible="1"/>
+                            <div class="oe_button_box" name="button_box">
+                                <button name="action_see_quality_measure_data" icon="fa-check" type="object"
+                                        class="oe_stat_button">
+                                    <field name="measure_data_count" string="Quality Measurement Data"
+                                           widget="statinfo"/>
+                                </button>
+                            </div>
                         </div>
                         <h3>
                             <field name="name" readonly="1"/>
@@ -208,6 +218,7 @@
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="user_id" string="Control Person" invisible="1"/>
                                 <field name="partner_id" invisible="not partner_id"/>
+                                <field name="measure_data_count" invisible="1"/>
                             </group>
                         </group>
                         <!--2 is 'picture' -->
