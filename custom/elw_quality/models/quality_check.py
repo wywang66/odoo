@@ -189,6 +189,9 @@ class ElwQualityCheck(models.Model):
             if rec.quality_state != 'none' or rec.picking_id:
                 raise ValidationError(
                     _("Can not delete the record that is not in 'To Do' or has Deliveries/Receipts order"))
+            elif len(rec.measure_data_ids) > 0:
+                # unlink child's records
+                rec.measure_data_ids.unlink()
         return super(ElwQualityCheck, self).unlink()
 
     @api.depends('quality_state')

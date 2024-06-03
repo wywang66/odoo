@@ -180,7 +180,7 @@
                             </button>
                             <field name="active" invisible="1"/>
                             <div class="oe_button_box" name="button_box">
-                                <button name="action_see_quality_measure_data" icon="fa-check" type="object"
+                                <button name="action_see_quality_measure_data" icon="fa-book" type="object"
                                         class="oe_stat_button">
                                     <field name="measure_data_count" string="Quality Measurement Data"
                                            widget="statinfo"/>

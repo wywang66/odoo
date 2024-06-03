@@ -103,7 +103,7 @@
         <field name="name">elw.quality.measure.data.tree.view</field>
         <field name="model">elw.quality.measure.data</field>
         <field name="arch" type="xml">
-            <tree string="Quality Measure data">
+            <tree string="Quality Measure data" delete="0" create="0">
                 <field name="name"/>
                 <!--                <field name="active" invisible="1"/>-->
                 <!--                <field name="display_name"/>-->
@@ -116,7 +116,7 @@
                 <field name="upper_limit"/>
                 <field name="lower_limit"/>
                 <field name="date_created"/>
-                <field name="within_tolerance" optional="hide"/>
+                <field name="within_tolerance"/>
             </tree>
         </field>
     </record>
@@ -126,7 +126,7 @@
         <field name="model">elw.quality.measure.data</field>
         <field name="arch" type="xml">
             <!--readonly form-->
-            <form string="Quality Measure Data Form">
+            <form string="Quality Measure Data Form" delete="0" create="0">
                 <sheet>
                     <div class="oe_title">
                         <h3>
@@ -135,7 +135,7 @@
                     </div>
                     <group>
                         <field name="active" invisible="1"/>
-                        <field name="display_name"/>
+<!--                        <field name="display_name"/>-->
                         <field name="point_id"/>
                         <field name="check_id"/>
                         <field name="product_id"/>
