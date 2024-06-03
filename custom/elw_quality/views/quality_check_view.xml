@@ -233,10 +233,10 @@
                                 </group>
                             </page>
                             <page string="Measurement Spec" invisible="measure_data_ids or test_type_id != 5">
-                                <header>
-                                    <button name="action_measure_data_confirm" type="object" class="btn-primary"
-                                            string="Confirm"/>
-                                </header>
+<!--                                <header>-->
+<!--                                    <button name="action_measure_data_confirm" type="object" class="btn-primary"-->
+<!--                                            string="Save"/>-->
+<!--                                </header>-->
                                 <field name="measure_spec_ids">
                                     <tree string="Measure Settings " editable="bottom">
                                         <field name="name"/>

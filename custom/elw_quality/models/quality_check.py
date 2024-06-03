@@ -203,7 +203,40 @@ class ElwQualityCheck(models.Model):
                 rec.quality_state = 'fail'
 
     def do_measure(self):
-        pass
+        qa_measure_state = []
+        if not self.measure_data_ids:
+            for line in self.measure_spec_ids:
+                # print('line.id, line.name', line.id, line.name, self.id, line.check_id)
+                if not line.measured_value:
+                    raise ValidationError(
+                        _("You have not updated Measured Value in Measure name: %s",
+                          line.measure_name))
+                else:
+                    vals = {
+                        'measure_name': line.measure_name,
+                        'target_value': line.target_value,
+                        'measured_value': line.measured_value,
+                        'target_value_unit': line.target_value_unit,
+                        'upper_limit': line.upper_limit,
+                        'lower_limit': line.lower_limit,
+                        'within_tolerance': line.within_tolerance,
+                        'point_id': line.point_id.id,
+                        'check_id': self.id,
+                    }
+                    # print("vals----------", vals)
+                    qa_measure_state.append(line.within_tolerance)
+                    data_obj = self.env['elw.quality.measure.data']
+                    create_id = data_obj.create(vals)
+                    # print("create_id", create_id, create_id.id)
+                    # reset
+                    line.measured_value = 0
+                    line.within_tolerance = False
+
+            # print("qa_measure_state", qa_measure_state)
+            if False in qa_measure_state:
+                self.quality_state = 'fail'
+            else:
+                self.quality_state = 'pass'
 
     @api.model
     def _create_qa_alert_record(self, vals):
