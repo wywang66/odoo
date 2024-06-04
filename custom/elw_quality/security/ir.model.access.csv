@@ -10,4 +10,3 @@ access_elw_quality_alert_stage,elw.quality.alert.stage,model_elw_quality_alert_s
 access_elw_quality_check_popup_wizard,elw.quality.check.popup.wizard,model_elw_quality_check_popup_wizard,base.group_user,1,1,1,1
 access_elw_quality_measure_spec,elw.quality.measure.spec,model_elw_quality_measure_spec,base.group_user,1,1,1,1
 access_elw_quality_measure_data,elw.quality.measure.data,model_elw_quality_measure_data,base.group_user,1,1,1,1
-access_elw_quality_data,elw.quality.data,model_elw_quality_data,base.group_user,1,1,1,1

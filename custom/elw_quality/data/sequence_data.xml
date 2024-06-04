@@ -40,13 +40,5 @@
             <field name="company_id" eval="False"/> <!-- False : common for all companies-->
         </record>
 
-        <record id="seq_elw_quality_data" model="ir.sequence">
-            <field name="name">Elw Quality Data Sequence</field>
-            <field name="code">elw.quality.data.sequence</field>
-            <field name="prefix">DD</field>
-            <field name="padding">3</field>
-            <field name="company_id" eval="False"/> <!-- False : common for all companies-->
-        </record>
-
     </data>
 </odoo>
