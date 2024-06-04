@@ -27,12 +27,12 @@
                 <field name="check_id" optional="hide"/>
                 <field name="product_id"/>
                 <field name="target_value"/>
-                <field name="measured_value"/>
+<!--                <field name="measured_value"/>-->
                 <field name="target_value_unit"/>
                 <field name="upper_limit"/>
                 <field name="lower_limit"/>
                 <field name="date_created"/>
-                <field name="within_tolerance" optional="hide"/>
+<!--                <field name="within_tolerance" optional="hide"/>-->
             </tree>
         </field>
     </record>
@@ -57,12 +57,12 @@
                         <field name="product_id"/>
                         <field name="measure_name"/>
                         <field name="target_value"/>
-                        <field name="measured_value"/>
+<!--                        <field name="measured_value"/>-->
                         <field name="target_value_unit"/>
                         <field name="upper_limit"/>
                         <field name="lower_limit"/>
                         <field name="date_created"/>
-                        <field name="within_tolerance" optional="hide"/>
+<!--                        <field name="within_tolerance" optional="hide"/>-->
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -146,7 +146,7 @@
                         <field name="upper_limit"/>
                         <field name="lower_limit"/>
                         <field name="date_created"/>
-                        <field name="within_tolerance" optional="hide"/>
+                        <field name="within_tolerance" />
                     </group>
                 </sheet>
                 <div class="oe_chatter">

@@ -232,56 +232,19 @@
                                     <field string="Notes" name="additional_note" widget="text"/>
                                 </group>
                             </page>
-                            <page string="Measurement Spec" >
-<!--                                <page string="Measurement Spec" invisible="measure_data_ids or test_type_id != 5">-->
-<!--                                <header>-->
-<!--                                    <button name="action_measure_data_confirm" type="object" class="btn-primary"-->
-<!--                                            string="Save"/>-->
-<!--                                </header>-->
-                                <field name="measure_spec_ids">
-                                    <tree string="Measure Settings " editable="bottom">
-                                        <field name="name"/>
-                                        <field name="measure_name"/>
-                                        <field name="measured_value"/>
-                                        <field name="target_value"/>
-                                        <field name="target_value_unit"/>
-                                        <field name="upper_limit"/>
-                                        <field name="lower_limit"/>
-                                        <field name="within_tolerance"/>
-                                    </tree>
-                                </field>
-                            </page>
 <!--                            <page string="Measurement Data" invisible="not measure_data_ids">-->
-                            <page string="Measurement Data" >
+                            <page string="Measurement Data" invisible=" test_type_id != 5">
                                 <field name="measure_data_ids">
                                     <tree string="Measure Data " editable="bottom">
-                                        <field name="name"/>
-<!--                                        <field name="spec_id"/>-->
-                                        <field name="measure_name"/>
-                                        <field name="measured_value"/>
-                                        <field name="target_value"/>
-                                        <field name="target_value_unit"/>
-                                        <field name="upper_limit"/>
-                                        <field name="lower_limit"/>
-                                        <field name="within_tolerance"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Measurement" >
-                                <field name="data_ids">
-                                    <tree string="Data " editable="bottom">
                                         <field name="name"/>
                                         <field name="spec_id"/>
                                         <field name="measure_name"/>
                                         <field name="measured_value"/>
-<!--                                        <field name="target_value"/>-->
+                                        <field name="target_value"/>
                                         <field name="target_value_unit"/>
                                         <field name="upper_limit"/>
                                         <field name="lower_limit"/>
                                         <field name="within_tolerance"/>
-                                        <field name="product_id"/>
-                                        <field name="point_id"/>
-                                        <field name="check_id"/>
                                     </tree>
                                 </field>
                             </page>
