@@ -54,20 +54,11 @@ class ElwQualityCheck(models.Model):
                                        compute="_compute_measured_spec", store=False)
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
-                                       store=True)
-    # measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
-    #                                    compute="_compute_measured_data")
+                                       compute="", store=True)
 
-
-    # # measure_spec_ids must be filled if test_type_id == 5
-    # @api.constrains('measure_spec_ids')
-    # def _check_if_measure_spec_ids_empty(self):
-    #     for rec in self:
-    #         if rec.test_type_id.id == 5:
-    #             for each in rec.measure_spec_ids:
-    #                 if not each.measured_value:
-    #                     raise ValidationError(
-    #                         _("You have not updated Measured Value on %s in 'Measurement Data' tag", each.measure_name))
+    @api.depends('point_id')
+    def _check_measure_data_ids(self):
+        pass
 
     @api.depends('test_type_id')
     def _compute_measured_data(self):
@@ -85,8 +76,9 @@ class ElwQualityCheck(models.Model):
             if rec.test_type_id.id == 5:
                 data = self.env['elw.quality.measure.spec'].search([('point_id', '=', rec.point_id.id)])
                 # data = self.env['elw.quality.measure.spec'].browse(rec.point_id.id)
-                # print()
+
                 rec.measure_spec_ids = data
+                print("rec.measure_spec_ids---", rec.measure_spec_ids)
             else:
                 rec.measure_spec_ids = None
 
@@ -184,21 +176,40 @@ class ElwQualityCheck(models.Model):
 
     def do_measure(self):
         qa_measure_state = []
+        measure_names =[]
         if self.measure_data_ids:
             for line in self.measure_data_ids:
-                # print('line.id, line.name', line.id, line.name, self.id, line.check_id)
-                if not line.measured_value:
+                if line.point_id.id != self.point_id.id:
+                    raise ValidationError(
+                        _("Selected Control Point Ref# %s does not match with the current: %s",
+                          line.point_id.name, self.point_id.name))
+                elif not line.measured_value:
                     raise ValidationError(
                         _("You have not updated Measured Value in Measure name: %s",
                           line.measure_name))
                 else:
                     qa_measure_state.append(line.within_tolerance)
-
-            # print("qa_measure_state", qa_measure_state)
-            if False in qa_measure_state:
-                self.quality_state = 'fail'
+                    measure_names.append(line.measure_name)
+            # print("measure_names", measure_names, qa_measure_state)
+            # check if the total measurement count id correct
+            cnt = len(self.env['elw.quality.measure.spec'].search([('point_id.id', '=', self.point_id.id)]))
+            if cnt != len(self.measure_data_ids):
+                raise ValidationError(
+                    _("Selected %d measurement items, not matching with the %d items in Quality Control Point",
+                      len(self.measure_data_ids), cnt))
+            # check if any measure_name duplication
+            elif len(measure_names) != len(set(measure_names)):
+                raise ValidationError(
+                    _("Duplicated Measure Name found !"))
             else:
-                self.quality_state = 'pass'
+                # print("qa_measure_state", qa_measure_state)
+                if False in qa_measure_state:
+                    self.quality_state = 'fail'
+                else:
+                    self.quality_state = 'pass'
+        else:
+            raise ValidationError(_("Please fill up the Measurement Data"))
+
 
     @api.model
     def _create_qa_alert_record(self, vals):
@@ -220,7 +231,6 @@ class ElwQualityCheck(models.Model):
         }
         # print("vals in quality.check---------", vals)
         qa_alert_rec = self._create_qa_alert_record(vals)
-
         return {
             'name': _('Quality Alert'),
             'res_model': 'elw.quality.alert',

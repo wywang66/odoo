@@ -24,7 +24,7 @@ class QualityMeasureSpec(models.Model):
     check_id = fields.Many2one('elw.quality.check', string='Check Ref#', ondelete='cascade',
                                store=True)  # check_id is name of quality.check
 
-    @api.depends('point_id', 'check_id')
+    @api.depends('point_id', 'product_id')
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = rec.point_id.name + ':' + rec.product_id.name
@@ -112,7 +112,7 @@ class QualityMeasureData(models.Model):
     # @api.onchange, it just not support one2many
     @api.onchange('measured_value')
     def onchange_measured_value(self):
-        print ("measured_value", self.measured_value, self.upper_limit, self.lower_limit )
+        # print("measured_value", self.measured_value, self.upper_limit, self.lower_limit )
         if self.measured_value and self.upper_limit and self.lower_limit:
             for line in self.check_id.measure_data_ids:
                 if line.lower_limit <= line.measured_value <= line.upper_limit:
