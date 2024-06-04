@@ -19,9 +19,9 @@ class QualityMeasureSpec(models.Model):
     # within_tolerance = fields.Boolean('Within Tolerance?', default=False, tracking=True, store=True)
     point_id = fields.Many2one('elw.quality.point', 'Control Point Ref#', ondelete='cascade')
     product_id = fields.Many2one('product.product', string="Products", domain="[('type','in',('product','consu'))]",
-                                 store=True, related="point_id.product_id")
+                                 store=True, related="point_id.product_id", ondelete='cascade')
     date_created = fields.Date(string="Date Created", default=fields.Date.context_today)
-    check_id = fields.Many2one('elw.quality.check', string='Check Ref#',
+    check_id = fields.Many2one('elw.quality.check', string='Check Ref#', ondelete='cascade',
                                store=True)  # check_id is name of quality.check
 
     @api.depends('point_id', 'check_id')
@@ -94,7 +94,7 @@ class QualityMeasureData(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char('Sequence', readonly=True)
-    spec_id = fields.Many2one('elw.quality.measure.spec', string="Measure Spec Ref#")
+    spec_id = fields.Many2one('elw.quality.measure.spec', string="Measure Spec Ref#", ondelete='cascade')
     measure_name = fields.Char('Measure Name', related="spec_id.measure_name", translate=True, tracking=True, store=True)
     target_value = fields.Float(string="Target Value", related="spec_id.target_value",)
     measured_value = fields.Float(string="Measured Value", tracking=True, store=True)
@@ -104,9 +104,9 @@ class QualityMeasureData(models.Model):
     within_tolerance = fields.Boolean('Pass?', default=False, tracking=True, store=True)
     point_id = fields.Many2one('elw.quality.point', 'Control Point Ref#', ondelete='cascade')
     product_id = fields.Many2one('product.product', string="Products", domain="[('type','in',('product','consu'))]",
-                                 store=True, related="point_id.product_id")
+                                 store=True, related="point_id.product_id", ondelete='cascade')
     date_created = fields.Date(string="Date Created", default=fields.Date.context_today)
-    check_id = fields.Many2one('elw.quality.check', string='Check Ref#',
+    check_id = fields.Many2one('elw.quality.check', string='Check Ref#', ondelete='cascade',
                                store=True)  # check_id is name of quality.check
 
     # @api.onchange, it just not support one2many
