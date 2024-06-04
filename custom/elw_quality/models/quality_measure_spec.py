@@ -102,9 +102,9 @@ class QualityMeasureData(models.Model):
     upper_limit = fields.Float(string="Upper Limit", related="spec_id.upper_limit", tracking=True, store=True)
     lower_limit = fields.Float(string="Lower Limit", related="spec_id.lower_limit", tracking=True, store=True)
     within_tolerance = fields.Boolean('Pass?', default=False, tracking=True, store=True)
-    point_id = fields.Many2one('elw.quality.point', 'Control Point Ref#', ondelete='cascade')
+    point_id = fields.Many2one('elw.quality.point', 'QA Point Ref#', ondelete='cascade', related="spec_id.point_id")
     product_id = fields.Many2one('product.product', string="Products", domain="[('type','in',('product','consu'))]",
-                                 store=True, related="point_id.product_id", ondelete='cascade')
+                                 store=True, related="spec_id.product_id", ondelete='cascade')
     date_created = fields.Date(string="Date Created", default=fields.Date.context_today)
     check_id = fields.Many2one('elw.quality.check', string='Check Ref#', ondelete='cascade',
                                store=True)  # check_id is name of quality.check
@@ -135,18 +135,10 @@ class QualityMeasureData(models.Model):
         return rtn
 
     # #  no decorator needed
-    # To Show tracking in chatter Add tracking=True https://www.odoo.com/forum/help-1/how-to-use-track-visibility-onchange-on-order-lines-fields-odoo14-211204
     def write(self, vals):
         if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.measure.data.sequence')
         rtn = super(QualityMeasureData, self).write(vals)
-        # print("write  ............", vals)  # write  ............ {'measured_value': 1} one value
-        #  if condition is a must for avoiding the max recursion depth exceeded error
-        #  write 'measured_value' on all of one2many fields in the existing one record
-        # if vals.get('measured_value') or vals.get('upper_limit') or vals.get('lower_limit'):
-        #     res = self._recheck_upper_lower_limits()
-        #     if res == 0:
-        #         self._recheck_measured_value()
         return rtn
 
