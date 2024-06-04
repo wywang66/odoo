@@ -155,15 +155,15 @@
 
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <header>
-                        <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none'"
+                        <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none' or test_type_id == 5"
                                 string="Pass" data-hotkey="q"/>
                         <button name="do_pass" type="object" invisible="quality_state != 'fail'"
                                 string="Pass" data-hotkey="q"/>
-                        <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'none'"
+                        <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'none' or test_type_id == 5"
                                 string="Fail" data-hotkey="w"/>
                         <button name="do_fail" type="object" invisible="quality_state != 'pass'"
                                 string="Fail" data-hotkey="w"/>
-                        <button name="do_measure" type="object"
+                        <button name="do_measure" type="object" class="btn-primary"
                                 invisible="test_type_id != 5 or quality_state != 'none'" string="Measure"
                                 data-hotkey="v"/>
                         <button name="do_alert" type="object" invisible="alert_ids or quality_state != 'pass'"
