@@ -295,3 +295,12 @@ class ElwQualityCheck(models.Model):
             'view_mode': 'tree,form',
             'target': 'current',
         }
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super(ElwQualityCheck, self).default_get(fields_list)
+        # print("default_get---", fields_list) # all the fields
+        # print("res ---", res) # all default value
+        if not res.get('team_id'):
+            res['team_id'] = self.env['elw.quality.team'].browse(1).id
+        return res
