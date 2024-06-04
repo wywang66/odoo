@@ -87,17 +87,16 @@
                         <h3>
                             <field name="name" readonly="1"/>
                         </h3>
-
                         <group>
                             <group>
                                 <field name="active" invisible="1"/>
                                 <field name="company_id" invisible="1"/>
                                 <field name="title"/>
                                 <field name="product_ids" widget="many2many_tags"/>
+                                <field name="product_id" invisible="0"/>
                                 <field name="product_category_ids" widget="many2many_tags"/>
                                 <field name="picking_type_ids" widget="many2many_tags"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
-                                <field name="user_id"/>
                             </group>
                             <group>
                                 <field name="measure_on"/>
@@ -120,6 +119,7 @@
                                 </div>
                                 <field name="test_type_id"
                                        options="{'no_open': True, 'no_create': True}"/>
+                                <field name="user_id"/>
                                 <field name="team_id" options="{'no_open': True, 'no_create': True}"/>
                             </group>
                         </group>
@@ -131,8 +131,8 @@
                                 <field name="note"/>
                             </page>
                             <page string="Measurement Settings" invisible="test_type_id !=5">
-                                <field name="measure_data_ids">
-                                    <tree string="Measure Settings " editable="top">
+                                <field name="measure_spec_ids">
+                                    <tree string="Measure Settings " editable="bottom">
                                         <field name="name"/>
                                         <field name="measure_name"/>
                                         <field name="target_value"/>
@@ -152,6 +152,7 @@
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
                         <field name="message_ids"/>
                     </div>
                 </form>

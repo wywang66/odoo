@@ -25,7 +25,7 @@ class ElwQualityCheck(models.Model):
     product_id = fields.Many2one('product.product', string='Product', required=True, store=True,
                                  domain="[('type', 'in', ['product', 'consu'])]", ondelete='cascade')
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete='set null')
-    measure_on = fields.Selection(related='point_id.measure_on', string='Control per', required=True, store=True,
+    measure_on = fields.Selection(related='point_id.measure_on', string='Control per', store=True,
                                   help='Product = A quality check is requested per product.'
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
@@ -44,11 +44,85 @@ class ElwQualityCheck(models.Model):
     alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result')
     fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
                                                 compute='_compute_fail_and_not_alert_created', store=True)
-
     picture = fields.Binary(string="Picture", store=True)
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
+
+    measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
+                                       readonly=False,
+                                       compute="_compute_measured_spec", store=False)
+    measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
+    measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
+                                       compute="_compute_measured_data")
+
+    data_ids = fields.One2many('elw.quality.data', 'check_id', readonly=False)
+
+    # # measure_spec_ids must be filled if test_type_id == 5
+    # @api.constrains('measure_spec_ids')
+    # def _check_if_measure_spec_ids_empty(self):
+    #     for rec in self:
+    #         if rec.test_type_id.id == 5:
+    #             for each in rec.measure_spec_ids:
+    #                 if not each.measured_value:
+    #                     raise ValidationError(
+    #                         _("You have not updated Measured Value on %s in 'Measurement Data' tag", each.measure_name))
+
+    @api.depends('test_type_id')
+    def _compute_measured_data(self):
+        for rec in self:
+            if rec.test_type_id.id == 5:
+                data = self.env['elw.quality.measure.data'].search([('check_id', '=', rec.id)])
+                # print("data------", data)
+                rec.measure_data_ids = data
+            else:
+                rec.measure_data_ids = None
+
+    @api.depends('test_type_id', 'point_id')
+    def _compute_measured_spec(self):
+        for rec in self:
+            if rec.test_type_id.id == 5:
+                data = self.env['elw.quality.measure.spec'].search([('point_id', '=', rec.point_id.id)])
+                # data = self.env['elw.quality.measure.spec'].browse(rec.point_id.id)
+                # print()
+                rec.measure_spec_ids = data
+            else:
+                rec.measure_spec_ids = None
+
+    @api.depends('measure_spec_ids')
+    def _compute_measure_data_count(self):
+        for rec in self:
+            rec.measure_data_count = self.env['elw.quality.measure.spec'].search_count(
+                [('point_id', '=', rec.point_id.id)])
+
+    # update measured_value in elw.quality.measure.spec and save the records in measure.data
+    @api.depends('measure_spec_ids')
+    def action_measure_data_confirm(self):
+        for line in self.measure_spec_ids:
+            # print('line.id, line.name', line.id, line.name, self.id, line.check_id)
+            if not line.measured_value:
+                raise ValidationError(
+                    _("You have not updated Measured Value in Measure name: %s",
+                      line.measure_name))
+            else:
+                vals = {
+                    'measure_name': line.measure_name,
+                    'target_value': line.target_value,
+                    'measured_value': line.measured_value,
+                    'target_value_unit': line.target_value_unit,
+                    'upper_limit': line.upper_limit,
+                    'lower_limit': line.lower_limit,
+                    'within_tolerance': line.within_tolerance,
+                    'point_id': line.point_id.id,
+                    'check_id': self.id,
+                }
+                # print("vals----------", vals)
+                data_obj = self.env['elw.quality.measure.data']
+                create_id = data_obj.create(vals)
+                # print("create_id", create_id, create_id.id)
+                # reset
+                line.measured_value = 0
+                line.within_tolerance = False
 
     # if manually creating a qa check by selecting qa.point, make sure the product is in qa.point
     @api.constrains('product_id')
@@ -99,8 +173,9 @@ class ElwQualityCheck(models.Model):
         for vals in vals:
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
+            print("before create vals", vals)
             rtn = super(ElwQualityCheck, self).create(vals)
-            return rtn
+        return rtn
 
     # #  no decorator needed
     def write(self, vals):
@@ -116,7 +191,10 @@ class ElwQualityCheck(models.Model):
         for rec in self:
             if rec.quality_state != 'none' or rec.picking_id:
                 raise ValidationError(
-                    _("Can delete the record that is not in 'To Do' or has Deliveries/Receipts order"))
+                    _("Can not delete the record that is not in 'To Do' or has Deliveries/Receipts order"))
+            elif len(rec.measure_data_ids) > 0:
+                # unlink child's records
+                rec.measure_data_ids.unlink()
         return super(ElwQualityCheck, self).unlink()
 
     @api.depends('quality_state')
@@ -132,7 +210,40 @@ class ElwQualityCheck(models.Model):
                 rec.quality_state = 'fail'
 
     def do_measure(self):
-        pass
+        qa_measure_state = []
+        if not self.measure_data_ids:
+            for line in self.measure_spec_ids:
+                # print('line.id, line.name', line.id, line.name, self.id, line.check_id)
+                if not line.measured_value:
+                    raise ValidationError(
+                        _("You have not updated Measured Value in Measure name: %s",
+                          line.measure_name))
+                else:
+                    vals = {
+                        'measure_name': line.measure_name,
+                        'target_value': line.target_value,
+                        'measured_value': line.measured_value,
+                        'target_value_unit': line.target_value_unit,
+                        'upper_limit': line.upper_limit,
+                        'lower_limit': line.lower_limit,
+                        'within_tolerance': line.within_tolerance,
+                        'point_id': line.point_id.id,
+                        'check_id': self.id,
+                    }
+                    # print("vals----------", vals)
+                    qa_measure_state.append(line.within_tolerance)
+                    data_obj = self.env['elw.quality.measure.data']
+                    create_id = data_obj.create(vals)
+                    # print("create_id", create_id, create_id.id)
+                    # reset
+                    line.measured_value = 0
+                    line.within_tolerance = False
+
+            # print("qa_measure_state", qa_measure_state)
+            if False in qa_measure_state:
+                self.quality_state = 'fail'
+            else:
+                self.quality_state = 'pass'
 
     @api.model
     def _create_qa_alert_record(self, vals):
@@ -203,3 +314,13 @@ class ElwQualityCheck(models.Model):
             result['res_id'] = alerts.id
             # print("result--------", result)
         return result
+
+    def action_see_quality_measure_data(self):
+        return {
+            'name': _('Quality Measurement Data'),
+            'res_model': 'elw.quality.measure.data',
+            'domain': [('id', '=', self.measure_data_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'target': 'current',
+        }

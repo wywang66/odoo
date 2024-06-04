@@ -138,6 +138,13 @@
                   sequence="54"
         />
 
+        <menuitem name="Quality Measure Data"
+                  id="elw_quality_measure_data_menu_sub"
+                  parent="elw_quality_menu_top_config"
+                  action="elw_quality_measure_data_action_window"
+                  sequence="54"
+        />
+
         <!--        Configurations-->
 <!--        <menuitem name="Quality Reasons"-->
 <!--                  id="elw_quality_reason_menu_sub"-->

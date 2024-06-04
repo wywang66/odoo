@@ -24,18 +24,26 @@
             <field name="company_id" eval="False"/> <!-- False : common for all companies-->
         </record>
 
-        <record id="seq_elw_quality_check_popup" model="ir.sequence">
-            <field name="name">Elw Quality Check Popup Sequence</field>
-            <field name="code">elw.quality.check.popup.wizard.sequence</field>
-            <field name="prefix">POP</field>
-            <field name="padding">5</field>
-            <field name="company_id" eval="False"/> <!-- False : common for all companies-->
-        </record>
-
         <record id="seq_elw_quality_measure_spec" model="ir.sequence">
             <field name="name">Elw Quality Measure Spec Sequence</field>
             <field name="code">elw.quality.measure.spec.sequence</field>
 <!--            <field name="prefix">'M'</field>-->
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/> <!-- False : common for all companies-->
+        </record>
+
+        <record id="seq_elw_quality_measure_data" model="ir.sequence">
+            <field name="name">Elw Quality Measure Data Sequence</field>
+            <field name="code">elw.quality.measure.data.sequence</field>
+            <field name="prefix">MD</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/> <!-- False : common for all companies-->
+        </record>
+
+        <record id="seq_elw_quality_data" model="ir.sequence">
+            <field name="name">Elw Quality Data Sequence</field>
+            <field name="code">elw.quality.data.sequence</field>
+            <field name="prefix">DD</field>
             <field name="padding">3</field>
             <field name="company_id" eval="False"/> <!-- False : common for all companies-->
         </record>

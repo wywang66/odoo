@@ -29,6 +29,7 @@ class ElwQualityPoint(models.Model):
     product_ids = fields.Many2many('product.product', string="Products", domain="[('type','in',('product','consu'))]",
                                    store=True, required=True, compute="_get_product_from_category", readonly=False,
                                    help="Quality Point will apply to every selected Products.")
+    product_id = fields.Many2one('product.product', compute='_compute_product_id_for_measure')
     product_category_ids = fields.Many2many('product.category', string="Product Categories", store=True,
                                             help="Quality Point will apply to every Products in the selected Product Categories.")
     picking_type_ids = fields.Many2many('stock.picking.type', string='Operations', store=True, copy=True, required=True)
@@ -54,25 +55,49 @@ class ElwQualityPoint(models.Model):
     team_id = fields.Many2one('elw.quality.team', string='Team', ondelete='restrict')
     quality_check_count = fields.Integer(string="Check Count", compute="_compute_quality_check_count")
     check_ids = fields.One2many('elw.quality.check', 'point_id', string="Check IDS")
+    #  measure data are child data angit addd put in parent quality.point model
+    measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
+
     # for notebook
     note = fields.Html('Note')
-    
-    #  measure data
-    measure_data_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
 
-    # measure_data_ids must be filled if test_type_id == 5
-    @api.constrains('measure_data_ids')
-    def _check_if_measure_data_ids_empty(self):
-        for rec in self:
-            if rec.test_type_id.id == 5 and not len(rec.measure_data_ids):
-                raise ValidationError(_("Please fill in Measurement Settings"))
+    # @api.constrains('product_ids')
+    # def _check_if_product_ids_is_single(self):
+    #     for rec in self:
+    #         if rec.test_type_id.id == 5 and len(rec.product_ids) != 1:
+    #             raise ValidationError(_("Set one product for 'Measure' Test Type"))
 
     # product_ids must be one if test_type_id == 5. measure spec applies to one product
-    @api.constrains('product_ids')
-    def _check_if_product_ids_is_single(self):
+    # below is to sync up product_id on quality.measure.spec. one product for test_type_id=5
+    # api.depend or api.onchange run earlier than api.constraints
+
+    # @api.depends('test_type_id')
+    # def _compute_measure_spec_ids(self):
+    #     for rec in self:
+    #         if rec.test_type_id.id == 5:
+    #             all_ids = self.env['elw.quality.measure.spec'].sudo().search([])
+    #             temp = [each.id for each in all_ids if each.point_id == rec]
+    #             rec.measure_spec_ids = self.env['elw.quality.measure.spec'].sudo().browse(temp)
+    #             # print("rec.measure_spec_ids...", rec.measure_spec_ids)
+    #         else:
+    #             rec.measure_spec_ids = None
+
+    @api.depends('product_ids', 'test_type_id')
+    def _compute_product_id_for_measure(self):
         for rec in self:
-            if rec.test_type_id.id == 5 and len(rec.product_ids) != 1:
-                raise ValidationError(_("Set one product for 'Measure' Test Type"))
+            if rec.test_type_id.id == 5 and len(rec.product_ids) == 1:
+                rec.product_id = rec.env['product.product'].browse(rec.product_ids.ids)
+            elif rec.test_type_id.id == 5 and len(rec.product_ids) != 1:
+                raise ValidationError(_("Set one product for 'Measure' Test Type."))
+            else:
+                rec.product_id = None
+
+    # measure_spec_ids must be filled if test_type_id == 5
+    @api.constrains('measure_spec_ids')
+    def _check_if_measure_spec_ids_empty(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and not len(rec.measure_spec_ids):
+                raise ValidationError(_("Please fill in Measurement Settings Tag."))
 
     @api.depends('check_ids')
     def _compute_quality_check_count(self):
@@ -97,9 +122,11 @@ class ElwQualityPoint(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.point.sequence')
             # print("Success ............", vals.get('name'))
+            # print("create Success ............", vals)
+            # one2many field include multiple records in vals. vals is a single record
             rtn = super(ElwQualityPoint, self).create(vals)
             # print("create return ............", rtn)
-            return rtn
+        return rtn
 
     # #  no decorator needed
     def write(self, vals):
@@ -108,7 +135,8 @@ class ElwQualityPoint(models.Model):
         if not self.name and not vals.get('name'):
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.point.sequence')
-            # print("write Success 2 ............", vals.get('name'))
+            # print("write name ............", vals.get('name'))
+        # print("write Success ............", vals)
         rtn = super(ElwQualityPoint, self).write(vals)
         # print("write return ............", rtn)
         return rtn
@@ -116,7 +144,10 @@ class ElwQualityPoint(models.Model):
     def unlink(self):
         for rec in self:
             if rec.quality_check_count:
-                raise ValidationError(_("Can delete the record that links to Quality Check"))
+                raise ValidationError(_("Can not delete the record that links to Quality Check"))
+            elif len(rec.measure_spec_ids) > 0:
+                # unlink child's records
+                rec.measure_spec_ids.unlink()
         return super(ElwQualityPoint, self).unlink()
 
     def action_see_quality_checks(self):

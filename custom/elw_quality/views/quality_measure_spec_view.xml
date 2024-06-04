@@ -1,18 +1,18 @@
 <odoo>
     <!-- elw.quality.measure.spec search-->
     <record model="ir.ui.view" id="elw_quality_measure_spec_search_view">
-            <field name="name">elw.quality.check.measure.spec.view</field>
-            <field name="model">elw.quality.measure.spec</field>
-            <field name="arch" type="xml">
-                <search>
-                    <field name="product_id"/>
-                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
-                    <group expand="0" string="Group By">
-                        <filter string="Product" name="by_product" context="{'group_by': 'product_id'}"/>
-                    </group>
-                </search>
-            </field>
-        </record>
+        <field name="name">elw.quality.measure.spec.view</field>
+        <field name="model">elw.quality.measure.spec</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Product" name="by_product" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
 
     <!-- elw.quality.measure.spec tree-->
     <record model="ir.ui.view" id="elw_quality_measure_spec_tree_view">
@@ -21,16 +21,18 @@
         <field name="arch" type="xml">
             <tree string="Quality Measure Spec" create="0" delete="0">
                 <field name="name"/>
-                <field name="active" invisible="1"/>
+                <field name="active" optional="hide"/>
+                <!--                <field name="display_name"/>-->
+                <field name="point_id"/>
+                <field name="check_id" optional="hide"/>
                 <field name="product_id"/>
                 <field name="target_value"/>
-<!--                <field name="measured_value"/>-->
+                <field name="measured_value"/>
                 <field name="target_value_unit"/>
                 <field name="upper_limit"/>
                 <field name="lower_limit"/>
                 <field name="date_created"/>
-                <!--                <field name="within_tolerance" optional="hide"/>-->
-                <!--                <field name="point_id" optional="hide"/>-->
+                <field name="within_tolerance" optional="hide"/>
             </tree>
         </field>
     </record>
@@ -40,7 +42,7 @@
         <field name="model">elw.quality.measure.spec</field>
         <field name="arch" type="xml">
             <!--readonly form-->
-            <form string="Quality Measure Spec Form" edit="0" create="0" delete="0">
+            <form string="Quality Measure Spec Form" create="0" delete="0">
                 <sheet>
                     <div class="oe_title">
                         <h3>
@@ -49,16 +51,18 @@
                     </div>
                     <group>
                         <field name="active" invisible="1"/>
+                        <field name="display_name"/>
+                        <field name="point_id"/>
+                        <field name="check_id" invisible="1"/>
                         <field name="product_id"/>
                         <field name="measure_name"/>
                         <field name="target_value"/>
-<!--                        <field name="measured_value"/>-->
+                        <field name="measured_value"/>
                         <field name="target_value_unit"/>
                         <field name="upper_limit"/>
                         <field name="lower_limit"/>
                         <field name="date_created"/>
-                        <!--                <field name="within_tolerance" optional="hide"/>-->
-                        <!--                <field name="point_id" optional="hide"/>-->
+                        <field name="within_tolerance" optional="hide"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -75,6 +79,91 @@
         <field name="name">Quality Measure Specifications</field>
         <field name="res_model">elw.quality.measure.spec</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="elw_quality_measure_spec_search_view"/>
+    </record>
+
+
+    <!-- elw.quality.measure.data search-->
+    <record model="ir.ui.view" id="elw_quality_measure_data_search_view">
+        <field name="name">elw.quality.measure.data.view</field>
+        <field name="model">elw.quality.measure.data</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Product" name="by_product" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- elw.quality.measure.data tree-->
+    <record model="ir.ui.view" id="elw_quality_measure_data_tree_view">
+        <field name="name">elw.quality.measure.data.tree.view</field>
+        <field name="model">elw.quality.measure.data</field>
+        <field name="arch" type="xml">
+            <tree string="Quality Measure data" delete="0" create="0">
+                <field name="name"/>
+                <!--                <field name="active" invisible="1"/>-->
+<!--                <field name="spec_id"/>-->
+                <field name="point_id"/>
+                <field name="check_id"/>
+                <field name="product_id"/>
+                <field name="target_value"/>
+                <field name="measured_value"/>
+                <field name="target_value_unit"/>
+                <field name="upper_limit"/>
+                <field name="lower_limit"/>
+                <field name="date_created"/>
+                <field name="within_tolerance"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="elw_quality_measure_data_form_view">
+        <field name="name">elw.quality.measure.data.form.view</field>
+        <field name="model">elw.quality.measure.data</field>
+        <field name="arch" type="xml">
+            <!--readonly form-->
+            <form string="Quality Measure Data Form" delete="0" create="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h3>
+                            <field name="name" readonly="1"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <field name="active" invisible="1"/>
+<!--                        <field name="spec_id"/>-->
+                        <field name="point_id"/>
+                        <field name="check_id"/>
+                        <field name="product_id"/>
+                        <field name="measure_name"/>
+                        <field name="target_value"/>
+                        <field name="measured_value"/>
+                        <field name="target_value_unit"/>
+                        <field name="upper_limit"/>
+                        <field name="lower_limit"/>
+                        <field name="date_created"/>
+                        <field name="within_tolerance" optional="hide"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- actions opening views on models -->
+    <record model="ir.actions.act_window" id="elw_quality_measure_data_action_window">
+        <field name="name">Quality Measure Data</field>
+        <field name="res_model">elw.quality.measure.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="elw_quality_measure_data_search_view"/>
     </record>
 
 </odoo>

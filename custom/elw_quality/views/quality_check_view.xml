@@ -130,7 +130,11 @@
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="picking_id"/>
-                    <field name="alert_result"/>
+                    <field name="alert_result" widget="badge"
+                           decoration-success="alert_result == 'Passed'"
+                           decoration-info="alert_result == 'Solved'"
+                           decoration-danger="alert_result =='Unsolved'"
+                    />
                     <field name="lot_id" optional="hide"/>
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>
@@ -148,6 +152,8 @@
             <field name="model">elw.quality.check</field>
             <field name="arch" type="xml">
                 <form>
+
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <header>
                         <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none'"
                                 string="Pass" data-hotkey="q"/>
@@ -172,6 +178,14 @@
                                     invisible="alert_count == 0">
                                 <field name="alert_count" string="Quality Alerts" widget="statinfo"/>
                             </button>
+                            <field name="active" invisible="1"/>
+                            <div class="oe_button_box" name="button_box">
+                                <button name="action_see_quality_measure_data" icon="fa-book" type="object"
+                                        class="oe_stat_button" invisible="not measure_data_ids">
+                                    <field name="measure_data_count" string="Quality Measurement Data"
+                                           widget="statinfo"/>
+                                </button>
+                            </div>
                         </div>
                         <h3>
                             <field name="name" readonly="1"/>
@@ -184,7 +198,8 @@
                                 <field name="control_date"/>
                                 <field name="user_id"/>
                                 <field name="has_lot_id" invisible="1"/>
-                                <field name="lot_id" invisible="not has_lot_id or not product_id" required="has_lot_id"/>
+                                <field name="lot_id" invisible="not has_lot_id or not product_id"
+                                       required="has_lot_id"/>
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">
                                         <field name="name"/>
@@ -193,7 +208,7 @@
                                 </field>
                                 <!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
                                 <!--                                <field name="fail_and_not_alert_created"/>-->
-<!--                                <field name="measure_data_count"/>-->
+                                <!--                                <field name="measure_data_count"/>-->
                             </group>
                             <group>
                                 <field name="picking_id"/>
@@ -203,6 +218,7 @@
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="user_id" string="Control Person" invisible="1"/>
                                 <field name="partner_id" invisible="not partner_id"/>
+                                <field name="measure_data_count" invisible="1"/>
                             </group>
                         </group>
                         <!--2 is 'picture' -->
@@ -215,6 +231,59 @@
                                     <field string="Instructions" name="note"/>
                                     <field string="Notes" name="additional_note" widget="text"/>
                                 </group>
+                            </page>
+                            <page string="Measurement Spec" >
+<!--                                <page string="Measurement Spec" invisible="measure_data_ids or test_type_id != 5">-->
+<!--                                <header>-->
+<!--                                    <button name="action_measure_data_confirm" type="object" class="btn-primary"-->
+<!--                                            string="Save"/>-->
+<!--                                </header>-->
+                                <field name="measure_spec_ids">
+                                    <tree string="Measure Settings " editable="bottom">
+                                        <field name="name"/>
+                                        <field name="measure_name"/>
+                                        <field name="measured_value"/>
+                                        <field name="target_value"/>
+                                        <field name="target_value_unit"/>
+                                        <field name="upper_limit"/>
+                                        <field name="lower_limit"/>
+                                        <field name="within_tolerance"/>
+                                    </tree>
+                                </field>
+                            </page>
+<!--                            <page string="Measurement Data" invisible="not measure_data_ids">-->
+                            <page string="Measurement Data" >
+                                <field name="measure_data_ids">
+                                    <tree string="Measure Data " editable="bottom">
+                                        <field name="name"/>
+<!--                                        <field name="spec_id"/>-->
+                                        <field name="measure_name"/>
+                                        <field name="measured_value"/>
+                                        <field name="target_value"/>
+                                        <field name="target_value_unit"/>
+                                        <field name="upper_limit"/>
+                                        <field name="lower_limit"/>
+                                        <field name="within_tolerance"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Measurement" >
+                                <field name="data_ids">
+                                    <tree string="Data " editable="bottom">
+                                        <field name="name"/>
+                                        <field name="spec_id"/>
+                                        <field name="measure_name"/>
+                                        <field name="measured_value"/>
+<!--                                        <field name="target_value"/>-->
+                                        <field name="target_value_unit"/>
+                                        <field name="upper_limit"/>
+                                        <field name="lower_limit"/>
+                                        <field name="within_tolerance"/>
+                                        <field name="product_id"/>
+                                        <field name="point_id"/>
+                                        <field name="check_id"/>
+                                    </tree>
+                                </field>
                             </page>
                         </notebook>
                     </sheet>
