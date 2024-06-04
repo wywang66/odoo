@@ -60,6 +60,12 @@ class ElwQualityCheck(models.Model):
     def _check_measure_data_ids(self):
         pass
 
+    @api.constrains('measure_data_ids')
+    def _check_if_measure_data_ids_empty(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and not len(rec.measure_data_ids):
+                raise ValidationError(_("Please fill in Measurement Data Tag."))
+
     @api.depends('test_type_id')
     def _compute_measured_data(self):
         for rec in self:
@@ -138,7 +144,7 @@ class ElwQualityCheck(models.Model):
         for vals in vals:
             vals['name'] = self.env['ir.sequence'].next_by_code(
                 'elw.quality.check.sequence')
-            print("before create vals", vals)
+            # print("before create vals", vals)
             rtn = super(ElwQualityCheck, self).create(vals)
         return rtn
 

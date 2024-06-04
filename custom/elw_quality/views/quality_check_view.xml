@@ -237,7 +237,7 @@
                                 <field name="measure_data_ids">
                                     <tree string="Measure Data " editable="bottom">
                                         <field name="name"/>
-                                        <field name="spec_id"/>
+                                        <field name="spec_id" options="{'no_create': True}"/>/>
                                         <field name="measure_name"/>
                                         <field name="measured_value"/>
                                         <field name="target_value"/>
