@@ -152,18 +152,17 @@
             <field name="model">elw.quality.check</field>
             <field name="arch" type="xml">
                 <form>
-
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <header>
-                        <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none'"
+                        <button name="do_pass" type="object" class="btn-primary" invisible="quality_state != 'none' or test_type_id == 5"
                                 string="Pass" data-hotkey="q"/>
                         <button name="do_pass" type="object" invisible="quality_state != 'fail'"
                                 string="Pass" data-hotkey="q"/>
-                        <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'none'"
+                        <button name="do_fail" type="object" class="btn-primary" invisible="quality_state != 'none' or test_type_id == 5"
                                 string="Fail" data-hotkey="w"/>
                         <button name="do_fail" type="object" invisible="quality_state != 'pass'"
                                 string="Fail" data-hotkey="w"/>
-                        <button name="do_measure" type="object"
+                        <button name="do_measure" type="object" class="btn-primary"
                                 invisible="test_type_id != 5 or quality_state != 'none'" string="Measure"
                                 data-hotkey="v"/>
                         <button name="do_alert" type="object" invisible="alert_ids or quality_state != 'pass'"
@@ -232,30 +231,15 @@
                                     <field string="Notes" name="additional_note" widget="text"/>
                                 </group>
                             </page>
-                            <page string="Measurement Spec" invisible="measure_data_ids or test_type_id != 5">
-<!--                                <header>-->
-<!--                                    <button name="action_measure_data_confirm" type="object" class="btn-primary"-->
-<!--                                            string="Save"/>-->
-<!--                                </header>-->
-                                <field name="measure_spec_ids">
-                                    <tree string="Measure Settings " editable="bottom">
-                                        <field name="name"/>
-                                        <field name="measure_name"/>
-                                        <field name="measured_value"/>
-                                        <field name="target_value"/>
-                                        <field name="target_value_unit"/>
-                                        <field name="upper_limit"/>
-                                        <field name="lower_limit"/>
-                                        <field name="within_tolerance"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Measurement Data" invisible="not measure_data_ids">
-
+<!--                            <page string="Measurement Data" invisible="not measure_data_ids">-->
+                            <page string="Measurement Data" invisible=" test_type_id != 5">
+                                <header>
+                                    <button name="do_add_records" type="object" string="Add Records" class="btn-primary"/>
+                                </header>
                                 <field name="measure_data_ids">
                                     <tree string="Measure Data " editable="bottom">
                                         <field name="name"/>
-<!--                                        <field name="spec_id"/>-->
+                                        <field name="spec_id" options="{'no_create': True}"/>/>
                                         <field name="measure_name"/>
                                         <field name="measured_value"/>
                                         <field name="target_value"/>

@@ -139,7 +139,7 @@
                                         <field name="target_value_unit"/>
                                         <field name="upper_limit"/>
                                         <field name="lower_limit"/>
-                                        <field name="within_tolerance" optional="hide"/>
+<!--                                        <field name="within_tolerance" optional="hide"/>-->
                                         <field name="point_id" optional="hide"/>
                                     </tree>
                                 </field>
