@@ -340,6 +340,12 @@ class ElwQualityCheck(models.Model):
             data_obj = self.env['elw.quality.point'].search([('id', '=', rec.point_id.id)])
             # print("product_range", data_obj, data_obj.product_ids.ids)
             rec.product_id_domain = json.dumps([('id', 'in', data_obj.product_ids.ids)])
-            # print("product_range", rec.product_id_domain) #[["id", "in", [38, 18]]]
+            # print("product_range", rec.product_id_domain) #[["id", "in", [38, 18]]] this format works too
 
+    @api.model
+    def name_search(self, name, domain=None, operator='ilike', limit=None, order=None):
+        domain = domain or []
+        if name:
+            domain = ['|', ('name', operator, name), ('test_type_id', operator, name)]
 
+        return super()._name_search(name, domain, operator, limit, order)
