@@ -101,7 +101,7 @@ class QualityMeasureData(models.Model):
     target_value_unit = fields.Char(string="Unit", related="spec_id.target_value_unit", tracking=True, store=True)
     upper_limit = fields.Float(string="Upper Limit", related="spec_id.upper_limit", tracking=True, store=True)
     lower_limit = fields.Float(string="Lower Limit", related="spec_id.lower_limit", tracking=True, store=True)
-    within_tolerance = fields.Boolean('Within Tolerance?', default=False, tracking=True, store=True)
+    within_tolerance = fields.Boolean('Pass?', default=False, tracking=True, store=True)
     point_id = fields.Many2one('elw.quality.point', 'Control Point Ref#', ondelete='cascade')
     product_id = fields.Many2one('product.product', string="Products", domain="[('type','in',('product','consu'))]",
                                  store=True, related="point_id.product_id")
@@ -112,16 +112,18 @@ class QualityMeasureData(models.Model):
     # @api.onchange, it just not support one2many
     @api.onchange('measured_value')
     def onchange_measured_value(self):
-        for line in self.check_id.measure_data_ids:
-            if line.lower_limit <= line.measured_value <= line.upper_limit:
-                vals = {
-                    'within_tolerance': True,
-                }
-            else:
-                vals = {
-                    'within_tolerance': False,
-                }
-            line.update(vals)
+        print ("measured_value", self.measured_value, self.upper_limit, self.lower_limit )
+        if self.measured_value and self.upper_limit and self.lower_limit:
+            for line in self.check_id.measure_data_ids:
+                if line.lower_limit <= line.measured_value <= line.upper_limit:
+                    vals = {
+                        'within_tolerance': True,
+                    }
+                else:
+                    vals = {
+                        'within_tolerance': False,
+                    }
+                line.update(vals)
 
     @api.model_create_multi
     def create(self, vals):
