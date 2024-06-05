@@ -2,7 +2,7 @@
 {
     'name': "ELW Quality",
 
-    'summary': "ELW Quality control",
+    'summary': "Quality Check, Alert and Control",
 
     'description': """
 Long description of module's purpose
@@ -10,7 +10,7 @@ Long description of module's purpose
 
     'author': "My Company",
     'website': "https://www.yourcompany.com",
-    'sequence': -120,
+    'sequence': -110,
     'application': True,
 
     # Categories can be used to filter modules in modules listing

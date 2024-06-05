@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "ELW Purchase",
+    'name': "ELW Product Rework",
 
-    'summary': "Purchase orders, Tenders and Agreements",
+    'summary': "Product Repair and Rework",
 
     'description': """
-Digital bigbite purchase module
+Digital bigbite sales module
     """,
-    'sequence': -140,
+    'sequence': -80,
     'application': True,
     'author': "Digital BigBite",
     'website': "https://www.yourcompany.com",
@@ -15,16 +15,16 @@ Digital bigbite purchase module
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'ELW/ELW Purchase',
+    'category': 'ELW/ELW Product Rework',
 
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'purchase', 'mail', 'account'],
+    'depends': ['base', 'stock', 'sale_management'],
 
     # always loaded
     'data': [
-        'views/purchase_order_view.xml',
+        # 'views/sale_order_view.xml',
     ],
     'license': 'LGPL-3',
 }

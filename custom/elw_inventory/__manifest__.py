@@ -2,13 +2,13 @@
 {
     'name': "ELW Inventory Management",
 
-    'summary': "Inventory",
+    'summary': "Stock, Inventory, Receipt and Delivery",
 
     'description': """
 Long description of module's purpose
     """,
     'application': True,
-    'sequence': -110,
+    'sequence': -150,
     'author': "My Company",
     'website': "https://www.yourcompany.com",
 
@@ -19,14 +19,14 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'stock', 'account', 'purchase', 'sale', 'elw_quality'],
+    'depends': ['base', 'product', 'stock', 'account', 'elw_quality'],
 
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
         'views/product_view.xml',
         'views/stock_picking_view.xml',
-        'views/sale_order_view.xml',
+        # 'views/sale_order_view.xml',
         'views/ir_module_view.xml',
     ],
     # only loaded in demonstration mode

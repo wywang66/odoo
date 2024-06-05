@@ -2,4 +2,3 @@
 
 from . import stock_picking
 from . import product
-from . import sale_order

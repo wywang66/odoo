@@ -2,12 +2,12 @@
 {
     'name': "ELW Maintenance",
 
-    'summary': "ELW maintenance",
+    'summary': "Equipment Maintenance, Preventive Maintenance",
 
     'description': """
 Digital bigbite equipment maintenance including scheduled calibration
     """,
-    'sequence': -100,
+    'sequence': -120,
     'application': True,
     'author': "Digital BigBite",
     'website': "https://www.yourcompany.com",
