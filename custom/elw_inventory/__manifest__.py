@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Inventory Management",
+    'name': "ELW Inventory Management",
 
     'summary': "Inventory",
 
@@ -8,7 +8,7 @@
 Long description of module's purpose
     """,
     'application': True,
-    'sequence': -35,
+    'sequence': -110,
     'author': "My Company",
     'website': "https://www.yourcompany.com",
 
@@ -26,7 +26,6 @@ Long description of module's purpose
         # 'security/ir.model.access.csv',
         'views/product_view.xml',
         'views/stock_picking_view.xml',
-        'views/purchase_order_view.xml',
         'views/sale_order_view.xml',
         'views/ir_module_view.xml',
     ],

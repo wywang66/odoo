@@ -7,7 +7,7 @@
     'description': """
 Digital bigbite equipment maintenance including scheduled calibration
     """,
-    'sequence': -110,
+    'sequence': -100,
     'application': True,
     'author': "Digital BigBite",
     'website': "https://www.yourcompany.com",

@@ -2,7 +2,7 @@
 {
     'name': "ELW Quality",
 
-    'summary': "Quality control",
+    'summary': "ELW Quality control",
 
     'description': """
 Long description of module's purpose
