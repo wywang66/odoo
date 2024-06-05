@@ -186,7 +186,7 @@ class ElwQualityCheck(models.Model):
                     measure_names.append(line.measure_name)
             # print("measure_names", measure_names, qa_measure_state)
             # check if the total measurement count id correct
-            cnt = len(self.env['elw.quality.measure.spec'].search([('point_id.id', '=', self.point_id.id)]))
+            cnt = len(self.measure_spec_ids.ids)
             if cnt != len(self.measure_data_ids):
                 raise ValidationError(
                     _("Selected %d measurement items, not matching with the %d items in Quality Control Point",
@@ -342,3 +342,12 @@ class ElwQualityCheck(models.Model):
             domain = ['|', ('name', operator, name), ('test_type_id', operator, name)]
 
         return super()._name_search(name, domain, operator, limit, order)
+
+    @api.constrains('measure_data_ids')
+    def _check_number_of_line_in_measure_data_ids(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and len(rec.measure_data_ids.ids):
+                if len(rec.measure_data_ids.ids) != len(rec.measure_spec_ids.ids):
+                    raise ValidationError(
+                        _('Warning! Number of measurement data (%d) is not equal to number of measurement spec (%d).',
+                          len(rec.measure_data_ids.ids), len(rec.measure_spec_ids.ids)))
