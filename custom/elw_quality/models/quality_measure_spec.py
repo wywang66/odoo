@@ -27,7 +27,7 @@ class QualityMeasureSpec(models.Model):
     @api.depends('point_id', 'product_id')
     def _compute_display_name(self):
         for rec in self:
-            rec.display_name = rec.point_id.name + ':' + rec.product_id.name
+            rec.display_name = str(rec.point_id.name) + ':' + str(rec.product_id.name)
 
     @api.onchange('measured_value')
     def onchange_measured_value(self):
