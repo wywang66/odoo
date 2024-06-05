@@ -1,5 +1,8 @@
+from typing import Dict, List
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+import json
 
 
 class ElwQualityCheck(models.Model):
@@ -55,6 +58,8 @@ class ElwQualityCheck(models.Model):
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
                                        compute="", store=True)
+
+    product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
     @api.depends('point_id')
     def _check_measure_data_ids(self):
@@ -182,7 +187,7 @@ class ElwQualityCheck(models.Model):
 
     def do_measure(self):
         qa_measure_state = []
-        measure_names =[]
+        measure_names = []
         if self.measure_data_ids:
             for line in self.measure_data_ids:
                 if line.point_id.id != self.point_id.id:
@@ -216,6 +221,15 @@ class ElwQualityCheck(models.Model):
         else:
             raise ValidationError(_("Please fill up the Measurement Data"))
 
+    # below can change the existing record's spec_id value, but cannot add records
+    @api.depends('point_id', 'measure_spec_ids')
+    def do_add_records(self):
+        self.ensure_one()
+        for item in self.measure_spec_ids:
+            print(item)
+            self.measure_data_ids = self.env['elw.quality.measure.data'].browse(1)
+            self.measure_data_ids.spec_id = item
+            print(self.measure_data_ids, self.measure_data_ids.spec_id)
 
     @api.model
     def _create_qa_alert_record(self, vals):
@@ -303,4 +317,35 @@ class ElwQualityCheck(models.Model):
         # print("res ---", res) # all default value
         if not res.get('team_id'):
             res['team_id'] = self.env['elw.quality.team'].browse(1).id
+            # res['test_type_id'] = 5
+        #     print("res 5 ---", res)
+        #     unsupported operand type(s) for "==": 'elw.quality.measure.data()' == '<Command.UPDATE: 1>'
+        #     res['measure_data_ids'] =self.env['elw.quality.measure.data'].browse(3)
+        # print("res ---", res)
         return res
+
+    # auto load product for Measure test type
+    @api.onchange('point_id')
+    def onchange_point_id(self):
+        for rec in self:
+            if rec.point_id:
+                if rec.test_type_id.id == 5:
+                    # print("rec.point_id", rec.point_id, rec.point_id.product_id)
+                    self.product_id = rec.point_id.product_id.id
+
+    # below is to add a dynamic domain on product_id
+    @api.depends('point_id')
+    def _compute_product_id_domain(self):
+        for rec in self:
+            data_obj = self.env['elw.quality.point'].search([('id', '=', rec.point_id.id)])
+            # print("product_range", data_obj, data_obj.product_ids.ids)
+            rec.product_id_domain = json.dumps([('id', 'in', data_obj.product_ids.ids)])
+            # print("product_range", rec.product_id_domain) #[["id", "in", [38, 18]]] this format works too
+
+    @api.model
+    def name_search(self, name, domain=None, operator='ilike', limit=None, order=None):
+        domain = domain or []
+        if name:
+            domain = ['|', ('name', operator, name), ('test_type_id', operator, name)]
+
+        return super()._name_search(name, domain, operator, limit, order)
