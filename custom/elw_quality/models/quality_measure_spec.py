@@ -102,7 +102,7 @@ class QualityMeasureData(models.Model):
     upper_limit = fields.Float(string="Upper Limit", related="spec_id.upper_limit", tracking=True, store=True)
     lower_limit = fields.Float(string="Lower Limit", related="spec_id.lower_limit", tracking=True, store=True)
     within_tolerance = fields.Boolean('Pass?', default=False, tracking=True, store=True)
-    point_id = fields.Many2one('elw.quality.point', 'QA Point Ref#', ondelete='cascade', related="spec_id.point_id")
+    point_id = fields.Many2one('elw.quality.point', 'Control Point Ref#', ondelete='cascade', related="spec_id.point_id")
     product_id = fields.Many2one('product.product', string="Products", domain="[('type','in',('product','consu'))]",
                                  store=True, related="spec_id.product_id", ondelete='cascade')
     date_created = fields.Date(string="Date Created", default=fields.Date.context_today)

@@ -136,6 +136,7 @@
                            decoration-danger="alert_result =='Unsolved'"
                     />
                     <field name="lot_id" optional="hide"/>
+                    <field name="test_type_id"/>
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>
                     <field name="quality_state" widget="badge"
