@@ -12,6 +12,7 @@ class AccountPaymentTerm(models.Model):
     _name = "account.payment.term"
     _description = "Payment Terms"
     _order = "sequence, id"
+    _check_company_domain = models.check_company_domain_parent_of
 
     def _default_line_ids(self):
         return [Command.create({'value': 'percent', 'value_amount': 100.0, 'nb_days': 0})]
@@ -143,7 +144,7 @@ class AccountPaymentTerm(models.Model):
             results['amount'] += term['foreign_amount']
         return amount_by_date
 
-    @api.constrains('line_ids')
+    @api.constrains('line_ids', 'early_discount')
     def _check_lines(self):
         round_precision = self.env['decimal.precision'].precision_get('Payment Terms')
         for terms in self:

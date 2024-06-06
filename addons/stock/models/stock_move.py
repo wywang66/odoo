@@ -472,7 +472,8 @@ Please change the quantity done or the rounding precision of your unit of measur
 
     def _set_date_deadline(self, new_deadline):
         # Handle the propagation of `date_deadline` fields (up and down stream - only update by up/downstream documents)
-        already_propagate_ids = self.env.context.get('date_deadline_propagate_ids', set()) | set(self.ids)
+        already_propagate_ids = self.env.context.get('date_deadline_propagate_ids', set())
+        already_propagate_ids.update(self.ids)
         self = self.with_context(date_deadline_propagate_ids=already_propagate_ids)
         for move in self:
             moves_to_update = (move.move_dest_ids | move.move_orig_ids)
@@ -745,25 +746,6 @@ Please change the quantity done or the rounding precision of your unit of measur
                 self.env.context,
             ),
         }
-
-    def action_assign_serial_show_details(self):
-        """ On `self.move_line_ids`, assign `lot_name` according to
-        `self.next_serial` before returning `self.action_show_details`.
-        """
-        self.ensure_one()
-        if not self.next_serial:
-            raise UserError(_("You need to set a Serial Number before generating more."))
-        self._generate_serial_numbers()
-        return self.action_show_details()
-
-    def action_clear_lines_show_details(self):
-        """ Unlink `self.move_line_ids` before returning `self.action_show_details`.
-        Useful for if a user creates too many SNs by accident via action_assign_serial_show_details
-        since there's no way to undo the action.
-        """
-        self.ensure_one()
-        self.move_line_ids.unlink()
-        return self.action_show_details()
 
     def action_assign_serial(self):
         """ Opens a wizard to assign SN's name on each move lines.
@@ -1100,9 +1082,11 @@ Please change the quantity done or the rounding precision of your unit of measur
             return 'assigned'
         # The picking should be the same for all moves.
         if moves_todo[:1].picking_id and moves_todo[:1].picking_id.move_type == 'one':
+            if all(not m.product_uom_qty for m in moves_todo):
+                return 'assigned'
             most_important_move = moves_todo[0]
             if most_important_move.state == 'confirmed':
-                return 'confirmed' if most_important_move.product_uom_qty else 'assigned'
+                return 'confirmed'
             elif most_important_move.state == 'partially_available':
                 return 'confirmed'
             else:

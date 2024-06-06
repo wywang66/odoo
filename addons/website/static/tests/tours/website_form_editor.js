@@ -27,6 +27,7 @@
         });
     }
 
+    // TODO: in master only keep the conversion of the double quotes character.
     // Replace all `"` character by `&quot;`, all `'` character by `&apos;` and
     // all "`" character by `&lsquo;`.
     const getQuotesEncodedName = function (name) {
@@ -318,6 +319,16 @@
         }, {
             content: "Mark the field as not required",
             trigger: 'we-button[data-name="required_opt"] we-checkbox',
+            run: function () {
+                // We need this 'setTimeout' to ensure that the 'blur' event of
+                // the input has enough time to be executed. Without it, the
+                // click on the 'we-checkbox' takes priority, and the 'blur'
+                // event is not executed (see the '_onListItemBlurInput'
+                // function of the 'we-list' widget)."
+                setTimeout(() => {
+                    this.$anchor[0].click();
+                }, 500);
+            },
         }, {
             content: "Check the resulting field",
             trigger: "iframe .s_website_form_field.s_website_form_custom:not(.s_website_form_required)" +
@@ -364,10 +375,15 @@
             content: "Check that the input value is the full option value",
             trigger: 'we-list table input:eq(3)',
             run: () => {
-                const addedOptionEl = document.querySelector('iframe.o_iframe').contentDocument.querySelector('.s_website_form_field select option[value="44 - UK"]');
-                if (!addedOptionEl) {
-                    console.error('The number option was not correctly added');
-                }
+                // We need this 'setTimeout' to ensure that the 'input' event of
+                // the input has enough time to be executed (see the
+                // '_onListItemBlurInput' function of the 'we-list' widget).
+                setTimeout(() => {
+                    const addedOptionEl = document.querySelector('iframe.o_iframe').contentDocument.querySelector('.s_website_form_field select option[value="44 - UK"]');
+                    if (!addedOptionEl) {
+                        console.error('The number option was not correctly added');
+                    }
+                }, 500);
             },
         }, {
             content: "Check the resulting snippet",
@@ -860,6 +876,46 @@
             run: "click",
         },
         ...wTourUtils.clickOnSave(),
+    ]);
+
+    wTourUtils.registerWebsitePreviewTour("website_form_special_characters", {
+        test: true,
+        url: "/",
+        edition: true,
+    }, () => [
+        {
+            ...wTourUtils.dragNDrop({id: "s_website_form", name: "Form"}),
+            run: "drag_and_drop_native iframe #wrap",
+        },
+        {
+            content: "Select form by clicking on an input field",
+            extra_trigger: "iframe .s_website_form_field",
+            trigger: "iframe section.s_website_form input",
+        },
+        ...addCustomField("char", "text", `Test1"'`, false),
+        ...addCustomField("char", "text", 'Test2`\\', false),
+        ...wTourUtils.clickOnSave(),
+        ...essentialFieldsForDefaultFormFillInSteps,
+        {
+            content: "Complete 'Your Question' field",
+            trigger: "iframe textarea[name='description']",
+            run: "text test",
+        }, {
+            content: "Complete the first added field",
+            trigger: "iframe input[name='Test1&quot;&apos;']",
+            run: "text test1",
+        }, {
+            content: "Complete the second added field",
+            trigger: "iframe input[name='Test2&lsquo;&bsol;']",
+            run: "text test2",
+        }, {
+            content: "Click on 'Submit'",
+            trigger: "iframe a.s_website_form_send",
+        }, {
+            content: "Check the form was again sent (success page without form)",
+            trigger: "iframe body:not(:has([data-snippet='s_website_form'])) .fa-check-circle",
+            isCheck: true,
+        },
     ]);
 
     export default {};

@@ -3567,10 +3567,9 @@ msgstr "欄位"
 #: code:addons/mail/models/mail_tracking_duration_mixin.py:0
 #, python-format
 msgid ""
-"Field \"(field)r on model %(model)r must be of type Many2one and have "
+"Field “%(field)s” on model “%(model)s” must be of type Many2one and have "
 "tracking=True for the computation of duration."
 msgstr ""
-"模型%(model)r上的欄位\"(field)r\"必須是 Many2one 類型，並且在計算持續時間時，追蹤設為真（tracking=True）。"
 
 #. module: mail
 #. odoo-python
@@ -10271,6 +10270,15 @@ msgstr "您可以對這個模板附加文件，可以附加到所有根據此模
 #, python-format
 msgid "You may not define a template on an abstract model: %s"
 msgstr "不可在抽象模型上定義範本： %s"
+
+#. module: mail
+#. odoo-python
+#: code:addons/mail/models/ir_attachment.py:0
+#, python-format
+msgid ""
+"You may not unlink or modify the content of attachments from other people's "
+"messages"
+msgstr "你不可取消連結或修改其他人的郵件中的附件內容"
 
 #. module: mail
 #. odoo-javascript

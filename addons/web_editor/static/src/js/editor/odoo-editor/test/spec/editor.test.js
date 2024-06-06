@@ -1655,6 +1655,13 @@ X[]
                         <p>before[]after</p>`),
                 });
             });
+            it('should keep empty line and delete prefix of second line', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>ab</p><p>[<br></p><p>d]ef</p>',
+                    stepFunction: deleteForward,
+                    contentAfter: '<p>ab</p><p>[]<br></p><p>ef</p>',
+                });
+            });
         });
     });
 
@@ -2047,6 +2054,13 @@ X[]
                             await deleteBackward(editor);
                         },
                         contentAfter: `<p>abc</p><p>[]def</p>`,
+                    });
+                });
+                it('should not delete in contenteditable=false', async () => {
+                    await testEditor(BasicEditor, {
+                        contentBefore: `<p contenteditable="false">ab[]cdef</p>`,
+                        stepFunction: deleteBackward,
+                        contentAfter: `<p contenteditable="false">ab[]cdef</p>`,
                     });
                 });
             });
@@ -3386,6 +3400,35 @@ X[]
                         contentAfter: unformat(`
                             <p>before[]after</p>`),
                     });
+                });
+            });
+            it('should keep empty line and delete prefix of second line', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>ab</p><p>[<br></p><p>d]ef</p>',
+                    stepFunction: deleteBackward,
+                    contentAfter: '<p>ab</p><p>[]<br></p><p>ef</p>',
+                });
+            });
+            it('should not delete in contenteditable=false 1', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: `<p contenteditable="false">ab[cd]ef</p>`,
+                    stepFunction: deleteBackward,
+                    contentAfter: `<p contenteditable="false">ab[cd]ef</p>`,
+                });
+            });
+            it('should not delete in contenteditable=false 2', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: `<div contenteditable="false">
+                                        <p>a[b</p>
+                                        <p>cd</p>
+                                        <p>e]f</p>
+                                    </div>`,
+                    stepFunction: deleteBackward,
+                    contentAfter: `<div contenteditable="false">
+                                        <p>a[b</p>
+                                        <p>cd</p>
+                                        <p>e]f</p>
+                                    </div>`,
                 });
             });
         });
@@ -7421,6 +7464,18 @@ X[]
                         await deleteBackward(editor)
                     },
                     contentAfter: '<p>\u200B[]<br></p>'
+                });
+            });
+        });
+
+        describe('After keydown event', () => {
+            it('should keep the selection at the start of the second text node after paragraph break', async () => {
+                await testEditor(BasicEditor, {
+                    contentBefore: '<p>ab<br>[c]de</p>',
+                    stepFunction: async editor => {
+                        await insertText(editor, 'f');
+                    },
+                    contentAfter: '<p>ab<br>f[]de</p>',
                 });
             });
         });

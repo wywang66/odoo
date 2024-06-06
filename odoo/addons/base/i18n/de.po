@@ -2643,7 +2643,7 @@ msgstr ""
 "\n"
 "Der Jahresbericht muss dem Beauftragten spätestens am 28. August nach Ende des Haushaltsjahres vorgelegt werden. Auf Wunsch können die Berichte auch in kürzeren Abständen eingereicht werden.\n"
 "\n"
-"Der Bericht verwendet die Steuerkennzeichen ``Dienstleistung`` und ``Steuerabzug``, um geeignete Journalposten zu finden. Diese werden anhand der Steuerpositionen und des richtigen Produkttyps (Dienstleistungen) festgelegt.\n"
+"Der Bericht verwendet die Steuerkennzeichen ``Dienstleistung`` und ``Steuerabzug``, um geeignete Journalposten zu finden. Diese werden anhand der Steuerpositionen und der richtigen Produktart (Dienstleistungen) festgelegt.\n"
 
 #. module: base
 #: model:ir.module.module,description:base.module_l10n_au_hr_payroll
@@ -22002,7 +22002,7 @@ msgstr "Hongkong"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_hk
 msgid "Hong Kong - Accounting"
-msgstr "Hong Kong - Buchhaltung"
+msgstr "Hongkong - Buchhaltung"
 
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_l10n_hk_hr_payroll
@@ -25611,7 +25611,7 @@ msgstr "Sonstiges"
 #: model:res.partner.title,name:base.res_partner_title_miss
 #: model:res.partner.title,shortcut:base.res_partner_title_miss
 msgid "Miss"
-msgstr "Fr."
+msgstr "Fräulein"
 
 #. module: base
 #. odoo-python
@@ -26448,7 +26448,7 @@ msgstr "Nichtrelationales Feld %(field)r in Pfad %(field_path)r in %(use)s)"
 #: code:addons/base/models/ir_model.py:0
 #, python-format
 msgid "Non-relational field %r in dependency %r"
-msgstr "Nicht-relationales Feld %r in Abhängigkeit %r"
+msgstr "Nichtrelationales Feld %r in Abhängigkeit %r"
 
 #. module: base
 #. odoo-python
@@ -36251,7 +36251,7 @@ msgstr "Timor-Leste"
 #: model:ir.model.fields,field_description:base.field_res_partner_title__name
 #: model:ir.model.fields,field_description:base.field_res_users__title
 msgid "Title"
-msgstr "Titel"
+msgstr "Anrede"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_sequence_date_range__date_to
