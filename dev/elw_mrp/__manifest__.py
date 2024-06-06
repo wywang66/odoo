@@ -24,7 +24,7 @@ Digital bigbite sales module
 
     # always loaded
     'data': [
-        # 'views/sale_order_view.xml',
+        'views/product_repair_order_view.xml',
     ],
     'license': 'LGPL-3',
 }
