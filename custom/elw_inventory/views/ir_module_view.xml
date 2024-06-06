@@ -35,7 +35,7 @@
             </field>
         </record>
 
-        <!-- comment author and website from module info of module -->
+        <!-- comment author and website from 'module info' of module tooltip -->
         <record id="base_module_form_elw_inherit" model="ir.ui.view">
             <field name="name">base.module.form.inherit</field>
             <field name="model">ir.module.module</field>
@@ -46,6 +46,21 @@
                 </xpath>
                 <xpath expr="//field[@name='website']" position="attributes">
                     <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- comment author and website main page tree view -->
+        <record id="base_module_tree_elw_inherit" model="ir.ui.view">
+            <field name="name">base.module.tree.inherit</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.module_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='author']" position="attributes">
+                    <attribute name="optional">"hide"</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="optional">"hide"</attribute>
                 </xpath>
             </field>
         </record>
