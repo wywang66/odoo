@@ -15,19 +15,41 @@
             </field>
         </record>
 
-<!--&lt;!&ndash;Below does not work   ERROR AssertionError: Element odoo has extra content: data, line 2     &ndash;&gt;-->
-<!--        <record id="base_open_module_tree_inherit" model="ir.actions.act_window">-->
-<!--            <field name="name">base.open.module.tree.inherit</field>-->
-<!--            <field name="model">ir.module.module</field>-->
-<!--            <field name="inherit_id" ref="base.open_module_tree"/>-->
-<!--&lt;!&ndash;            <field name="arch" type="xml">&ndash;&gt;-->
-<!--&lt;!&ndash;                <field name="context">{'search_default_app':1}</field>&ndash;&gt;-->
-<!--                <xpath expr="//field[@name='context']" position="attributes">-->
-<!--                    <attribute name="context">{'search_default_app':1, 'search_default_installed':1}-->
-<!--                    </attribute>-->
-<!--                </xpath>-->
-<!--&lt;!&ndash;            </field>&ndash;&gt;-->
+        <!-- inherit data file from odoo/base/data but below does not work, even commenting this section from original xml -->
+        <!-- https://www.odoo.com/forum/help-1/how-to-inherit-data-file-in-odoo-225213-->
+<!--        <record id="base.module_category_website" model="ir.module.category">-->
+<!--            <field name="sequence">305</field>-->
+<!--            <field name="visible" eval="0" />-->
 <!--        </record>-->
+
+
+        <!-- below make module_type (above 'category_id') on UI left search panel invisible -->
+        <record model="ir.ui.view" id="view_module_filter_apps_inherit_inherit">
+            <field name="name">Search Data Modules</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.view_module_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//searchpanel/field[@name='module_type']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- comment author and website from module info of module -->
+        <record id="base_module_form_elw_inherit" model="ir.ui.view">
+            <field name="name">base.module.form.inherit</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.module_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='author']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
 
     </data>
 </odoo>
