@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_dbb_maintenance_calibrationoverdue,dbb.maintenance.calibrationoverdue,model_dbb_maintenance_calibrationoverdue,base.group_user,1,1,1,1
+access_elw_maintenance_calibration,elw.equipment.calibration,model_elw_maintenance_calibration,base.group_user,1,1,1,1

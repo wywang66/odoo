@@ -2,10 +2,10 @@
 {
     'name': "ELW Maintenance",
 
-    'summary': "Equipment Maintenance, Preventive Maintenance",
+    'summary': "Equipment Calibration",
 
     'description': """
-Digital bigbite equipment maintenance including scheduled calibration
+Digital Bigbite equipment calibration
     """,
     'sequence': -120,
     'application': True,
@@ -20,7 +20,7 @@ Digital bigbite equipment maintenance including scheduled calibration
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['maintenance','mail','hr'],
+    'depends': ['maintenance'],
 
     # always loaded
     'data': [
@@ -28,7 +28,7 @@ Digital bigbite equipment maintenance including scheduled calibration
         'data/dbb_email_template_data.xml',
         'data/dbb_email_cron_data.xml',
         'data/sequence_data.xml',
-        'views/dbb_maintenance_equipment_view.xml',
+        'views/maintenance_calibration_view.xml',
         # 'views/dbb_calibration_overdue_view.xml',
     ],
    'license': 'LGPL-3',

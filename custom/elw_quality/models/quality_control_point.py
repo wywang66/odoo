@@ -159,3 +159,15 @@ class ElwQualityPoint(models.Model):
             'view_mode': 'tree,form',
             'target': 'current',
         }
+
+    # https://www.odoo.com/forum/help-1/userwarning-unsupported-operand-type-s-command-update-1-254376
+    # @api.model
+    # def default_get(self, fields_list):
+    #     res = super(ElwQualityPoint, self).default_get(fields_list)
+    #     # print("default_get---", fields_list) # all the fields
+    #     # print("res ---", res) # all default value
+    #     if not res.get('picking_type_ids'):
+    #         picking_type_ids_ids = self.env['stock.picking.type'].search([]).ids
+    #         print(picking_type_ids_ids, self._context)
+    #         res['picking_type_ids'] = self.env['stock.picking.type'].browse(picking_type_ids_ids[0])
+    #     return res
