@@ -24,7 +24,7 @@ Long description of module's purpose
 
     # always loaded
     'data': [
-        'security/elw_quality_security_data.xml',
+        # 'security/elw_quality_security_data.xml',
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
         'data/quality_team_data.xml',
