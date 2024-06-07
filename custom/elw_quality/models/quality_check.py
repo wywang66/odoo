@@ -158,15 +158,15 @@ class ElwQualityCheck(models.Model):
 
     @api.depends('quality_state')
     def do_pass(self):
-        for rec in self:
-            if rec.quality_state == 'none':
-                rec.quality_state = 'pass'
+        self.ensure_one()
+        if self.quality_state == 'none':
+            self.quality_state = 'pass'
 
     @api.depends('quality_state')
     def do_fail(self):
-        for rec in self:
-            if rec.quality_state == 'none':
-                rec.quality_state = 'fail'
+        self.ensure_one()
+        if self.quality_state == 'none':
+            self.quality_state = 'fail'
 
     def do_measure(self):
         qa_measure_state = []
@@ -179,7 +179,7 @@ class ElwQualityCheck(models.Model):
                           line.point_id.name, self.point_id.name))
                 elif not line.measured_value:
                     raise ValidationError(
-                        _("You have not updated Measured Value in Measure name: %s",
+                        _("You have not updated Measured Value in %s",
                           line.measure_name))
                 else:
                     qa_measure_state.append(line.within_tolerance)
