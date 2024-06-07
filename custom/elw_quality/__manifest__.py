@@ -8,7 +8,7 @@
 Long description of module's purpose
     """,
 
-    'author': "My Company",
+    'author': "Digital BigBite",
     'website': "https://www.yourcompany.com",
     'sequence': -110,
     'application': True,
