@@ -23,7 +23,6 @@ class ElwQualityCheck(models.Model):
     active = fields.Boolean(default=True)
     title = fields.Char("Title")
     point_id = fields.Many2one('elw.quality.point', string='Control Point ID', ondelete='cascade', required=True)
-
     partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', required=True, store=True,
                                  domain="[('type', 'in', ['product', 'consu'])]", ondelete='cascade')
@@ -61,35 +60,19 @@ class ElwQualityCheck(models.Model):
 
     product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
-    @api.depends('point_id')
-    def _check_measure_data_ids(self):
-        pass
-
-    @api.constrains('measure_data_ids')
+    @api.depends('measure_data_ids', 'test_type_id')
     def _check_if_measure_data_ids_empty(self):
         for rec in self:
             if rec.test_type_id.id == 5 and not len(rec.measure_data_ids):
                 raise ValidationError(_("Please fill in Measurement Data Tag."))
-
-    @api.depends('test_type_id')
-    def _compute_measured_data(self):
-        for rec in self:
-            if rec.test_type_id.id == 5:
-                data = self.env['elw.quality.measure.data'].search([('check_id', '=', rec.id)])
-                # print("data------", data)
-                rec.measure_data_ids = data
-            else:
-                rec.measure_data_ids = None
 
     @api.depends('test_type_id', 'point_id')
     def _compute_measured_spec(self):
         for rec in self:
             if rec.test_type_id.id == 5:
                 data = self.env['elw.quality.measure.spec'].search([('point_id', '=', rec.point_id.id)])
-                # data = self.env['elw.quality.measure.spec'].browse(rec.point_id.id)
-
                 rec.measure_spec_ids = data
-                print("rec.measure_spec_ids---", rec.measure_spec_ids)
+                # print("rec.measure_spec_ids---", rec.measure_spec_ids)
             else:
                 rec.measure_spec_ids = None
 
@@ -203,7 +186,7 @@ class ElwQualityCheck(models.Model):
                     measure_names.append(line.measure_name)
             # print("measure_names", measure_names, qa_measure_state)
             # check if the total measurement count id correct
-            cnt = len(self.env['elw.quality.measure.spec'].search([('point_id.id', '=', self.point_id.id)]))
+            cnt = len(self.measure_spec_ids.ids)
             if cnt != len(self.measure_data_ids):
                 raise ValidationError(
                     _("Selected %d measurement items, not matching with the %d items in Quality Control Point",
@@ -221,15 +204,25 @@ class ElwQualityCheck(models.Model):
         else:
             raise ValidationError(_("Please fill up the Measurement Data"))
 
-    # below can change the existing record's spec_id value, but cannot add records
     @api.depends('point_id', 'measure_spec_ids')
     def do_add_records(self):
+        """
+        This function first gets the matching measure_spec_ids by function _compute_measured_spec.
+        It then creates measure.data records. Via spec_id, measure.data records are populated.
+        So these records are popping up in quality.check Measurement Data Tag
+        """
         self.ensure_one()
         for item in self.measure_spec_ids:
-            print(item)
-            self.measure_data_ids = self.env['elw.quality.measure.data'].browse(1)
-            self.measure_data_ids.spec_id = item
-            print(self.measure_data_ids, self.measure_data_ids.spec_id)
+            # print("item", item) #item elw.quality.measure.spec(6,)
+            obj = self.env['elw.quality.measure.data']
+            vals = {
+                'spec_id': item.id,
+                'point_id': item.point_id.id,
+                'check_id': self.id,
+            }
+            # print("vals----------", vals) #vals---------- {'spec_id': 6, 'point_id': 6, 'check_id': 23}
+            data_obj = self.env['elw.quality.measure.data']
+            data_obj.create(vals)
 
     @api.model
     def _create_qa_alert_record(self, vals):
@@ -349,3 +342,12 @@ class ElwQualityCheck(models.Model):
             domain = ['|', ('name', operator, name), ('test_type_id', operator, name)]
 
         return super()._name_search(name, domain, operator, limit, order)
+
+    @api.constrains('measure_data_ids')
+    def _check_number_of_line_in_measure_data_ids(self):
+        for rec in self:
+            if rec.test_type_id.id == 5 and len(rec.measure_data_ids.ids):
+                if len(rec.measure_data_ids.ids) != len(rec.measure_spec_ids.ids):
+                    raise ValidationError(
+                        _('Warning! Number of measurement data (%d) is not equal to number of measurement spec (%d).',
+                          len(rec.measure_data_ids.ids), len(rec.measure_spec_ids.ids)))

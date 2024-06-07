@@ -1,0 +1,84 @@
+<odoo>
+    <data>
+
+        <!-- display installed and uninstalled modules -->
+        <record id="base_view_view_search_inherit" model="ir.ui.view">
+            <field name="name">base.view.view.search.inherit</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.view_module_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='app']" position="attributes">
+                    <attribute name="domain">[('application', '=', True), ('state', 'in', ['installed',
+                        'to upgrade', 'to remove', 'uninstalled', 'to install'])]
+                    </attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- inherit data file from odoo/base/data but below does not work, even commenting this section from original xml -->
+        <!-- https://www.odoo.com/forum/help-1/how-to-inherit-data-file-in-odoo-225213-->
+<!--        <record id="base.module_category_website" model="ir.module.category">-->
+<!--            <field name="sequence">305</field>-->
+<!--            <field name="visible" eval="0" />-->
+<!--        </record>-->
+
+
+        <!-- below make module_type (above 'category_id') on UI left search panel invisible -->
+        <record model="ir.ui.view" id="view_module_filter_apps_inherit_inherit">
+            <field name="name">Search Data Modules</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.view_module_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//searchpanel/field[@name='module_type']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- comment author and website from 'module info' of module tooltip -->
+        <record id="base_module_form_elw_inherit" model="ir.ui.view">
+            <field name="name">base.module.form.inherit</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.module_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='author']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- comment author and website main page tree view -->
+        <record id="base_module_tree_elw_inherit" model="ir.ui.view">
+            <field name="name">base.module.tree.inherit</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.module_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='author']" position="attributes">
+                    <attribute name="optional">"hide"</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="optional">"hide"</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- make 'Learn More' buttons invisible in main UI  -->
+        <record id="base_module_kanban_elw_inherit" model="ir.ui.view">
+            <field name="name">base.module.kanban.inherit</field>
+            <field name="model">ir.module.module</field>
+            <field name="inherit_id" ref="base.module_view_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban/templates/t/a[2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//kanban/templates/t[2]/div/div[2]/div/a" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
