@@ -2,7 +2,7 @@
   <data noupdate="0">
     <record id="dbb_calibration_email_template" model="mail.template">
       <field name="name">Scheduled calibration notification template</field>
-      <field name="model_id" ref="maintenance.model_maintenance_equipment" />
+      <field name="model_id" ref="elw_maintenance.model_elw_maintenance_calibration" />
       <!-- <field name="subject">{{ object.create_uid.name }} from {{ object.company_id.name }}
       invites
         you to connect to Odoo</field> -->

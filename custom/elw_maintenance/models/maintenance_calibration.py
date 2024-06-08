@@ -6,6 +6,17 @@ from datetime import datetime, timedelta
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 
 
+class CalibrationStage(models.Model):
+    """ Model for case stages. This models the main stages of a Calibration Request management flow. """
+    _name = 'elw.calibration.stage'
+    _description = 'Calibration Stage'
+    _order = 'sequence, id'
+
+    name = fields.Char('Name', required=True, translate=True)
+    sequence = fields.Integer('Sequence', default=20)
+    done = fields.Boolean('Request Done')
+
+
 class MaintenanceCalibration(models.Model):
     _name = 'elw.maintenance.calibration'
     _description = 'Digital BigBite Scheduled Calibration'
@@ -18,6 +29,11 @@ class MaintenanceCalibration(models.Model):
             team = MT.search([], limit=1)
         return team.id
 
+    @api.returns('self')
+    def _default_stage(self):
+        return self.env['calibration.stage'].search([], limit=1)
+
+
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True,
                                  default=lambda self: self.env.company, ondelete='cascade')
@@ -26,6 +42,8 @@ class MaintenanceCalibration(models.Model):
                                    ondelete='cascade')
     request_date = fields.Date('Request Date', tracking=True, default=fields.Date.context_today,
                                help="Date requested for calibration")
+    # user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
+    #                                 ondelete='cascade')
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
                                     ondelete='cascade')
     category_id = fields.Many2one('maintenance.equipment.category', related='equipment_id.category_id',
@@ -46,6 +64,7 @@ class MaintenanceCalibration(models.Model):
     priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority')
     color = fields.Integer('Color Index')
     close_date = fields.Date('Close Date', help="Date the calibration was finished. ")
+
     # maintenance_team_id = fields.Many2one('maintenance.team', string='Team', required=True,
     #                                       default=_get_default_team_id,
     #                                       compute='_compute_maintenance_team_id', store=True, readonly=False,
@@ -73,11 +92,10 @@ class MaintenanceCalibration(models.Model):
     technician_doing_calibration_id = fields.Many2one('res.users', string='Technician Doing Calibration', store=True,
                                                       default=lambda self: self.env.uid, ondelete='cascade')
     # list sequence is same as xml's statusbar sequence
-    state = fields.Selection([
-        ('pending_calibration', 'Pending Calibration'),
-        ('doing_calibration', 'Doing Calibration'),
-        ('done_calibration', 'Done Calibration'),
-        ('calibration_overdue', 'Calibration Overdue'), ], string="Status", tracking=True)
+
+    stage_id = fields.Many2one('elw.calibration.stage', string='Stage', ondelete='restrict', tracking=True,
+                               group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
+    done = fields.Boolean(related='stage_id.done')
 
     # state = fields.Selection([
     #     ('pending_calibration', 'Pending Calibration'),
