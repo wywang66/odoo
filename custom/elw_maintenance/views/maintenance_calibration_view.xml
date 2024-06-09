@@ -38,7 +38,7 @@
                                 <field name="owner_user_id" string="Requested By" invisible="1"/>
                                 <field name="equipment_id"
                                        context="{'default_company_id':company_id, 'default_category_id':category_id}"/>
-                                <field name="category_id" groups="maintenance.group_equipment_manager"
+                                <field name="category_id"
                                        context="{'default_company_id':company_id}" invisible="not equipment_id"/>
                                 <field name="request_date" readonly="True"/>
                                 <field name="done" invisible="1"/>
@@ -47,15 +47,29 @@
                                 <field name="company_id" invisible="1"/>
                             </group>
                             <group>
-                                <field name="name"/>
-                                <field name="equipment_id" optional="show"/>
-                                <field name="request_date" groups="base.group_no_one"/>
-                                <field name="owner_user_id" optional="show"/>
-                                <field name="category_id" optional="show"/>
+                                <field name="owner_user_id"/>
+                                <field name="maintenance_team_id" options="{'no_create': True, 'no_open': True}"/>
 
-                                <field name="technician_doing_calibration_id" optional="hide"
-                                       widget="many2one_avatar_user"/>
-                                <field name="company_id" optional="hide"/>
+                                <label for="repeat_interval"/>
+                                <div class="d-flex">
+                                    <field name="repeat_interval" required="True" class="me-2"
+                                           style="max-width: 2rem !important;"/>
+                                    <field name="repeat_unit" required="True" class="me-2"
+                                           style="max-width: 6rem !important;"/>
+                                    <field name="repeat_type" required="True" class="me-2"
+                                           style="max-width: 8rem !important;"/>
+                                    <field name="repeat_until" invisible="repeat_type != 'until'"
+                                           required="repeat_type == 'until'" class="me-2"
+                                           style="max-width: 8rem !important;"/>
+                                </div>
+                                <label for="sending_email_notification_days_ahead"/>
+                                <div class="d-flex">
+                                    <field name="sending_email_notification_days_ahead" class="me-2" style="max-width: 2rem !important;"/>
+                                    <span class="oe_inline">days ahead of due date</span>
+                                </div>
+                                <field name="priority" widget="priority"/>
+
+
                             </group>
                         </group>
                     </sheet>

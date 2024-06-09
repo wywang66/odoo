@@ -33,7 +33,6 @@ class MaintenanceCalibration(models.Model):
     def _default_stage(self):
         return self.env['calibration.stage'].search([], limit=1)
 
-
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True,
                                  default=lambda self: self.env.company, ondelete='cascade')
@@ -42,22 +41,16 @@ class MaintenanceCalibration(models.Model):
                                    ondelete='cascade')
     request_date = fields.Date('Request Date', tracking=True, default=fields.Date.context_today,
                                help="Date requested for calibration")
-    # user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
-    #                                 ondelete='cascade')
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
                                     ondelete='cascade')
     category_id = fields.Many2one('maintenance.equipment.category', related='equipment_id.category_id',
                                   string='Category', store=True, readonly=True, ondelete='cascade')
-    is_calibration_required = fields.Boolean()
-    calibration_interval_by = fields.Selection(string="by",
-                                               selection=[('days', 'Days'), ('months', 'Months'), ('years', 'Years')],
-                                               required=True, default='months', store=True)
-    calibration_interval = fields.Integer(string='Calibration Interval', default=3, required=True, )
     sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10,
                                                            required=True, store=False)
+    calibration_due_date = fields.Date(string="Calibration Due Date", store=True,
+                                       compute='_compute_calibration_due_date')
     # calibration_date = fields.Date(string="Calibration Due Date", compute='_compute_calibration_date', tracking=True, store=True, required=True, default = datetime.today().date() )
-    calibration_date = fields.Date(string="Calibration Due Date", tracking=True,
-                                   store=True)
+    calibration_date = fields.Date(string="Calibration Due Date", tracking=True, store=True)
     send_email_date = fields.Date(string="Send Email Notification after", compute='_compute_send_email_date',
                                   tracking=True, store=True)
 
@@ -65,22 +58,26 @@ class MaintenanceCalibration(models.Model):
     color = fields.Integer('Color Index')
     close_date = fields.Date('Close Date', help="Date the calibration was finished. ")
 
-    # maintenance_team_id = fields.Many2one('maintenance.team', string='Team', required=True,
-    #                                       default=_get_default_team_id,
-    #                                       compute='_compute_maintenance_team_id', store=True, readonly=False,
-    #                                       check_company=True, ondelete='cascade')
-    repeat_interval = fields.Integer(string='Repeat Every', default=1)
+    maintenance_team_id = fields.Many2one('maintenance.team', string='Team', required=True,
+                                          default=_get_default_team_id,
+                                          compute='_compute_maintenance_team_id', store=True, readonly=False,
+                                          check_company=True, ondelete='cascade')
+    repeat_interval = fields.Integer(string='Repeat Every', default=3)
     repeat_unit = fields.Selection([
         ('day', 'Days'),
         ('week', 'Weeks'),
         ('month', 'Months'),
         ('year', 'Years'),
-    ], default='week')
+    ], default='month')
     repeat_type = fields.Selection([
         ('forever', 'Forever'),
         ('until', 'Until'),
     ], default="forever", string="Until")
     repeat_until = fields.Date(string="End Date")
+
+    def _compute_calibration_due_date(self):
+        pass
+
 
     # send_email_date = fields.Date(string="Send Email Notification On", store=True)
 
@@ -166,7 +163,7 @@ class MaintenanceCalibration(models.Model):
     #                 record.calibration_date = today + timedelta(days=record.calibration_interval)
     #                 record.state = "pending_calibration"  # force it to be "pending"
 
-    @api.depends('calibration_date', 'sending_email_notification_days_ahead', 'is_calibration_required')
+    @api.depends('sending_email_notification_days_ahead')
     def _compute_send_email_date(self):
         pass
         # for record in self:
@@ -200,8 +197,8 @@ class MaintenanceCalibration(models.Model):
             except MailDeliveryException as e:
                 raise ValidationError(_("Sending mail error: ", e))
 
-    # send a scheduled email. stop sending if is_calibration_done= True   
-    @api.depends('send_email_date', 'is_calibration_done')
+    # send a scheduled email. stop sending if is_calibration_done= True
+    @api.depends('send_email_date')
     def action_send_email_on_scheduled_date(self):
         template = self.env.ref('dbb_maintenance.dbb_calibration_email_template')
         records_of_send_email_today = self.env['maintenance.equipment'].search(
@@ -304,7 +301,7 @@ class MaintenanceCalibration(models.Model):
             # print("Success ............", vals.get('name'))
         return super(MaintenanceCalibration, self).create(vals)
 
-        # #  no decorator needed
+    # #  no decorator needed
 
     def write(self, vals):
         # print("write Success ............", self.name, vals.get('name'))
@@ -313,15 +310,14 @@ class MaintenanceCalibration(models.Model):
             # print("write Success 2 ............", vals.get('name'))
         return super(MaintenanceCalibration, self).write(vals)
 
+    class Dbb_CalibrationOverdue(models.Model):
+        _name = 'dbb.maintenance.calibrationoverdue'
+        _description = 'Digital BigBite Maintenance Scheduled Calibration Overdue'
 
-class Dbb_CalibrationOverdue(models.Model):
-    _name = 'dbb.maintenance.calibrationoverdue'
-    _description = 'Digital BigBite Maintenance Scheduled Calibration Overdue'
+        equipment_sequence_id = fields.Many2one(comodel_name='maintenance.equipment', string="Equipment")
+        # appointment_id = fields.Many2one(comodel_name='hospital.appointment', string ="Appointment",domain=['|',('state','=','draft'),('priority','in', ('0','1', False))]) # prioriry is a selection in appointment.py, false : no data
+        reason = fields.Text(string="Reason", required=True, default="equipment was breaking down")
+        date_rescheduled = fields.Date(string="Reschedule Calibartion Date")
 
-    equipment_sequence_id = fields.Many2one(comodel_name='maintenance.equipment', string="Equipment")
-    # appointment_id = fields.Many2one(comodel_name='hospital.appointment', string ="Appointment",domain=['|',('state','=','draft'),('priority','in', ('0','1', False))]) # prioriry is a selection in appointment.py, false : no data
-    reason = fields.Text(string="Reason", required=True, default="equipment was breaking down")
-    date_rescheduled = fields.Date(string="Reschedule Calibartion Date")
-
-    def action_reschedule_calibration(self):
-        return
+        def action_reschedule_calibration(self):
+            return
