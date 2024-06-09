@@ -23,7 +23,7 @@ class QualityAlert(models.Model):
     active = fields.Boolean(default=True)
     partner_id = fields.Many2one('res.partner', string='Vendor', store=True, ondelete="set null")
     product_id = fields.Many2one('product.product', string='Product Variant', store=True, ondelete="set null",
-                                 domain="['&', ('product_tmpl_id', '=', product_tmpl_id), ('type', 'in', ['product', 'consu'])]")
+                                 related="check_id.product_id", readonly=False, required=True)
     product_tmpl_id = fields.Many2one('product.template', string='Product', related='product_id.product_tmpl_id',
                                       store=True, ondelete="set null")
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete="set null")
