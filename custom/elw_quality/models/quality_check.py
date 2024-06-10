@@ -34,6 +34,7 @@ class ElwQualityCheck(models.Model):
                                        'with partial quantity checks also possible.')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
                              ondelete='restrict')
+    lot_name = fields.Char(string='Lot Name', compute='_get_lot_name', readonly=False)
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL')
@@ -59,6 +60,22 @@ class ElwQualityCheck(models.Model):
                                        compute="", store=True)
 
     product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
+
+    @api.depends('has_lot_id', 'picking_id')
+    def _get_lot_name(self):
+        for rec in self:
+            if rec.has_lot_id:
+                stock_move_lines = self.env['stock.move.line'].search([('picking_id', '=', rec.picking_id.id)])
+                # print('stock_move_lines', stock_move_lines)
+                if stock_move_lines:
+                    # Get the lot names from the stock move lines, filtering out any non-string values (e.g.,False)
+                    lot_names = [name for name in stock_move_lines.mapped('lot_name') if isinstance(name, str)]
+                    # print('lot_names', lot_names)
+                    rec.lot_name = ', '.join(lot_names) if lot_names else ''
+                else:
+                    # If no stock move lines are found, set a default value
+                    rec.lot_name = ''
+
 
     @api.depends('measure_data_ids', 'test_type_id')
     def _check_if_measure_data_ids_empty(self):
@@ -110,7 +127,7 @@ class ElwQualityCheck(models.Model):
         alert_data = self.env['elw.quality.alert']._read_group([('check_id', 'in', self.ids)],
                                                                ['check_id'], ['__count'])
         # print('alert_data:', alert_data) # alert_data: [(elw.quality.check(3,), 1)]
-        #dictionary comprehension to map the IDs to their corresponding counts
+        # dictionary comprehension to map the IDs to their corresponding counts
         mapped_data = {check.id: count for check, count in alert_data}
         #  defaulting to 0 if the check.id is not found in mapped_data.
         for check in self:

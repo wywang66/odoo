@@ -4,7 +4,6 @@ from odoo.exceptions import ValidationError, RedirectWarning
 
 # https://www.odoo.com/forum/help-1/pass-a-many2one-field-from-purchase-module-to-inventory-module-249828
 
-
 class StockMove(models.Model):
     _inherit = "stock.move"
 
@@ -105,9 +104,10 @@ class Picking(models.Model):
     def _compute_qa_check_product_ids(self):
         """
         This function returns qa_check_product_ids that display the pending quality check products
-        among the products in the delivery order. If the pending quality check products and delivery types
+        among the products in the delivery order. at ththe e same time, It creates record for 'quality.check' model.
+        If the pending quality check products and delivery types
         are matched those the quality check points view, Btn "Quality Check" is visible and the pending
-        quality check products are shown. It does not create record for quality.check.
+        quality check products are shown.
         """
         qa_checkpoint_lists = self.env['elw.quality.point'].sudo().search([])
         for rec in self:
@@ -179,12 +179,8 @@ class Picking(models.Model):
     @api.depends('quality_check_ids', 'quality_state', 'qa_check_product_ids', 'is_all_quality_fails_resolved')
     def button_validate(self):
         self.ensure_one()
-        # print("trigger here-----self.quality_alert_open_count----", self.quality_alert_open_count)
-        if not self.qa_check_product_ids:  # before getting the 1st popup
-            raise ValidationError(
-                _("Sorry, Quality Records have not been automatically created! Please create at Quality Control|Control Checks"))
         # after 1st popup window
-        elif self.quality_check_ids and not self.is_all_quality_fails_resolved:
+        if self.quality_check_ids and not self.is_all_quality_fails_resolved:
             vals_popup = self._fill_in_vals_popup_after_popup()
             # print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
