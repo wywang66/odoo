@@ -176,23 +176,6 @@ class Picking(models.Model):
                       }
         return vals_popup
 
-    @api.model
-    def find_team_id(self):
-        team_obj = self.env['elw.quality.team']
-        team_search = team_obj.sudo().search([])
-        if len(team_search):
-            return team_search[0].id
-        else:
-            raise ValidationError(_("Sorry, Please Create a Quality Team First at 'Configurations|Quality Teams'! "))
-
-    # def find_lot_id(self):
-    #     lot_obj = self.env['stock.lot']
-    #     lot_search = lot_obj.sudo().search([])
-    #     if len(lot_search):
-    #         return lot_search[0].id
-    #     else:
-    #         raise ValidationError(_("Sorry, Please Create a Lot ID First at 'Products|Lot/Serial Numbers'! "))
-
     @api.depends('quality_check_ids', 'quality_state', 'qa_check_product_ids', 'is_all_quality_fails_resolved')
     def button_validate(self):
         self.ensure_one()
@@ -218,27 +201,6 @@ class Picking(models.Model):
             }
         else:
             return super(Picking, self).button_validate()
-
-    # display a message with product_ids, check_ids do_alert, to reminder the user to create QA alert
-    @api.depends('check_ids', 'quality_check_fail')
-    def do_alert(self):
-        self.ensure_one()
-        if self.check_ids and self.quality_check_fail:
-            vals_popup = self._fill_in_vals_popup_after_popup()
-            print("do_alert vals_popup ", vals_popup)
-            qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
-            # print("self.check_ids.quality_state", self.quality_state)  # self.check_ids.quality_state pass
-
-            show_name = 'Create Quality Alert. Status of Quality Check on Delivery: ' + self.name
-            return {
-                'name': show_name,
-                'res_model': 'elw.quality.check.popup.wizard',
-                'res_id': qa_check_popup_wizard.id,
-                'type': 'ir.actions.act_window',
-                'view_mode': 'form',
-                'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
-                'target': 'new',
-            }
 
     @api.depends('quality_check_ids.ids')
     def action_open_quality_check_picking(self):
