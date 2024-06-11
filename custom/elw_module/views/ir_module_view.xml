@@ -17,11 +17,16 @@
 
         <!-- inherit data file from odoo/base/data but below does not work, even commenting this section from original xml -->
         <!-- https://www.odoo.com/forum/help-1/how-to-inherit-data-file-in-odoo-225213-->
-<!--        <record id="base.module_category_website" model="ir.module.category">-->
-<!--            <field name="sequence">305</field>-->
-<!--            <field name="visible" eval="0" />-->
-<!--        </record>-->
+        <!--        <record id="base.module_category_website" model="ir.module.category">-->
+        <!--            <field name="sequence">305</field>-->
+        <!--            <field name="visible" eval="0" />-->
+        <!--        </record>-->
 
+        <!--category_id, do not need to add ELW in  odoo/addons/base/data/ir_module_category_data.xml with elw_module_security_data. ELW is added-->
+<!--        <record model="ir.module.category" id="module_category_elw">-->
+<!--            <field name="name">ELW</field>-->
+<!--            <field name="sequence">120</field>-->
+<!--        </record>-->
 
         <!-- below make module_type (above 'category_id') on UI left search panel invisible -->
         <record model="ir.ui.view" id="view_module_filter_apps_inherit_inherit">

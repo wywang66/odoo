@@ -8,7 +8,7 @@
 Long description of module's purpose
     """,
 
-    'author': "My Company",
+    'author': "Digital BigBite",
     'website': "https://www.yourcompany.com",
     'sequence': -110,
     'application': True,
@@ -24,7 +24,7 @@ Long description of module's purpose
 
     # always loaded
     'data': [
-        'security/elw_quality_security_data.xml',
+        # 'security/elw_quality_security_data.xml',
         'security/ir.model.access.csv',
         'data/sequence_data.xml',
         'data/quality_team_data.xml',

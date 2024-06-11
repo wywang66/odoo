@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, Command
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
 
@@ -102,11 +102,7 @@ class ElwQualityPoint(models.Model):
     @api.depends('check_ids')
     def _compute_quality_check_count(self):
         for rec in self:
-            if rec.check_ids.ids:
-                rec.quality_check_count = sum(1 for check in rec.check_ids)
-            else:
-                rec.quality_check_count = 0
-            # print("rec.quality_check_count", rec.quality_check_count)
+            rec.quality_check_count = self.env['elw.quality.check'].search_count([('point_id', '=', rec.id)])
 
     @api.depends('product_category_ids')
     def _get_product_from_category(self):
@@ -159,3 +155,13 @@ class ElwQualityPoint(models.Model):
             'view_mode': 'tree,form',
             'target': 'current',
         }
+
+    # https://www.odoo.com/forum/help-1/userwarning-unsupported-operand-type-s-command-update-1-254376
+    @api.model
+    def default_get(self, fields_list):
+        res = super(ElwQualityPoint, self).default_get(fields_list)
+        # print("default_get---", fields_list) # all the fields
+        # print("res ---", res) # all default value
+        if not res.get('picking_type_ids'):
+            res['picking_type_ids'] = [Command.set(self.env['stock.picking.type'].search([]).ids)]
+        return res

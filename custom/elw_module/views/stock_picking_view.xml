@@ -39,13 +39,11 @@
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='backorder_id']" position="after">
-
                     <field name="qa_check_product_ids" widget="many2many_tags"/>
-                    <field name="check_ids" widget="many2many_tags" invisible="1"/>
                     <field name="quality_check_fail" invisible="1"/>
                     <field name="quality_state" invisible="1"/>
 <!--                    <div>-->
-                        <field name="is_all_quality_fails_resolved" invisible="not check_ids"
+                        <field name="is_all_quality_fails_resolved" invisible="not quality_check_ids"
                                style="margin-bottom:20px;" string="Is All Passed or Failures Resolved"/>
 
                         <!--avoid the overlapping with  fields in the 2nd group-->
@@ -68,17 +66,17 @@
                         </tree>
                     </field>
                 </xpath>
-                <xpath expr="//button[@name='button_validate']" position="after">
-                    <button name="action_create_quality_check"
-                            invisible="not qa_check_product_ids or state in ('done','cancel') or check_ids"
-                            string="Create QA Check Record" type="object" class="oe_highlight"/>
+<!--                <xpath expr="//button[@name='button_validate']" position="after">-->
+<!--                    <button name="action_create_quality_check"-->
+<!--                            invisible="not qa_check_product_ids or state in ('done','cancel') or check_ids"-->
+<!--                            string="Create QA Check Record" type="object" class="oe_highlight"/>-->
 <!--                    <button name="action_quality_check"-->
 <!--                            invisible="not check_ids or state in ('done','cancel') or quality_state in ('fail','pass')"-->
 <!--                            string="Quality Check" type="object" class="oe_highlight"/>-->
 <!--                    <button name="do_alert" type="object" class="btn-primary"-->
 <!--                            invisible="not quality_check_fail or quality_alert_ids" string="Create Alert"-->
 <!--                            data-hotkey="g"/>-->
-                </xpath>
+<!--                </xpath>-->
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>
                 </xpath>
@@ -102,20 +100,20 @@
                             </div>
                         </button>
                         <button name="action_open_quality_check_picking"
-                                invisible="not check_ids or not qa_check_product_ids or quality_check_fail or quality_state == 'pass'"
+                                invisible="not qa_check_product_ids or quality_check_fail or quality_state == 'pass'"
                                 type="object"
                                 class="oe_stat_button" icon="fa-check">
                             <field name="quality_check_count" string="Quality Checks" widget="statinfo"/>
 <!--                            <span class="o_stat_text">Quality Checks</span>-->
                         </button>
                         <button name="action_open_quality_check_picking"
-                                invisible="not check_ids or quality_check_fail or quality_state != 'pass'" type="object"
+                                invisible="not qa_check_product_ids or quality_check_fail or quality_state != 'pass'" type="object"
                                 class="oe_stat_button text-success" icon="fa-check">
                             <field name="quality_check_count" string="Quality Checks" widget="statinfo" class="o_stat_text text-success"/>
 <!--                            <span class="o_stat_text text-success">Quality Checks</span>-->
                         </button>
                         <button name="action_open_quality_check_picking"
-                                invisible="not check_ids or not quality_check_fail" type="object"
+                                invisible="not qa_check_product_ids or not quality_check_fail" type="object"
                                 class="oe_stat_button text-danger" icon="fa-check">
                             <field name="quality_check_count" string="Quality Checks" widget="statinfo" class="o_stat_text text-danger"/>
 <!--                            <span class="o_stat_text text-danger">Quality Checks</span>-->

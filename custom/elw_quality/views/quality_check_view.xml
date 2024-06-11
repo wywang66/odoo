@@ -200,7 +200,7 @@
                                 <field name="control_date"/>
                                 <field name="user_id"/>
                                 <field name="has_lot_id" invisible="1"/>
-                                <field name="lot_id" invisible="not has_lot_id or not product_id"
+                                <field name="lot_name" invisible="not has_lot_id or not product_id"
                                        required="has_lot_id"/>
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">

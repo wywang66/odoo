@@ -23,7 +23,7 @@ class QualityAlert(models.Model):
     active = fields.Boolean(default=True)
     partner_id = fields.Many2one('res.partner', string='Vendor', store=True, ondelete="set null")
     product_id = fields.Many2one('product.product', string='Product Variant', store=True, ondelete="set null",
-                                 domain="['&', ('product_tmpl_id', '=', product_tmpl_id), ('type', 'in', ['product', 'consu'])]")
+                                 related="check_id.product_id", readonly=False, required=True)
     product_tmpl_id = fields.Many2one('product.template', string='Product', related='product_id.product_tmpl_id',
                                       store=True, ondelete="set null")
     picking_id = fields.Many2one('stock.picking', string='Picking', store=True, ondelete="set null")
@@ -33,8 +33,8 @@ class QualityAlert(models.Model):
         ('2', 'High'),
         ('3', 'Very High')], string="Priority", tracking=True, store=True,
         help="1 star: Low, 2 stars: High, 3 stars: Very High")
-    check_id = fields.Many2one('elw.quality.check', string='Check Ref#', readonly=True, ondelete='cascade',
-                               store=True)  # check_id is name of quality.check
+    check_id = fields.Many2one('elw.quality.check', string='Check Ref#', readonly=False, ondelete='cascade',
+                               store=True, domain="[('quality_state', '=', 'fail')]")  # check_id is name of quality.check
     point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID',
                                ondelete='set null')
     lot_id = fields.Many2one('stock.lot', string='Lot/Serial', compute='_get_lot_id', store=True)
