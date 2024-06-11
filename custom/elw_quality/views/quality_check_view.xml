@@ -7,7 +7,7 @@
                 <search>
                     <field name="product_id"/>
                     <field name="picking_id"/>
-                    <field name="lot_id" groups="stock.group_production_lot"/>
+                    <field name="lot_ids" groups="stock.group_production_lot"/>
                     <field name="team_id"/>
                     <filter string="In Progress" name="progress" domain="[('quality_state', '=', 'none')]"/>
                     <filter string="Passed" name="passed" domain="[('quality_state', '=', 'pass')]"/>
@@ -78,7 +78,7 @@
                     <field name="user_id"/>
                     <field name="control_date"/>
                     <field name="product_id"/>
-                    <field name="lot_id"/>
+                    <field name="lot_ids"/>
                     <field name="quality_state"/>
                     <templates>
                         <t t-name="kanban-box">
@@ -107,7 +107,7 @@
                                     </div>
                                     <div class="col-4">
                                         <span>
-                                            <t t-esc="record.lot_id.value"/>
+                                            <t t-esc="record.lot_ids.value"/>
                                         </span>
                                     </div>
                                 </div>
@@ -135,7 +135,7 @@
                            decoration-info="alert_result == 'Solved'"
                            decoration-danger="alert_result =='Unsolved'"
                     />
-                    <field name="lot_id" optional="hide"/>
+                    <field name="lot_ids" optional="hide"/>
                     <field name="test_type_id"/>
                     <field name="control_date"/>
                     <field name="user_id" widget="many2one_avatar_user"/>
@@ -200,8 +200,11 @@
                                 <field name="control_date"/>
                                 <field name="user_id"/>
                                 <field name="has_lot_id" invisible="1"/>
-                                <field name="lot_name" invisible="not has_lot_id or not product_id"
+                                <field name="lot_ids" widget="many2many_tags" invisible="lot_name or not has_lot_id or not product_id"
                                        required="has_lot_id"/>
+                                <field name="lot_name" string="Lot/Serial" invisible="not lot_name"
+                                       required="has_lot_id"/>
+<!--                                <field name="move_lot_ids" widget="many2many_tags"/>-->
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">
                                         <field name="name"/>

@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _, Command
-from odoo.exceptions import ValidationError, RedirectWarning
+from odoo.exceptions import ValidationError, RedirectWarning, UserError
 
 
 # https://www.odoo.com/forum/help-1/pass-a-many2one-field-from-purchase-module-to-inventory-module-249828
@@ -9,7 +9,7 @@ class StockMove(models.Model):
 
     # 'stock.move.line' defines picking_id picking_id = fields.Many2one('stock.picking', 'Transfer',)
     # 'stock.picking' defines purchase_id = fields.Many2one('purchase.order', related='move_ids.purchase_line_id.order_id',)
-    # \addons\product\models\product_template.py 'product.template' defines 
+    # \addons\product\models\product_template.py 'product.template' defines
     # categ_id = fields.Many2one('product.category', 'Product Category', related = 'picking_id.purchase_id.categ_id', required=True)
     # below works too
     categ_id = fields.Many2one('product.category', 'Product Category', related='product_id.categ_id', required=True)
@@ -83,8 +83,9 @@ class Picking(models.Model):
     def _compute_quality_check_fail(self):
         for rec in self:
             if rec.quality_check_ids:
-                quality_state_list = [check.quality_state for check in rec.quality_check_ids] if rec.quality_check_ids else []
-                print("quality_state_list=========", quality_state_list)
+                quality_state_list = [check.quality_state for check in
+                                      rec.quality_check_ids] if rec.quality_check_ids else []
+                # print("quality_state_list=========", quality_state_list)
                 if 'none' in quality_state_list:
                     rec.quality_state = 'none'
                     rec.quality_check_fail = False
@@ -181,6 +182,23 @@ class Picking(models.Model):
         self.ensure_one()
         # after 1st popup window
         if self.quality_check_ids and not self.is_all_quality_fails_resolved:
+            # Remind the user to enter lot ID if the product is set to track lot id
+            # entering 2 lot_name in purchase order creates 2 line
+            for line in self.move_line_ids:
+                if line.product_id in self.qa_check_product_ids and line.product_id.tracking:
+                    # print("line.product_id", line.product_id)
+                    # for purchase lot_name, for sale lot_id
+                    if not line.lot_name and not line.lot_id:
+                        raise UserError(
+                            _("Please enter lot information for %s before proceed to Quality Check",
+                              line.product_id.name))
+                    # elif not line.lot_name and line.lot_id:
+                    #     raise UserError(
+                    #         _("Please select correct lot information for %s before proceed to Quality Check",
+                    #           line.product_id.name))
+                    # else:
+                    #     print("line.product_id", line.lot_name, line.lot_id)
+
             vals_popup = self._fill_in_vals_popup_after_popup()
             # print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
@@ -195,6 +213,7 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
+
         else:
             return super(Picking, self).button_validate()
 
