@@ -84,7 +84,7 @@ class Picking(models.Model):
         for rec in self:
             if rec.quality_check_ids:
                 quality_state_list = [check.quality_state for check in rec.quality_check_ids] if rec.quality_check_ids else []
-                print("quality_state_list=========", quality_state_list)
+                # print("quality_state_list=========", quality_state_list)
                 if 'none' in quality_state_list:
                     rec.quality_state = 'none'
                     rec.quality_check_fail = False
@@ -181,6 +181,16 @@ class Picking(models.Model):
         self.ensure_one()
         # after 1st popup window
         if self.quality_check_ids and not self.is_all_quality_fails_resolved:
+            # Remind the user to enter lot ID if the product is set to track lot id
+            for product in self.qa_check_product_ids:
+                # print("product.tracking", product, product.tracking)
+                if product.tracking:
+                    stock_lot_data = self.env['stock.lot'].search([('product_id','=', product.id)])
+                    # print("stock lot", stock_lot_data)
+                    if not stock_lot_data:
+                        raise ValidationError(
+                            _("Please enter product (%s) tracking lot information before proceed to Quality Check", product.display_name))
+
             vals_popup = self._fill_in_vals_popup_after_popup()
             # print("vals_popup ", vals_popup)
             qa_check_popup_wizard = self._create_qa_check_popup_wizard_record(vals_popup)
@@ -195,6 +205,7 @@ class Picking(models.Model):
                 'view_id': self.env.ref('elw_quality.elw_quality_check_popup_form_view').id,
                 'target': 'new',
             }
+
         else:
             return super(Picking, self).button_validate()
 
