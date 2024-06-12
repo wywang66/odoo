@@ -190,7 +190,7 @@ class Picking(models.Model):
                         line.lot_name or line.lot_id):
                     raise UserError(
                         _("Please enter lot information for %s before proceed to Quality Check",
-                          line.product_id.name))
+                          line.product_id.display_name))
                     # else:
                     #     print("line.product_id", line.lot_name, line.lot_id)
 

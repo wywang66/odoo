@@ -64,12 +64,13 @@ class ElwQualityCheck(models.Model):
     @api.depends('has_lot_id', 'picking_id')
     def _get_lot_name(self):
         for rec in self:
-            if rec.has_lot_id:
+            if rec.has_lot_id and rec.picking_id:
                 stock_move_lines = self.env['stock.move.line'].search([('picking_id', '=', rec.picking_id.id)])
                 # print('map stock_move_lines', stock_move_lines, stock_move_lines.mapped('lot_id'),
                 #       stock_move_lines.mapped('lot_name'))
                 if all(value is not False for value in stock_move_lines.mapped('lot_name')):
                     # Get the lot names from the stock move lines, filtering out any non-string values (e.g.,False)
+                    # print('stock_move_lines.mapped name', stock_move_lines.mapped('lot_name'))
                     lot_names = [name for name in stock_move_lines.mapped('lot_name') if isinstance(name, str)]
                     rec.lot_name = ', '.join(lot_names) if lot_names else ''
                 elif len(stock_move_lines.mapped('lot_id').mapped('id')):
@@ -79,7 +80,7 @@ class ElwQualityCheck(models.Model):
                 else:
                     raise UserError(
                         _('Not Lot/Serial found! Please provide Lot/Serial for %s in Delivery or Receipt order page.',
-                          rec.product_id.name))
+                          rec.product_id.display_name))
 
     @api.depends('measure_data_ids', 'test_type_id')
     def _check_if_measure_data_ids_empty(self):
