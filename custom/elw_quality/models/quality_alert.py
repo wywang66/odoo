@@ -37,7 +37,7 @@ class QualityAlert(models.Model):
                                store=True, domain="[('quality_state', '=', 'fail')]")  # check_id is name of quality.check
     point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID',
                                ondelete='set null')
-    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', compute='_get_lot_id', store=True)
+    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', compute='_get_lot_ids', store=True)
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='set null')
 
@@ -68,11 +68,11 @@ class QualityAlert(models.Model):
 
     # select the same lot_id from quality.check
     @api.depends('check_id')
-    def _get_lot_id(self):
+    def _get_lot_ids(self):
         for rec in self:
-            lot_id_ = self.env['elw.quality.check'].browse(rec.check_id.id)
+            lot_ids_ = self.env['elw.quality.check'].browse(rec.check_id.id)
             # print("lot_id_------", lot_id_, rec.check_id.id)
-            rec.lot_id = lot_id_.lot_id if lot_id_ else None
+            rec.lot_ids = lot_ids_.lot_ids if lot_ids_ else None
 
     # # select the same lot_id from quality.check
     # @api.depends('check_id')

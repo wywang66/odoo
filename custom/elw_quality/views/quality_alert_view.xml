@@ -6,9 +6,9 @@
             <field name="arch" type="xml">
                 <search string="Quality Alert Search ">
                     <field name="name" string="Quality Alert"
-                           filter_domain="[                     '|', '|', '|', ('name', 'ilike', self), ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_id', 'ilike', self)]"/>
+                           filter_domain="[                     '|', '|', '|', ('name', 'ilike', self), ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_ids', 'ilike', self)]"/>
                     <field name="product_id" string="Product"
-                           filter_domain="[                     '|', '|', ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_id', 'ilike', self)]"/>
+                           filter_domain="[                     '|', '|', ('product_id', 'ilike', self), ('product_tmpl_id', 'ilike', self), ('lot_ids', 'ilike', self)]"/>
                     <field name="tag_ids"/>
                     <field name="user_id"/>
                     <field name="team_id"/>
@@ -104,7 +104,7 @@
                     <field name="name" decoration-bf="1"/>
                     <!--                    <field name="product_tmpl_id" optional="show"/>-->
                     <field name="product_id" optional="show"/>
-                    <field name="lot_id" optional="hide"/>
+                    <field name="lot_ids" optional="hide"/>
                     <field name="team_id" optional="show"/>
                     <field name="user_id" optional="show" widget="many2one_avatar_user"/>
                     <field name="check_id" optional="show"/>
@@ -159,7 +159,7 @@
                                 <field name="product_id" />
                                 <!-- product.group_product_variant makes product_id not selectable"/>-->
                                 <!-- <field name="product_id" groups="product.group_product_variant"/>-->
-                                <field name="lot_id" context="{'default_product_id': product_id}" groups="stock.group_production_lot" invisible="not lot_id"/>
+                                <field name="lot_ids" widget="many2many_tags" context="{'default_product_id': product_id}" groups="stock.group_production_lot" invisible="not lot_ids"/>
                                 <field name="picking_id"/>
                                 <field name="check_id" options="{'no_create': True}"/>
                                 <field name="point_id"/>

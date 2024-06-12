@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 import json
 
 
@@ -32,12 +32,15 @@ class ElwQualityCheck(models.Model):
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
                                        'with partial quantity checks also possible.')
-    lot_id = fields.Many2one('stock.lot', string='Lot/Serial', domain="[('product_id', '=', product_id)]", store=True,
-                             ondelete='restrict')
-    lot_name = fields.Char(string='Lot Name', compute='_get_lot_name', readonly=False)
+    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', compute='_get_move_line_lot_ids',
+                               readonly=False, domain="[('product_id', '=', product_id)]")
+    # move_lot_ids = fields.Many2many('stock.lot', string='Lot IDs', compute='_get_move_line_lot_ids',
+    #                            store=True,
+    #                            ondelete='restrict')
+    lot_name = fields.Char(string='Lot Name', compute='_get_lot_name', readonly=False, store=True)
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
-    test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL')
+    test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL', store=True)
     team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='cascade')
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
@@ -61,18 +64,27 @@ class ElwQualityCheck(models.Model):
 
     product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
+    # below is run when pressing 'Confirm Order' in purchase and sale
+    @api.depends('has_lot_id', 'picking_id')
+    def _get_move_line_lot_ids(self):
+        for rec in self:
+            if rec.has_lot_id:
+                lot_ids = rec.picking_id.move_line_ids.filtered(lambda line: not line.lot_name and line.lot_id).mapped(
+                    'lot_id.id')
+                rec.lot_ids = self.env['stock.lot'].browse(lot_ids)
+
     @api.depends('has_lot_id', 'picking_id')
     def _get_lot_name(self):
         for rec in self:
             if rec.has_lot_id:
                 stock_move_lines = self.env['stock.move.line'].search([('picking_id', '=', rec.picking_id.id)])
-                # print('stock_move_lines', stock_move_lines)
-                if stock_move_lines:
+                # print('map stock_move_lines', stock_move_lines, stock_move_lines.mapped('lot_id'),stock_move_lines.mapped('lot_name'))
+                if stock_move_lines and stock_move_lines.mapped('lot_name'):
                     # Get the lot names from the stock move lines, filtering out any non-string values (e.g.,False)
                     lot_names = [name for name in stock_move_lines.mapped('lot_name') if isinstance(name, str)]
                     # print('lot_names', lot_names)
                     rec.lot_name = ', '.join(lot_names) if lot_names else ''
-                else:
+                elif stock_move_lines:
                     # If no stock move lines are found, set a default value
                     rec.lot_name = ''
 
