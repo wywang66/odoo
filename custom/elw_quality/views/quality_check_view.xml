@@ -203,7 +203,7 @@
                                 <field name="lot_ids" widget="many2many_tags" invisible="lot_name or not has_lot_id or not product_id"
                                        required="has_lot_id" force_save="1"/>
                                 <field name="lot_name" string="Lot/Serial" invisible="not lot_name"
-                                       required="has_lot_id"/>
+                                       required="has_lot_id" force_save="1"/>
 <!--                                <field name="move_lot_ids" widget="many2many_tags"/>-->
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">

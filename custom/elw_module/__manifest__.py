@@ -30,7 +30,7 @@ Long description of module's purpose
         'views/sale_order_view.xml',
         'views/ir_module_view.xml',
         'views/purchase_order_view.xml',
-
+        'views/stock_lot.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
