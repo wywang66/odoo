@@ -71,6 +71,7 @@
         </record>
 
         <!-- make 'Learn More' buttons invisible in main UI  -->
+        <!-- make 'Module Info' buttons invisible in main UI kanban  -->
         <record id="base_module_kanban_elw_inherit" model="ir.ui.view">
             <field name="name">base.module.kanban.inherit</field>
             <field name="model">ir.module.module</field>
@@ -79,7 +80,10 @@
                 <xpath expr="//kanban/templates/t/a[2]" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
-                <xpath expr="//kanban/templates/t[2]/div/div[2]/div/a" position="attributes">
+                <xpath expr="//kanban/templates/t[2]/div/div[2]/div/a[1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//kanban/templates/t[2]/div/div[2]/div/a[2]" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
             </field>

@@ -130,7 +130,7 @@
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="picking_id"/>
-                    <field name="alert_result" widget="badge"
+                    <field name="alert_result" force_save="1" widget="badge"
                            decoration-success="alert_result == 'Passed'"
                            decoration-info="alert_result == 'Solved'"
                            decoration-danger="alert_result =='Unsolved'"
@@ -178,7 +178,7 @@
                         <div class="oe_button_box" name="button_box">
                             <button name="action_see_alerts" icon="fa-bell" type="object" class="oe_stat_button"
                                     invisible="alert_count == 0">
-                                <field name="alert_count" string="Quality Alerts" widget="statinfo"/>
+                                <field name="alert_count" force_save="1" string="Quality Alerts" widget="statinfo"/>
                             </button>
                             <field name="active" invisible="1"/>
                             <div class="oe_button_box" name="button_box">
@@ -201,9 +201,9 @@
                                 <field name="user_id"/>
                                 <field name="has_lot_id" invisible="1"/>
                                 <field name="lot_ids" widget="many2many_tags" invisible="lot_name or not has_lot_id or not product_id"
-                                       required="has_lot_id"/>
+                                       required="has_lot_id" force_save="1"/>
                                 <field name="lot_name" string="Lot/Serial" invisible="not lot_name"
-                                       required="has_lot_id"/>
+                                       required="has_lot_id" force_save="1"/>
 <!--                                <field name="move_lot_ids" widget="many2many_tags"/>-->
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">

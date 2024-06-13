@@ -19,7 +19,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'stock', 'account', 'elw_quality', 'purchase', 'sale'],
+    'depends': ['base', 'product', 'stock', 'account', 'purchase', 'sale', 'elw_quality'],
 
     # always loaded
     'data': [
@@ -30,7 +30,7 @@ Long description of module's purpose
         'views/sale_order_view.xml',
         'views/ir_module_view.xml',
         'views/purchase_order_view.xml',
-
+        'views/stock_lot.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
