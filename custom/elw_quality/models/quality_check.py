@@ -33,9 +33,9 @@ class ElwQualityCheck(models.Model):
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
                                        'with partial quantity checks also possible.')
     lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', compute='_get_lot_name',
-                               readonly=False, domain="[('product_id', '=', product_id)]")
-    lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_name', readonly=False)
-    has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id")
+                               readonly=False, domain="[('product_id', '=', product_id)]", store=True)
+    lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_name', readonly=False, store=True)
+    has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id", store=True)
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL', store=True)
     team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='cascade')
@@ -61,12 +61,12 @@ class ElwQualityCheck(models.Model):
 
     product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
-    @api.depends('has_lot_id', 'picking_id')
+    @api.depends('has_lot_id', 'picking_id','picking_id.move_line_ids')
     def _get_lot_name(self):
         for rec in self:
             if rec.has_lot_id and rec.picking_id:
-                stock_move_lines = self.env['stock.move.line'].search([('picking_id', '=', rec.picking_id.id)])
-                # print('map stock_move_lines', stock_move_lines, stock_move_lines.mapped('lot_id'),
+                stock_move_lines = self.env['stock.move.line'].sudo().search([('picking_id', '=', rec.picking_id.id)])
+                # print('stock_move_lines', stock_move_lines, stock_move_lines.mapped('lot_id'),
                 #       stock_move_lines.mapped('lot_name'))
                 if all(value is not False for value in stock_move_lines.mapped('lot_name')):
                     # Get the lot names from the stock move lines, filtering out any non-string values (e.g.,False)
@@ -77,10 +77,10 @@ class ElwQualityCheck(models.Model):
                     # print('stock_move_lines.mapped', stock_move_lines.mapped('lot_id').mapped('id'))
                     lot_ids = stock_move_lines.mapped('lot_id').ids
                     rec.lot_ids = self.env['stock.lot'].browse(lot_ids)
-                else:
-                    raise UserError(
-                        _('Not Lot/Serial found! Please provide Lot/Serial for %s in Delivery or Receipt order page.',
-                          rec.product_id.display_name))
+            # else:
+            #     raise UserError(
+            #         _('Not delivery and receipt order! Please provide Lot/Serial for %s .',
+            #           rec.product_id.display_name))
 
     @api.depends('measure_data_ids', 'test_type_id')
     def _check_if_measure_data_ids_empty(self):
