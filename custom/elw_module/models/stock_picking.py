@@ -185,8 +185,8 @@ class Picking(models.Model):
             # Remind the user to enter lot ID if the product is set to track lot id
             # entering 2 lot_name in purchase order creates 2 line
             for line in self.move_line_ids:
-                # print("line.product_id", line.lot_name, line.lot_id.id, line.lot_id)
-                if line.product_id in self.qa_check_product_ids and line.product_id.tracking and not (
+                # print("line.product_id", line.product_id.name, line.product_id.tracking, line.lot_name, line.lot_id.id, line.lot_id)
+                if line.product_id in self.qa_check_product_ids and line.product_id.tracking != 'none' and not (
                         line.lot_name or line.lot_id):
                     raise UserError(
                         _("Please enter lot information for %s before proceed to Quality Check",

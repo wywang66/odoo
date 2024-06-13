@@ -42,9 +42,9 @@ class ElwQualityCheck(models.Model):
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
                                      default='none', string='Status')
-    alert_count = fields.Integer(default=0, compute="_compute_alert_cnt")
+    alert_count = fields.Integer(default=0, compute="_compute_alert_cnt", store=True)
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
-    alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result')
+    alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result', store=True)
     fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
                                                 compute='_compute_fail_and_not_alert_created', store=True)
     picture = fields.Binary(string="Picture", store=True)
@@ -55,24 +55,25 @@ class ElwQualityCheck(models.Model):
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
                                        readonly=False,
                                        compute="_compute_measured_spec", store=False)
-    measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count')
+    measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count', store=True)
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
                                        compute="", store=True)
 
-    product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
+    product_id_domain = fields.Char(compute="_compute_product_id_domain")
 
-    @api.depends('has_lot_id', 'picking_id','picking_id.move_line_ids')
+    @api.depends('has_lot_id', 'picking_id','picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
     def _get_lot_name(self):
         for rec in self:
             if rec.has_lot_id and rec.picking_id:
                 stock_move_lines = self.env['stock.move.line'].sudo().search([('picking_id', '=', rec.picking_id.id)])
                 # print('stock_move_lines', stock_move_lines, stock_move_lines.mapped('lot_id'),
                 #       stock_move_lines.mapped('lot_name'))
-                if all(value is not False for value in stock_move_lines.mapped('lot_name')):
+                if not all(name == False for name in stock_move_lines.mapped('lot_name')):
                     # Get the lot names from the stock move lines, filtering out any non-string values (e.g.,False)
                     # print('stock_move_lines.mapped name', stock_move_lines.mapped('lot_name'))
-                    lot_names = [name for name in stock_move_lines.mapped('lot_name') if isinstance(name, str)]
-                    rec.lot_name = ', '.join(lot_names) if lot_names else ''
+                    lot_names = [line.lot_name for line in stock_move_lines if line.lot_name]
+                    # print('lot_names', lot_names)
+                    rec.lot_name = ', '.join(lot_names)
                 elif len(stock_move_lines.mapped('lot_id').mapped('id')):
                     # print('stock_move_lines.mapped', stock_move_lines.mapped('lot_id').mapped('id'))
                     lot_ids = stock_move_lines.mapped('lot_id').ids
