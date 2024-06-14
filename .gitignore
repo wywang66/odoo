@@ -22,7 +22,9 @@ odoo/filestore
 odoo/addons/base/maintenance
 # window installation config file
 /odoo.conf
-
+/db.conf
+/venv
+dev/
 # generated for windows installer?
 install/win32/*.bat
 install/win32/meta.py
