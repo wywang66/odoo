@@ -36,6 +36,7 @@ class ElwQualityCheck(models.Model):
                                readonly=False, domain="[('product_id', '=', product_id)]", store=True)
     lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_name', readonly=False, store=True)
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id", store=True)
+    picking_code = fields.Selection(related='picking_id.picking_type_id.code', readonly=True)
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL', store=True)
     team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='cascade')

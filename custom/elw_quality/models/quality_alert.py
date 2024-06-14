@@ -37,11 +37,15 @@ class QualityAlert(models.Model):
                                store=True, domain="[('quality_state', '=', 'fail')]")  # check_id is name of quality.check
     point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID',
                                ondelete='set null')
-    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', compute='_get_lot_ids')
-    lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_ids')
+    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', domain="[('product_id', '=', product_id)]",
+                               required=True)
+    # related='check_id.lot_name' making a change on alert will update the change in quality.check
+    lot_name = fields.Char(string='Lots/Serials', required=True)
+    has_lot_id = fields.Boolean(string='Has Lot ids', related='check_id.has_lot_id')
+
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='set null')
-
+    picking_code = fields.Selection(related='picking_id.picking_type_id.code', readonly=True)
     user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='set null')
     team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True, readonly=False)
     date_assign = fields.Date(string='Date Assigned', default=fields.Date.context_today)
