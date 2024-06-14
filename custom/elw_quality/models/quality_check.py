@@ -60,7 +60,7 @@ class ElwQualityCheck(models.Model):
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
                                        compute="", store=True)
 
-    product_id_domain = fields.Char(compute="_compute_product_id_domain")
+    product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
     @api.depends('has_lot_id', 'picking_id','picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
     def _get_lot_name(self):

@@ -20,8 +20,8 @@ class QualityTeam(models.Model):
     color = fields.Integer("Color Index", default=0)
     check_ids = fields.One2many('elw.quality.check', 'team_id', copy=False)
     alert_ids = fields.One2many('elw.quality.alert', 'team_id', copy=False)
-    alert_count = fields.Integer("# Quality Alerts", compute="_compute_quality_alert_count")
-    check_count = fields.Integer("# Quality Checks", compute="_compute_quality_check_count")
+    alert_count = fields.Integer("# Quality Alerts", compute="_compute_quality_alert_count", store=True)
+    check_count = fields.Integer("# Quality Checks", compute="_compute_quality_check_count", store=True)
     alias_contact = fields.Selection(
         [('everyone', 'Everyone'), ('partners', 'Authenticated Partners'), ('followers', 'Followers'),
          ('employees', "Authenticated Employees")], default='everyone')
