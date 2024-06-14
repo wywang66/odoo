@@ -177,8 +177,12 @@
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="action_see_alerts" icon="fa-bell" type="object" class="oe_stat_button"
-                                    invisible="alert_count == 0">
-                                <field name="alert_count" force_save="1" string="Quality Alerts" widget="statinfo"/>
+                                    invisible="not alert_ids or alert_result=='Solved'">
+                                <field name="alert_count" force_save="1" class="text-danger" string="Quality Alerts" widget="statinfo"/>
+                            </button>
+                            <button name="action_see_alerts" icon="fa-bell" type="object" class="oe_stat_button"
+                                    invisible="not alert_ids or alert_result!='Solved'">
+                                <field name="alert_count" class="text-success" string="Quality Alerts" widget="statinfo"/>
                             </button>
                             <field name="active" invisible="1"/>
                             <div class="oe_button_box" name="button_box">
@@ -199,6 +203,7 @@
                                 <field name="measure_on" readonly="point_id"/>
                                 <field name="control_date"/>
                                 <field name="user_id"/>
+                                <field name="alert_result" invisible="1"/>
                                 <field name="has_lot_id" invisible="1"/>
                                 <field name="lot_ids" widget="many2many_tags" invisible="lot_name or not has_lot_id or not product_id"
                                        required="has_lot_id" force_save="1"/>

@@ -32,10 +32,14 @@ class ElwQualityCheck(models.Model):
                                        ' Operation = One quality check is requested at the operation level.'
                                        ' Quantity = A quality check is requested for each new product quantity registered,'
                                        'with partial quantity checks also possible.')
-    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', compute='_get_lot_name',
+    # lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', compute='_get_lot_name',
+    #                            readonly=False, domain="[('product_id', '=', product_id)]", store=True)
+    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials',
                                readonly=False, domain="[('product_id', '=', product_id)]", store=True)
-    lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_name', readonly=False, store=True)
-    has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id", store=True)
+    # lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_name', readonly=False, store=True)
+    lot_name = fields.Char(string='Lots/Serials', store=True)
+    # has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id", store=True)
+    has_lot_id = fields.Boolean(string='Has Lot ids', store=True)
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL', store=True)
     team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='cascade')
@@ -129,6 +133,7 @@ class ElwQualityCheck(models.Model):
             rec.has_lot_id = rec.product_id.tracking != 'none'
             # print("rec.has_lot_id---------", rec.has_lot_id)
 
+    @api.depends('alert_ids')
     def _compute_alert_cnt(self):
         alert_data = self.env['elw.quality.alert']._read_group([('check_id', 'in', self.ids)],
                                                                ['check_id'], ['__count'])
@@ -136,10 +141,11 @@ class ElwQualityCheck(models.Model):
         # dictionary comprehension to map the IDs to their corresponding counts
         mapped_data = {check.id: count for check, count in alert_data}
         #  defaulting to 0 if the check.id is not found in mapped_data.
+        # print('mapped_data:', mapped_data)
         for check in self:
             check.alert_count = mapped_data.get(check.id, 0)
 
-    @api.depends('alert_ids', 'quality_state')
+    @api.depends('alert_ids.stage_id', 'quality_state')
     def _compute_alert_result(self):
         for rec in self:
             if rec.quality_state == 'fail':
@@ -196,6 +202,7 @@ class ElwQualityCheck(models.Model):
         if self.quality_state == 'none':
             self.quality_state = 'fail'
 
+    @api.depends('measure_data_ids')
     def do_measure(self):
         qa_measure_state = []
         measure_names = []

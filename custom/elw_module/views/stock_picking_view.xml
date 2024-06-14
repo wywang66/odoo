@@ -43,6 +43,7 @@
                     <field name="quality_check_fail" invisible="1"/>
                     <field name="quality_state" invisible="1"/>
                     <field name="has_lot_tracking" invisible="1"/>
+                    <field name="is_all_records_created" invisible ="1"/>
 <!--                    <div>-->
                         <field name="is_all_quality_fails_resolved" invisible="not quality_check_ids"
                                style="margin-bottom:20px;" string="Is All Passed or Failures Resolved"/>
@@ -69,7 +70,7 @@
                 </xpath>
                 <xpath expr="//button[@name='button_validate']" position="after">
                     <button name="action_create_qa_check_record_with_tracking_product"
-                            invisible="not has_lot_tracking"
+                            invisible="not has_lot_tracking and is_all_records_created"
                             string="Add Lot Tracking QA Checks" type="object" class="oe_highlight"/>
 <!--                    <button name="action_quality_check"-->
 <!--                            invisible="not check_ids or state in ('done','cancel') or quality_state in ('fail','pass')"-->
