@@ -37,7 +37,6 @@ class Picking(models.Model):
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], )
     quality_check_ids = fields.One2many('elw.quality.check', 'picking_id', string="Quality Status", store=True)
     quality_check_count = fields.Integer(string="Check Count", compute="_compute_quality_check_count", default=0)
-    has_lot_tracking = fields.Boolean(string='has Lot tracking?', default=False)
 
     @api.depends('quality_check_ids')
     def _compute_quality_check_count(self):
@@ -117,7 +116,6 @@ class Picking(models.Model):
             vals = {}
             qa_check_product_ids_buf = []  # product_ids.ids
             qa_check_point_ids_buf = []
-            qa_product_tracking_buf = []
             # get all products in the delivery order
             delivery_product_ids = []
             picking_obj = rec.filtered(lambda p: p.state == 'assigned')  # assigned = Ready
@@ -144,14 +142,10 @@ class Picking(models.Model):
                                 vals['product_id'] = qa_product_id  #
                                 vals['point_id'] = qa_product_ids_obj.id
                                 # create quality.check record for no tracking product
-                                if self.env['product.product'].browse(qa_product_id).tracking == 'none':
-                                    # print("vals ", vals)#
-                                    # special cmd to create child record. must use []
-                                    rec.quality_check_ids = [Command.create(vals)]
-                                    # print("Command.create(vals) ", Command.create(vals)) #(<Command.CREATE: 0>, 0, {'picking_id': 40, 'quality_state': 'none', 'partner_id': 26, 'product_id': 19, 'point_id': 4})
-                                else:
-                                    rec.has_lot_tracking = True
-                                qa_product_tracking_buf.append(self.env['product.product'].browse(qa_product_id).tracking)
+                                # print("vals ", vals)#
+                                # special cmd to create child record. must use []
+                                rec.quality_check_ids = [Command.create(vals)]
+                                # print("Command.create(vals) ", Command.create(vals)) #(<Command.CREATE: 0>, 0, {'picking_id': 40, 'quality_state': 'none', 'partner_id': 26, 'product_id': 19, 'point_id': 4})
                                 qa_check_product_ids_buf.append(qa_product_id)
                                 qa_check_point_ids_buf.append(qa_product_ids_obj.id)
                                 # print("Found: qa_product_id, partner_id, rec.picking_type_id.id----------",
@@ -160,16 +154,9 @@ class Picking(models.Model):
                                 # len(qa_check_product_ids) can be >1
                                 vals['product_id'] = qa_check_product_ids_buf
                                 vals['point_id'] = qa_check_point_ids_buf
-                                vals['tracking'] = qa_product_tracking_buf
 
                 rec.qa_check_product_ids = self.env['product.product'].sudo().browse(qa_check_product_ids_buf)
                 return vals
-
-    def action_create_qa_check_record_with_tracking_product(self):
-        self.ensure_one()
-        vals = self._compute_qa_check_product_ids()
-        print('vals in action create record', vals)
-        pass
 
     def _create_qa_check_popup_wizard_record(self, vals):
         self.ensure_one()
