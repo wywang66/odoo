@@ -40,8 +40,8 @@ class QualityAlert(models.Model):
     lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', domain="[('product_id', '=', product_id)]",
                                required=True)
     # related='check_id.lot_name' making a change on alert will update the change in quality.check
-    lot_name = fields.Char(string='Lots/Serials', required=True)
-    has_lot_id = fields.Boolean(string='Has Lot ids', related='check_id.has_lot_id')
+    lot_name = fields.Char(string='Lots/Serials', required=True, store=True)
+    has_lot_id = fields.Boolean(string='Has Lot ids', related='check_id.has_lot_id', store=True)
 
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='set null')
@@ -54,7 +54,7 @@ class QualityAlert(models.Model):
     reason_id = fields.Many2one('elw.quality.reason', string='Root Cause')
     email_cc = fields.Char(string="Email cc", store=True, copy=True)
 
-    title = fields.Char(string='Title')
+    title = fields.Char(string='Title', store=True)
 
     # for notebook
     # additional_note = fields.Text('Note')

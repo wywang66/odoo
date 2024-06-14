@@ -15,7 +15,7 @@ class QualityTeam(models.Model):
                                  default=lambda self: self.env.company)
     # odoo creates quality_team_users_rel table for this many2many field
     member_ids = fields.Many2many(
-        'res.users', 'quality_team_users_rel', string="Team Members",
+        'res.users',  string="Team Members",
         domain="[('company_ids', 'in', company_id)]")
     color = fields.Integer("Color Index", default=0)
     check_ids = fields.One2many('elw.quality.check', 'team_id', copy=False)

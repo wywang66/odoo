@@ -25,7 +25,7 @@ class ElwQualityPoint(models.Model):
         readonly=True, required=True,
         help='The company is automatically set from your user preferences.')
 
-    title = fields.Char("Title")
+    title = fields.Char("Title", store=True)
     product_ids = fields.Many2many('product.product', string="Products", domain="[('type','in',('product','consu'))]",
                                    store=True, required=True, compute="_get_product_from_category", readonly=False,
                                    help="Quality Point will apply to every selected Products.")
@@ -53,9 +53,9 @@ class ElwQualityPoint(models.Model):
                                    default=_default_test_type_id, ondelete='cascade', store=True, tracking=True,
                                    help="Defines the type of the quality control point.")
     team_id = fields.Many2one('elw.quality.team', string='Team', ondelete='restrict')
-    quality_check_count = fields.Integer(string="Check Count", compute="_compute_quality_check_count")
+    quality_check_count = fields.Integer(string="Check Count", compute="_compute_quality_check_count", store=True)
     check_ids = fields.One2many('elw.quality.check', 'point_id', string="Check IDS")
-    #  measure data are child data angit addd put in parent quality.point model
+    #  measure data are child data and put in parent quality.point model
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
 
     # for notebook
