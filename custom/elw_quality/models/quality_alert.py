@@ -37,10 +37,9 @@ class QualityAlert(models.Model):
                                store=True, domain="[('quality_state', '=', 'fail')]")  # check_id is name of quality.check
     point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID',
                                ondelete='set null')
-    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', domain="[('product_id', '=', product_id)]",
-                               required=True)
+    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', domain="[('product_id', '=', product_id)]")
     # related='check_id.lot_name' making a change on alert will update the change in quality.check
-    lot_name = fields.Char(string='Lots/Serials', required=True, store=True)
+    lot_name = fields.Char(string='Lots/Serials', store=True)
     has_lot_id = fields.Boolean(string='Has Lot ids', related='check_id.has_lot_id', store=True)
 
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,

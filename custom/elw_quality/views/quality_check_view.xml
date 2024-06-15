@@ -206,8 +206,8 @@
                                 <field name="alert_result" invisible="1"/>
                                 <field name="has_lot_id" invisible="1"/>
                                 <field name="picking_code" invisible="1"/>
-                                <field name="lot_ids" widget="many2many_tags" invisible="picking_code != 'outgoing' and has_lot_id" required="has_lot_id" force_save="1"/>
-                                <field name="lot_name" string="Lot/Serial" invisible="picking_code != 'incoming' and has_lot_id" required="has_lot_id" force_save="1"/>
+                                <field name="lot_ids" widget="many2many_tags" invisible="picking_code != 'outgoing' or not has_lot_id" required="has_lot_id" force_save="1"/>
+                                <field name="lot_name" invisible="picking_code != 'incoming' or not has_lot_id" required="has_lot_id" force_save="1"/>
 <!--                                <field name="move_lot_ids" widget="many2many_tags"/>-->
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">
