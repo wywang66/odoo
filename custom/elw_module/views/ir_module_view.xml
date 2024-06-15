@@ -89,5 +89,11 @@
             </field>
         </record>
 
+        <!-- make 'website_sale' invisible in main UI  -->
+        <!-- inherit of act_window -->
+        <record id="base.open_module_tree" model="ir.actions.act_window">
+            <field name="domain">[('name', 'not in', ('mass_mailing', 'fleet','website_sale'))]</field>
+        </record>
+
     </data>
 </odoo>
