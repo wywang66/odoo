@@ -13,7 +13,7 @@
                     <filter string="Passed" name="passed" domain="[('quality_state', '=', 'pass')]"/>
                     <filter string="Failed" name="failed" domain="[('quality_state', '=', 'fail')]"/>
                     <filter string="Pending Action" name="pending_action"
-                            domain="['|', ('fail_and_not_alert_created', '=', True),('quality_state', '=', 'none')]"/>
+                            domain="['|', ('fail_and_not_alert_created', '=', True),('alert_result', '!=', 'Passed'), ('alert_result', '!=', 'Solved')]"/>
                     <separator/>
                     <filter string="Checked Date" name="control_date" date="control_date"/>
                     <group expand="0" string="Group By">

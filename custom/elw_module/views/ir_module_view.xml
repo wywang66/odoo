@@ -92,7 +92,7 @@
         <!-- make 'website_sale' invisible in main UI  -->
         <!-- inherit of act_window -->
         <record id="base.open_module_tree" model="ir.actions.act_window">
-            <field name="domain">[('name', 'not in', ('mass_mailing', 'fleet','website_sale'))]</field>
+            <field name="domain">[('name', 'not in', ('pos_restaurant','mass_mailing', 'fleet','website_sale','point_of_sale','data_recycle','survey'))]</field>
         </record>
 
     </data>
