@@ -92,8 +92,13 @@
         <!-- make 'website_sale' invisible in main UI  -->
         <!-- inherit of act_window -->
         <record id="base.open_module_tree" model="ir.actions.act_window">
-            <field name="domain">[('name', 'not in', ('pos_restaurant','mass_mailing', 'fleet','website_sale','point_of_sale','data_recycle','survey'))]</field>
+            <field name="domain">[('application','=', True),('name', 'not in',
+                ('web_studio','quality_control', 'pos_restaurant','mass_mailing',
+                'fleet','website_sale','point_of_sale','data_recycle','survey'))]
+            </field>
         </record>
 
+        <!--         <record model="ir.module.module" id="base.module_web_studio" invisible="1">-->
+        <!--         </record>-->
     </data>
 </odoo>

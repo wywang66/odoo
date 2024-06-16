@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "ELW ERP",
+    'name': "ELW Inventory",
 
-    'summary': "ELW ERP Management",
+    'summary': "ELW Inventory Management",
 
     'description': """
 Long description of module's purpose
     """,
     'application': True,
-    'sequence': -150,
+    'sequence': -115,
     'author': "Digital BigBite",
     'website': "https://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/15.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
-    'category': 'ELW/ELW Module',
+    'category': 'ELW/ELW Inventory',
     'version': '0.1',
 
     # any module necessary for this one to work correctly
@@ -23,9 +23,12 @@ Long description of module's purpose
 
     # always loaded
     'data': [
-        'security/elw_module_security_data.xml',
         # 'security/ir.model.access.csv',
-        'views/ir_module_view.xml',
+        'views/product_view.xml',
+        'views/stock_picking_view.xml',
+        'views/sale_order_view.xml',
+        'views/purchase_order_view.xml',
+        'views/stock_lot.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
