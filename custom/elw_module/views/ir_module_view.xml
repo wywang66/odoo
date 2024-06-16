@@ -93,7 +93,9 @@
         <!-- inherit of act_window -->
         <record id="base.open_module_tree" model="ir.actions.act_window">
             <field name="domain">[('application','=', True),('name', 'not in',
-                ('web_studio','quality_control', 'pos_restaurant','mass_mailing',
+                ('web_studio','account_accountant','knowledge','timesheet_grid','industry_fsm',
+                'sign', 'helpdesk','quality_control',
+                'pos_restaurant','mass_mailing',
                 'fleet','website_sale','point_of_sale','data_recycle','survey'))]
             </field>
         </record>
