@@ -19,7 +19,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'stock', 'account', 'purchase', 'sale', 'elw_quality'],
+    'depends': ['base', 'account'],
 
     # always loaded
     'data': [

@@ -19,7 +19,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'product', 'stock', 'account', 'purchase', 'sale', 'elw_quality'],
+    'depends': ['base', 'product', 'stock', 'purchase', 'sale', 'elw_quality'],
 
     # always loaded
     'data': [
@@ -35,6 +35,6 @@ Long description of module's purpose
         'demo/demo.xml',
     ],
     'license': 'LGPL-3',
-    'installable': True,
-    'auto_install': True,
+    # 'installable': True,
+    # 'auto_install': True,
 }
