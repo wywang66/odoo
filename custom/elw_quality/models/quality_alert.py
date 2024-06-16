@@ -43,7 +43,7 @@ class QualityAlert(models.Model):
     has_lot_id = fields.Boolean(string='Has Lot ids', related='check_id.has_lot_id', store=True)
 
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
-                               ondelete='set null')
+                               ondelete='set null', tracking=True)
     picking_code = fields.Selection(related='picking_id.picking_type_id.code', readonly=True)
     user_id = fields.Many2one('res.users', string='Responsible', store=True, ondelete='set null')
     team_id = fields.Many2one('elw.quality.team', string='Team', compute="_get_team_id", store=True, readonly=False)

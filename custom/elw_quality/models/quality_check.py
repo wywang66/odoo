@@ -42,7 +42,7 @@ class ElwQualityCheck(models.Model):
     team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='cascade')
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
-                                     default='none', string='Status')
+                                     default='none', string='Status', tracking=True)
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt", store=True)
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result', store=True)

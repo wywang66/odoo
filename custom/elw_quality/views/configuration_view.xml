@@ -52,7 +52,6 @@
             <kanban class="o_kanban_dashboard o_quality_kanban" create="0">
                 <field name="name"/>
                 <field name="check_count"/>
-                <field name="alert_count"/>
                 <field name="alias_email"/>
                 <field name="color"/>
                 <templates>
@@ -90,7 +89,7 @@
                                                 type="action"
                                                 context="{'search_default_inprogress': 1,'search_default_team_id': id}">
                                             <span>
-                                                <field name="alert_count"/>
+                                                <field name="todo_qa_alert_count"/>
                                                 Quality Alerts
                                             </span>
                                         </button>

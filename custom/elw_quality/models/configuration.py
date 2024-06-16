@@ -20,7 +20,6 @@ class QualityTeam(models.Model):
     color = fields.Integer("Color Index", default=0)
     check_ids = fields.One2many('elw.quality.check', 'team_id', copy=False)
     alert_ids = fields.One2many('elw.quality.alert', 'team_id', copy=False)
-    alert_count = fields.Integer("# Quality Alerts", compute="_compute_quality_alert_count", store=True)
     check_count = fields.Integer("# Quality Checks", compute="_compute_quality_check_count", store=True)
     alias_contact = fields.Selection(
         [('everyone', 'Everyone'), ('partners', 'Authenticated Partners'), ('followers', 'Followers'),
@@ -47,22 +46,11 @@ class QualityTeam(models.Model):
                                                        compute='_compute_todo_qa_alerts')
     todo_qa_alert_count_unsolved = fields.Integer(string="# Unsolved Alerts", compute='_compute_todo_qa_alerts')
 
-    @api.depends('alert_ids')
-    def _compute_quality_alert_count(self):
-        for team in self:
-            unsolved = 0
-            if team.alert_ids.ids:
-                unsolved = sum(1 for alert in team.alert_ids if alert.stage_id.name != 'Solved')
-            team.alert_count = unsolved
-
-    @api.depends('check_ids')
+    @api.depends('check_ids', 'check_ids.alert_result')
     def _compute_quality_check_count(self):
         for rec in self:
-            todo = 0
-            if rec.check_ids.ids:
-                todo = sum(1 for check in rec.check_ids if
-                           check.quality_state == 'none' or check.fail_and_not_alert_created == True)
-            rec.check_count = todo
+            rec.check_count = sum(1 for check in rec.check_ids if check.alert_result != 'Passed') if len(
+                rec.check_ids) else 0
 
     @api.depends('alert_ids')
     def _compute_todo_qa_alerts(self):
