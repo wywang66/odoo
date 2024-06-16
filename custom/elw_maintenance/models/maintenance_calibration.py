@@ -31,7 +31,7 @@ class MaintenanceCalibration(models.Model):
 
     @api.returns('self')
     def _default_stage(self):
-        return self.env['calibration.stage'].search([], limit=1)
+        return self.env['elw.calibration.stage'].search([], limit=1)
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True,
@@ -39,7 +39,7 @@ class MaintenanceCalibration(models.Model):
     active = fields.Boolean(default=True)
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True,
                                    ondelete='cascade')
-    request_date = fields.Date('Request Date', tracking=True, default=fields.Date.context_today,
+    request_date = fields.Date('Request Date', tracking=True, default=fields.Date.context_today, store=True,
                                help="Date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
                                     ondelete='cascade')
@@ -53,27 +53,26 @@ class MaintenanceCalibration(models.Model):
     calibration_date = fields.Date(string="Calibration Due Date", tracking=True, store=True)
     send_email_date = fields.Date(string="Send Email Notification after", compute='_compute_send_email_date',
                                   tracking=True, store=True)
-
-    priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority')
+    priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority',
+                                store=True)
     color = fields.Integer('Color Index')
-    close_date = fields.Date('Close Date', help="Date the calibration was finished. ")
-
+    close_date = fields.Date('Close Date', help="Date the calibration was finished.", store=True)
     maintenance_team_id = fields.Many2one('maintenance.team', string='Team', required=True,
                                           default=_get_default_team_id,
                                           compute='_compute_maintenance_team_id', store=True, readonly=False,
                                           check_company=True, ondelete='cascade')
-    repeat_interval = fields.Integer(string='Repeat Every', default=3)
+    repeat_interval = fields.Integer(string='Repeat Every', default=3, store=True)
     repeat_unit = fields.Selection([
         ('day', 'Days'),
         ('week', 'Weeks'),
         ('month', 'Months'),
         ('year', 'Years'),
-    ], default='month')
+    ], default='month', store=True)
     repeat_type = fields.Selection([
         ('forever', 'Forever'),
         ('until', 'Until'),
-    ], default="forever", string="Until")
-    repeat_until = fields.Date(string="End Date")
+    ], default="forever", string="Until", store=True)
+    repeat_until = fields.Date(string="End Date",store=True)
 
     def _compute_calibration_due_date(self):
         pass
@@ -92,7 +91,7 @@ class MaintenanceCalibration(models.Model):
 
     stage_id = fields.Many2one('elw.calibration.stage', string='Stage', ondelete='restrict', tracking=True,
                                group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
-    done = fields.Boolean(related='stage_id.done')
+    done = fields.Boolean(related='stage_id.done', store=True)
 
     # state = fields.Selection([
     #     ('pending_calibration', 'Pending Calibration'),
@@ -298,7 +297,7 @@ class MaintenanceCalibration(models.Model):
     def create(self, data_list):
         for vals in data_list:
             vals['name'] = self.env['ir.sequence'].next_by_code('maintenance.equipment.sequence')
-            # print("Success ............", vals.get('name'))
+            # print("Success ............", vals)
         return super(MaintenanceCalibration, self).create(vals)
 
     # #  no decorator needed
