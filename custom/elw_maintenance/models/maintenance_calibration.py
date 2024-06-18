@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError, UserError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
@@ -324,6 +324,14 @@ class MaintenanceCalibration(models.Model):
         first_stage_obj = self.env['elw.calibration.stage'].search([], order="sequence asc", limit=1)
         # self.write({'active': True, 'stage_id': first_stage_obj.id})
         self.write({'archive': False, 'stage_id': first_stage_obj.id})
+
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        """ Read group customization in order to display all the stages in the
+            kanban view, even if they are empty
+        """
+        stage_ids = stages._search([], order=order, access_rights_uid=SUPERUSER_ID)
+        return stages.browse(stage_ids)
 
     class Dbb_CalibrationOverdue(models.Model):
         _name = 'dbb.maintenance.calibrationoverdue'
