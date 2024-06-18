@@ -10,7 +10,7 @@ from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 class CalibrationStage(models.Model):
     """ Model for case stages. This models the main stages of a Calibration Request management flow. """
     _name = 'elw.calibration.stage'
-    _description = 'Calibration Stage'
+    _description = 'Define calibration stage'
     _order = 'sequence, id'
 
     name = fields.Char('Name', required=True, translate=True)
@@ -20,7 +20,7 @@ class CalibrationStage(models.Model):
 
 class MaintenanceCalibration(models.Model):
     _name = 'elw.maintenance.calibration'
-    _description = 'Digital BigBite Scheduled Calibration'
+    _description = 'Perform calibration on selected equipment'
     _inherit = ['mail.thread',
                 'mail.activity.mixin',
                 ]  # add a chatter

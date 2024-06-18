@@ -359,6 +359,12 @@
                   parent="menu_equipment_calibration"
                   sequence="1"/>
 
+        <menuitem id="menu_calibration_overdue_submenu"
+                  name="Calibration for Overdue"
+                  action="elw_equipment_calibration_overdue_action"
+                  parent="menu_equipment_calibration"
+                  sequence="1"/>
+
 <!--        <menuitem id="menu_calibration_stages_submenu"-->
 <!--                  name="Calibration Stages"-->
 <!--                  action="elw_eq_calibration_stage_action"-->
