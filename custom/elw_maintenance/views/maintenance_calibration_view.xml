@@ -49,10 +49,10 @@
                     <field name="request_date" groups="base.group_no_one"/>
                     <field name="owner_user_id" optional="show"/>
                     <field name="category_id" optional="show"/>
-                    <field name="stage_id" decoration-success="stage_id == 'Calibration Passed'"
-                           decoration-info="stage_id =='Pending Calibration'"
-                           decoration-warning="stage_id in('Doing Calibration', 'Calibration Overdue')"
-                           decoration-danger="stage_id =='Calibration Failed'" widget="badge" optional="show"/>
+                    <field name="stage_id" decoration-success="stage_id == 3"
+                           decoration-info="stage_id in (1,2)"
+                           decoration-warning="stage_id == 5"
+                           decoration-danger="stage_id == 4" widget="badge" optional="show"/>
                     <field name="technician_doing_calibration_id" optional="hide" widget="many2one_avatar_user"/>
                     <field name="company_id" optional="hide"/>
 
@@ -65,7 +65,7 @@
             <field name="model">elw.maintenance.calibration</field>
             <field name="arch" type="xml">
                 <form string="Calibration Request">
-                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="archive"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="not archive"/>
                     <header>
                         <button string="Archive" name="archive_calibration_request" type="object" invisible="archive"/>
                         <button string="Reopen Request" name="reset_calibration_request" type="object"
@@ -115,7 +115,7 @@
                                     <field name="send_email_date" class="me-2" style="max-width: 6rem !important;"/>
                                 </div>
                                 <field name="priority" widget="priority"/>
-
+                                <field name="is_calibration_overdue" invisible="1"/>
 
                             </group>
                         </group>
@@ -135,6 +135,9 @@
                                     <field name="instruction_text" placeholder="Your instructions"
                                            invisible="instruction_type != 'text'" nolabel="1"/>
                                 </group>
+                            </page>
+                            <page string="Reason for Calibration Overdue">
+                                <field name='reason_for_overdue' placeholder="Write down reasons for calibration overdue" required="is_calibration_overdue"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -334,6 +337,7 @@
             <field name="name">Equipment Calibration</field>
             <field name="res_model">elw.maintenance.calibration</field>
             <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_active': True, 'default_user_id': uid}</field>
             <!--            <field name="target">new</field>-->
         </record>
 
@@ -355,11 +359,11 @@
                   parent="menu_equipment_calibration"
                   sequence="1"/>
 
-        <menuitem id="menu_calibration_stages_submenu"
-                  name="Calibration Stages"
-                  action="elw_eq_calibration_stage_action"
-                  parent="maintenance.menu_maintenance_configuration"
-                  sequence="4"/>
+<!--        <menuitem id="menu_calibration_stages_submenu"-->
+<!--                  name="Calibration Stages"-->
+<!--                  action="elw_eq_calibration_stage_action"-->
+<!--                  parent="maintenance.menu_maintenance_configuration"-->
+<!--                  sequence="4"/>-->
 
         <!-- add a menu no error but the menu is no show -->
         <!-- add a submenmu action is a must to show up this menu -->

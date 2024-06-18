@@ -45,7 +45,7 @@ class MaintenanceCalibration(models.Model):
                              help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True,
                                    ondelete='cascade')
-    request_date = fields.Date('Request Date', tracking=True, default=fields.Date.context_today, store=True,
+    request_date = fields.Date('Request Date', tracking=True,  store=True, default=fields.Date.context_today,
                                help="Date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
                                     ondelete='cascade')
@@ -76,8 +76,9 @@ class MaintenanceCalibration(models.Model):
 
     # send_email_date = fields.Date(string="Send Email Notification On", store=True)
 
-    # is_calibration_done = fields.Boolean(string="Is Calibration Done", compute='action_done_calibration', required=True,
-    #                                      default=False, store=True)
+    is_calibration_overdue = fields.Boolean(string="Is Calibration Overdue", compute='_compute_is_calibration_overdue',
+                                            store=True)
+
     # is_doing_calibration = fields.Boolean(string="Is Doing Calibration", default=False, store=False, compute='action_doing_calibration')
     calibration_completion_date = fields.Date(string='Calibration Completion Date', required=True, store=True,
                                               default=fields.Date.context_today)
@@ -97,22 +98,17 @@ class MaintenanceCalibration(models.Model):
     instruction_google_slide = fields.Char('Google Slide',
                                            help="Paste the url of your Google Slide. Make sure the access to the document is public.")
     instruction_text = fields.Html('Text')
+    reason_for_overdue = fields.Html(string="Reason for Overdue")
 
-    # state = fields.Selection([
-    #     ('pending_calibration', 'Pending Calibration'),
-    #     ('doing_calibration', 'Doing Calibration'),
-    #     ('done_calibration', 'Done Calibration'),
-    #     ('calibration_overdue', 'Calibration Overdue'),], default = "pending_calibration", string="Status", required = True, tracking=True)
-    # is_calibration_overdue = fields.Boolean(string="Is Preventive Maintenance Overdue", default=False,
-    #                                         compute='_compute_calibration_overdue', store=True)
-
-    # reason_overdue = fields.Text(string="Reason for Overdue", required=True)
-
-    # # override the active field. archieve if 'done_calibration'
-    # active = fields.Boolean()
-
-    # member_ids = fields.Many2many('hr.employee', string="Team Members from HR")
-    # company_id = fields.Many2one('hr.employee',string="Company")
+    @api.depends('calibration_due_date')
+    def _compute_is_calibration_overdue(self):
+        for rec in self:
+            if rec.calibration_due_date and rec.calibration_due_date < fields.Date.today():
+                rec.is_calibration_overdue = True
+                rec.stage_id = 5
+                # print('rec.calibration_due_date', rec.stage_id, rec.is_calibration_overdue)
+            else:
+                rec.is_calibration_overdue = False
 
     @api.depends('repeat_interval', 'repeat_unit')
     def _compute_calibration_due_date(self):
@@ -144,37 +140,6 @@ class MaintenanceCalibration(models.Model):
     #             if rec.calibration_completion_date > fields.Date.today():
     #                 raise ValidationError(_("Calibration completion date cannot be after today !"))
 
-    # @api.depends('calibration_interval', 'calibration_interval_by', 'is_calibration_required')
-    # def _compute_calibration_date(self):
-    #     for record in self:
-    #         # # # get calibration_date based cali completion date
-    #         # print(" --------------- ", record.calibration_completion_date)
-    #         # if record.calibration_completion_date:
-    #         #     self.check_calibration_completion_date()
-    #         #     print(" --------------- " )
-    #         #     if record.calibration_interval:
-    #         #         if record.calibration_interval_by == 'months':
-    #         #             months = record.calibration_interval
-    #         #             record.calibration_date = record.calibration_completion_date + timedelta(days=months*30)
-    #         #         elif record.calibration_interval_by == 'years':
-    #         #             years = record.calibration_interval
-    #         #             record.calibration_date = record.calibration_completion_date + timedelta(years*365)
-    #         #         else:
-    #         #             record.calibration_date = record.calibration_completion_date + timedelta(days=record.calibration_interval)
-    #         # else: # not done the calibration
-    #         # get calibration_date based on 'today'
-    #         if record.is_calibration_required == True:
-    #             today = fields.Date.today()
-    #             self.check_calibration_interval()
-    #             if record.calibration_interval_by == 'months':
-    #                 months = record.calibration_interval
-    #                 record.calibration_date = today + timedelta(days=months * 30)
-    #             elif record.calibration_interval_by == 'years':
-    #                 years = record.calibration_interval
-    #                 record.calibration_date = today + timedelta(years * 365)
-    #             else:
-    #                 record.calibration_date = today + timedelta(days=record.calibration_interval)
-    #                 record.state = "pending_calibration"  # force it to be "pending"
     @api.depends('sending_email_notification_days_ahead', 'calibration_due_date')
     def _compute_send_email_date(self):
         for rec in self:
@@ -317,7 +282,7 @@ class MaintenanceCalibration(models.Model):
         return super(MaintenanceCalibration, self).write(vals)
 
     def archive_calibration_request(self):
-        self.write({'archive': True })
+        self.write({'archive': True})
 
     def reset_calibration_request(self):
         """ Reinsert the calibration request into the calibration pipe in the first stage"""
