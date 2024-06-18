@@ -13,8 +13,7 @@ class CalibrationOverdue(models.Model):
     _order = 'id desc, name desc'  # Move the newest record to the top
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
-    archive = fields.Boolean(default=False,
-                             help="Set archive to true to hide the calibration request without deleting it.")
+    archive = fields.Boolean(default=False)
     calibration_id = fields.Many2one(comodel_name='elw.maintenance.calibration', string ="Calibration Ref#")
     # equipment_state = fields.Selection(related="equipment_sequence_id.state", readonly=True)
     # # appointment_id = fields.Many2one(comodel_name='hospital.appointment', string ="Appointment",domain=['|',('state','=','draft'),('priority','in', ('0','1', False))]) # prioriry is a selection in appointment.py, false : no data
