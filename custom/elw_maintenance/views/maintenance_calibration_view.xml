@@ -17,6 +17,7 @@
                            decoration-danger="stage_id =='Calibration Failed'" widget="badge" optional="show"/>
                     <field name="technician_doing_calibration_id" optional="hide" widget="many2one_avatar_user"/>
                     <field name="company_id" optional="hide"/>
+
                 </tree>
             </field>
         </record>
@@ -26,6 +27,13 @@
             <field name="model">elw.maintenance.calibration</field>
             <field name="arch" type="xml">
                 <form string="Calibration Request">
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="archive"/>
+                    <header>
+                        <button string="Cancel" name="archive_calibration_request" type="object" invisible="archive"/>
+                        <button string="Reopen Request" name="reset_calibration_request" type="object"
+                                invisible="not archive"/>
+                        <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+                    </header>
                     <sheet>
                         <div class="oe_title">
                             <label for="name" string="Request"/>
@@ -35,6 +43,7 @@
                         </div>
                         <group>
                             <group>
+                                <field name="archive" invisible="1"/>
                                 <field name="owner_user_id" string="Requested By" invisible="1"/>
                                 <field name="equipment_id"
                                        context="{'default_company_id':company_id, 'default_category_id':category_id}"/>
@@ -60,16 +69,42 @@
                                 </div>
                                 <label for="sending_email_notification_days_ahead"/>
                                 <div class="d-flex">
-                                    <field name="sending_email_notification_days_ahead" class="me-2" style="max-width: 2rem !important;"/>
-                                    <span class="oe_inline">days ahead of calibration due date Send Email Date :</span>
-                                    <field name="send_email_date"  style="max-width: 6rem !important;"/>
+                                    <field name="sending_email_notification_days_ahead" class="me-2"
+                                           style="max-width: 2rem !important;"/>
+                                    <span class="oe_inline">days before cali due date
+                                        <strong>Send Email On:</strong>
+                                    </span>
+                                    <field name="send_email_date" class="me-2" style="max-width: 6rem !important;"/>
                                 </div>
                                 <field name="priority" widget="priority"/>
 
 
                             </group>
                         </group>
+                        <notebook>
+                            <page string="Notes">
+                                <field name='description' placeholder="Internal Notes"/>
+                            </page>
+                            <page string="Instructions">
+                                <group col="1">
+                                    <field name="instruction_type" widget="radio" nolabel="1"/>
+                                    <field name="instruction_pdf" help="Upload your PDF file." widget="pdf_viewer"
+                                           invisible="instruction_type != 'pdf'" required="instruction_type == 'pdf'"
+                                           nolabel="1"/>
+                                    <field name="instruction_google_slide" placeholder="Google Slide Link"
+                                           widget="embed_viewer" invisible="instruction_type != 'google_slide'"
+                                           required="instruction_type == 'google_slide'" nolabel="1"/>
+                                    <field name="instruction_text" placeholder="Your instructions"
+                                           invisible="instruction_type != 'text'" nolabel="1"/>
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>

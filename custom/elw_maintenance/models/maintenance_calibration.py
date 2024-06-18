@@ -21,6 +21,9 @@ class CalibrationStage(models.Model):
 class MaintenanceCalibration(models.Model):
     _name = 'elw.maintenance.calibration'
     _description = 'Digital BigBite Scheduled Calibration'
+    _inherit = ['mail.thread',
+                'mail.activity.mixin',
+                ]  # add a chatter
     _order = 'id desc, name desc'  # Move the newest record to the top
 
     def _get_default_team_id(self):
@@ -37,7 +40,9 @@ class MaintenanceCalibration(models.Model):
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True,
                                  default=lambda self: self.env.company, ondelete='cascade')
-    active = fields.Boolean(default=True)
+    # active = fields.Boolean(default=True)
+    archive = fields.Boolean(default=False,
+                             help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True,
                                    ondelete='cascade')
     request_date = fields.Date('Request Date', tracking=True, default=fields.Date.context_today, store=True,
@@ -83,6 +88,15 @@ class MaintenanceCalibration(models.Model):
     stage_id = fields.Many2one('elw.calibration.stage', string='Stage', ondelete='restrict', tracking=True,
                                group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
     done = fields.Boolean(related='stage_id.done', store=True)
+    description = fields.Html('Description')
+    instruction_type = fields.Selection([
+        ('pdf', 'PDF'), ('google_slide', 'Google Slide'), ('text', 'Text')],
+        string="Instruction", default="text"
+    )
+    instruction_pdf = fields.Binary('PDF')
+    instruction_google_slide = fields.Char('Google Slide',
+                                           help="Paste the url of your Google Slide. Make sure the access to the document is public.")
+    instruction_text = fields.Html('Text')
 
     # state = fields.Selection([
     #     ('pending_calibration', 'Pending Calibration'),
@@ -161,7 +175,7 @@ class MaintenanceCalibration(models.Model):
     #             else:
     #                 record.calibration_date = today + timedelta(days=record.calibration_interval)
     #                 record.state = "pending_calibration"  # force it to be "pending"
-    @api.depends('sending_email_notification_days_ahead','calibration_due_date')
+    @api.depends('sending_email_notification_days_ahead', 'calibration_due_date')
     def _compute_send_email_date(self):
         for rec in self:
             if rec.calibration_due_date:
@@ -171,7 +185,6 @@ class MaintenanceCalibration(models.Model):
                     rec.send_email_date = datetime.today().date()
             else:
                 raise ValidationError(_("No calibration due date to derive the send email date!"))
-
 
     @api.model
     def get_email_to(self):
@@ -302,6 +315,15 @@ class MaintenanceCalibration(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code('maintenance.equipment.sequence')
             # print("write Success 2 ............", vals.get('name'))
         return super(MaintenanceCalibration, self).write(vals)
+
+    def archive_calibration_request(self):
+        self.write({'archive': True })
+
+    def reset_calibration_request(self):
+        """ Reinsert the calibration request into the calibration pipe in the first stage"""
+        first_stage_obj = self.env['elw.calibration.stage'].search([], order="sequence asc", limit=1)
+        # self.write({'active': True, 'stage_id': first_stage_obj.id})
+        self.write({'archive': False, 'stage_id': first_stage_obj.id})
 
     class Dbb_CalibrationOverdue(models.Model):
         _name = 'dbb.maintenance.calibrationoverdue'
