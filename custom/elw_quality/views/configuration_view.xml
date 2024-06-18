@@ -51,10 +51,11 @@
         <field name="arch" type="xml">
             <kanban class="o_kanban_dashboard o_quality_kanban" create="0">
                 <field name="name"/>
-                <field name="check_count"/>
-                <field name="alert_count"/>
+                <field name="todo_qa_check_count"/>
                 <field name="alias_email"/>
                 <field name="color"/>
+                <field name="todo_qa_alert_count"/>
+                <field name="todo_qa_alert_count_high_priority"/>
                 <templates>
                     <t t-name="kanban-menu">
                         <div t-if="widget.editable" role="menuitem">
@@ -90,7 +91,7 @@
                                                 type="action"
                                                 context="{'search_default_inprogress': 1,'search_default_team_id': id}">
                                             <span>
-                                                <field name="alert_count"/>
+                                                <field name="todo_qa_alert_count"/>
                                                 Quality Alerts
                                             </span>
                                         </button>
@@ -106,7 +107,7 @@
                                         <a class="oe_kanban_stock_picking_type_list"
                                            name="%(elw_quality_check_action_window)d" type="action"
                                            context="{'search_default_pending_action': 1,'search_default_team_id': id}">
-                                            <field name="check_count"/>
+                                            <field name="todo_qa_check_count"/>
                                             Checks In Progress
                                         </a>
                                     </div>

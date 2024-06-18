@@ -66,17 +66,17 @@
                         </tree>
                     </field>
                 </xpath>
-<!--                <xpath expr="//button[@name='button_validate']" position="after">-->
-<!--                    <button name="action_create_quality_check"-->
-<!--                            invisible="not qa_check_product_ids or state in ('done','cancel') or check_ids"-->
-<!--                            string="Create QA Check Record" type="object" class="oe_highlight"/>-->
+                <xpath expr="//button[@name='button_validate']" position="after">
+<!--                    <button name="action_create_qa_check_record_with_tracking_product"-->
+<!--                            invisible="not has_lot_tracking"-->
+<!--                            string="Add Lot Tracking QA Checks" type="object" class="oe_highlight"/>-->
 <!--                    <button name="action_quality_check"-->
 <!--                            invisible="not check_ids or state in ('done','cancel') or quality_state in ('fail','pass')"-->
 <!--                            string="Quality Check" type="object" class="oe_highlight"/>-->
 <!--                    <button name="do_alert" type="object" class="btn-primary"-->
 <!--                            invisible="not quality_check_fail or quality_alert_ids" string="Create Alert"-->
 <!--                            data-hotkey="g"/>-->
-<!--                </xpath>-->
+                </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="picking_type_code"/>
                 </xpath>
@@ -91,12 +91,21 @@
                 <xpath expr="//button[@name='action_view_stock_valuation_layers']" position="after">
                     <div name="button_box" position="inside">
                         <button name="open_quality_alert_picking" type="object"
-                                class="oe_stat_button" icon="fa-bell" invisible="quality_alert_count == 0">
+                                class="oe_stat_button" icon="fa-bell" invisible="quality_alert_count == 0 or is_all_quality_fails_resolved == True">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="quality_alert_count"/>
                                 </span>
                                 <span class="o_stat_text text-warning">Quality Alert</span>
+                            </div>
+                        </button>
+                        <button name="open_quality_alert_picking" type="object"
+                                class="oe_stat_button" icon="fa-bell" invisible="quality_alert_count == 0 or is_all_quality_fails_resolved != True">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="quality_alert_count"/>
+                                </span>
+                                <span class="o_stat_text text-success">Quality Alert</span>
                             </div>
                         </button>
                         <button name="action_open_quality_check_picking"
@@ -107,13 +116,13 @@
 <!--                            <span class="o_stat_text">Quality Checks</span>-->
                         </button>
                         <button name="action_open_quality_check_picking"
-                                invisible="not qa_check_product_ids or quality_check_fail or quality_state != 'pass'" type="object"
+                                invisible="not qa_check_product_ids or is_all_quality_fails_resolved != True" type="object"
                                 class="oe_stat_button text-success" icon="fa-check">
                             <field name="quality_check_count" string="Quality Checks" widget="statinfo" class="o_stat_text text-success"/>
 <!--                            <span class="o_stat_text text-success">Quality Checks</span>-->
                         </button>
                         <button name="action_open_quality_check_picking"
-                                invisible="not qa_check_product_ids or not quality_check_fail" type="object"
+                                invisible="not qa_check_product_ids or quality_state != 'fail' or is_all_quality_fails_resolved != False" type="object"
                                 class="oe_stat_button text-danger" icon="fa-check">
                             <field name="quality_check_count" string="Quality Checks" widget="statinfo" class="o_stat_text text-danger"/>
 <!--                            <span class="o_stat_text text-danger">Quality Checks</span>-->

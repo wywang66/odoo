@@ -15,64 +15,31 @@ class QualityTeam(models.Model):
                                  default=lambda self: self.env.company)
     # odoo creates quality_team_users_rel table for this many2many field
     member_ids = fields.Many2many(
-        'res.users', 'quality_team_users_rel', string="Team Members",
+        'res.users',  string="Team Members",
         domain="[('company_ids', 'in', company_id)]")
     color = fields.Integer("Color Index", default=0)
     check_ids = fields.One2many('elw.quality.check', 'team_id', copy=False)
     alert_ids = fields.One2many('elw.quality.alert', 'team_id', copy=False)
-    alert_count = fields.Integer("# Quality Alerts", compute="_compute_quality_alert_count")
-    check_count = fields.Integer("# Quality Checks", compute="_compute_quality_check_count")
     alias_contact = fields.Selection(
         [('everyone', 'Everyone'), ('partners', 'Authenticated Partners'), ('followers', 'Followers'),
-         ('employees', "Authenticated Employees")], default='everyone')
+         ('employees', "Authenticated Employees")], default='everyone', store=True)
     alias_name = fields.Char(string="Alias Name",
                              help="The name of the email alias, e.g. 'jobs' if you want to catch emails for <jobs@example.odoo.com>")
 
-    alias_domain_id = fields.Many2one('mail.alias.domain', string="Alias Domain")
-    alias_id = fields.Many2one('mail.alias', string="Alias")
-    alias_email = fields.Char(string="Email Alias")
+    alias_domain_id = fields.Many2one('mail.alias.domain', string="Alias Domain", ondelete='set null', store=True)
+    alias_id = fields.Many2one('mail.alias', string="Alias", ondelete='set null', store=True)
+    alias_email = fields.Char(string="Email Alias", store=True)
     # For the kanban dashboard only
-    todo_qa_check_ids = fields.One2many('elw.quality.check', string="QA Requests", copy=False,
-                                        compute='_compute_todo_qa_checks')
-
-    todo_qa_check_count = fields.Integer(string="# Requests", compute='_compute_todo_qa_checks')
-    # todo_qa_check_count_high_priority = fields.Integer(string="Number of Requests in High Priority",
-    #                                                    compute='_compute_todo_qa_checks')
-    todo_qa_check_count_fail = fields.Integer(string="# Fail Checks", compute='_compute_todo_qa_checks')
-
-    todo_qa_alert_ids = fields.One2many('elw.quality.alert', string="QA Alerts", copy=False,
-                                        compute='_compute_todo_qa_alerts')
-    todo_qa_alert_count = fields.Integer(string="# Alerts", compute='_compute_todo_qa_alerts')
+    todo_qa_check_count = fields.Integer(string="# Requests", compute='_compute_todo_qa_checks', store=True)
+    # todo_qa_check_count_fail = fields.Integer(string="# Fail Checks", compute='_compute_todo_qa_checks', store=True)
+    todo_qa_alert_count = fields.Integer(string="# Alerts", compute='_compute_todo_qa_alerts', store=True)
     todo_qa_alert_count_high_priority = fields.Integer(string="# Alerts in High Priority",
-                                                       compute='_compute_todo_qa_alerts')
-    todo_qa_alert_count_unsolved = fields.Integer(string="# Unsolved Alerts", compute='_compute_todo_qa_alerts')
+                                                       compute='_compute_todo_qa_alerts', store=True)
+    todo_qa_alert_count_unsolved = fields.Integer(string="# Unsolved Alerts", compute='_compute_todo_qa_alerts', store=True)
 
-    @api.depends('alert_ids')
-    def _compute_quality_alert_count(self):
-        for team in self:
-            unsolved = 0
-            if team.alert_ids.ids:
-                unsolved = sum(1 for alert in team.alert_ids if alert.stage_id.name != 'Solved')
-            team.alert_count = unsolved
-
-    @api.depends('check_ids')
-    def _compute_quality_check_count(self):
-        for rec in self:
-            todo = 0
-            if rec.check_ids.ids:
-                todo = sum(1 for check in rec.check_ids if
-                           check.quality_state == 'none' or check.fail_and_not_alert_created == True)
-            rec.check_count = todo
-
-    @api.depends('alert_ids')
+    @api.depends('alert_ids.stage_id')
     def _compute_todo_qa_alerts(self):
         for team in self:
-            team.todo_qa_alert_ids = self.env['elw.quality.alert'].search(
-                [('team_id', '=', team.id), ('stage_id.name', '!=', 'Solved')])
-            # team.todo_qa_check_ids = self.env['elw.quality.check'].search(
-            #     [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)])
-            # print("team.todo_qa_alert_ids...", team.todo_qa_alert_ids, team.id, team.name)
-
             data = self.env['elw.quality.alert']._read_group(
                 domain=[('team_id', '=', team.id), ('stage_id.name', '!=', 'Solved')],
                 groupby=['stage_id', 'priority'],
@@ -87,27 +54,21 @@ class QualityTeam(models.Model):
                 count for (_, _, count) in undone_data)
             # print("cnt/priority/undone_cnt...", team.todo_qa_alert_count, team.todo_qa_alert_count_high_priority, team.todo_qa_alert_count_unsolved)
 
-    @api.depends('check_ids.quality_state')
+    @api.depends('check_ids.alert_result')
     def _compute_todo_qa_checks(self):
         for team in self:
-            team.todo_qa_check_ids = self.env['elw.quality.check'].search(
-                [('team_id', '=', team.id), ('quality_state', '!=', 'pass')])
-            # team.todo_qa_check_ids = self.env['elw.quality.check'].search(
-            #     [('team_id', '=', team.id), ('quality_state', '!=', 'pass'), ('archive', '=', False)])
-            # print("team.todo_qa_check_ids...", team.todo_qa_check_ids, team.id)
-
             data = self.env['elw.quality.check']._read_group(
-                domain=[('team_id', '=', team.id), ('quality_state', '!=', 'pass')],
-                groupby=['quality_state'],
+                domain=[('team_id', '=', team.id), ('alert_result', '!=', 'Solved'),
+                        ('alert_result', '!=', 'Passed')],
+                groupby=['alert_result'],
                 aggregates=['__count']
             )
             # print("data...", data)  # data = [('fail', 4), ('none', 1)]
             #  when iterating over data, the underscore _ is used to "catch" the first element of each tuple and ignore it.
             team.todo_qa_check_count = sum(count for (_, count) in data)
-            fail_data = [(quality_state, count) for quality_state, count in data if quality_state == 'fail']
-            team.todo_qa_check_count_fail = sum(
-                count for (_, count) in fail_data)
-            # print("data...", team.todo_qa_check_count, team.todo_qa_check_count_fail)
+            # fail_data = [(quality_state, count) for quality_state, count in data if quality_state == 'fail']
+            # team.todo_qa_check_count_fail = sum(count for (_, count) in fail_data)
+            # print("data...", team.todo_qa_check_count)
 
 
 class QualityAlertStage(models.Model):

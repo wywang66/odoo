@@ -2,30 +2,17 @@
     <data>
 
         <!-- display installed and uninstalled modules -->
-        <record id="base_view_view_search_inherit" model="ir.ui.view">
-            <field name="name">base.view.view.search.inherit</field>
-            <field name="model">ir.module.module</field>
-            <field name="inherit_id" ref="base.view_module_filter"/>
-            <field name="arch" type="xml">
-                <xpath expr="//filter[@name='app']" position="attributes">
-                    <attribute name="domain">[('application', '=', True), ('state', 'in', ['installed',
-                        'to upgrade', 'to remove', 'uninstalled', 'to install'])]
-                    </attribute>
-                </xpath>
-            </field>
-        </record>
-
-        <!-- inherit data file from odoo/base/data but below does not work, even commenting this section from original xml -->
-        <!-- https://www.odoo.com/forum/help-1/how-to-inherit-data-file-in-odoo-225213-->
-        <!--        <record id="base.module_category_website" model="ir.module.category">-->
-        <!--            <field name="sequence">305</field>-->
-        <!--            <field name="visible" eval="0" />-->
-        <!--        </record>-->
-
-        <!--category_id, do not need to add ELW in  odoo/addons/base/data/ir_module_category_data.xml with elw_module_security_data. ELW is added-->
-<!--        <record model="ir.module.category" id="module_category_elw">-->
-<!--            <field name="name">ELW</field>-->
-<!--            <field name="sequence">120</field>-->
+<!--        <record id="base_view_view_search_inherit" model="ir.ui.view">-->
+<!--            <field name="name">base.view.view.search.inherit</field>-->
+<!--            <field name="model">ir.module.module</field>-->
+<!--            <field name="inherit_id" ref="base.view_module_filter"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//filter[@name='app']" position="attributes">-->
+<!--                    <attribute name="domain">[('application', '=', True), ('state', 'in', ['installed',-->
+<!--                        'to upgrade', 'to remove', 'uninstalled', 'to install'])]-->
+<!--                    </attribute>-->
+<!--                </xpath>-->
+<!--            </field>-->
 <!--        </record>-->
 
         <!-- below make module_type (above 'category_id') on UI left search panel invisible -->
@@ -86,6 +73,19 @@
                 <xpath expr="//kanban/templates/t[2]/div/div[2]/div/a[2]" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+            </field>
+        </record>
+
+        <!-- make 'website_sale' invisible in main UI  -->
+        <!-- inherit of act_window -->
+        <record id="base.open_module_tree" model="ir.actions.act_window">
+            <field name="domain">[('application','=', True),('name', 'not in',
+                ('web_studio','account_accountant','knowledge','timesheet_grid','industry_fsm',
+                'sign', 'helpdesk','quality_control', 'sale_subscription', 'planning', 'mrp_plm',
+                'social', 'hr_appraisal', 'marketing_automation','appointment', 'web_mobile',
+                'stock_barcode','sale_amazon','sale_ebay', 'voip', 'mrp_workorder',
+                'pos_restaurant','mass_mailing', 'website','website_event','mass_mailing_sms',
+                'fleet','website_sale','point_of_sale','data_recycle','survey'))]
             </field>
         </record>
 

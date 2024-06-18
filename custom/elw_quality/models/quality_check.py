@@ -36,12 +36,13 @@ class ElwQualityCheck(models.Model):
                                readonly=False, domain="[('product_id', '=', product_id)]", store=True)
     lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_name', readonly=False, store=True)
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id", store=True)
+    picking_code = fields.Selection(related='picking_id.picking_type_id.code', readonly=True)
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL', store=True)
     team_id = fields.Many2one('elw.quality.team', string='Team', store=True, required=True, ondelete='cascade')
     control_date = fields.Date(string='Checked Date', default=fields.Date.context_today)
     quality_state = fields.Selection([('none', 'To Do'), ('pass', 'Passed'), ('fail', 'Failed')], required=True,
-                                     default='none', string='Status')
+                                     default='none', string='Status', tracking=True)
     alert_count = fields.Integer(default=0, compute="_compute_alert_cnt", store=True)
     alert_ids = fields.One2many('elw.quality.alert', 'check_id', string="Alerts")
     alert_result = fields.Char(compute="_compute_alert_result", string='Quality Check Result', store=True)
@@ -59,7 +60,7 @@ class ElwQualityCheck(models.Model):
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
                                        compute="", store=True)
 
-    product_id_domain = fields.Char(compute="_compute_product_id_domain")
+    product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
     @api.depends('has_lot_id', 'picking_id','picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
     def _get_lot_name(self):
@@ -129,6 +130,7 @@ class ElwQualityCheck(models.Model):
             rec.has_lot_id = rec.product_id.tracking != 'none'
             # print("rec.has_lot_id---------", rec.has_lot_id)
 
+    @api.depends('alert_ids')
     def _compute_alert_cnt(self):
         alert_data = self.env['elw.quality.alert']._read_group([('check_id', 'in', self.ids)],
                                                                ['check_id'], ['__count'])
@@ -139,7 +141,7 @@ class ElwQualityCheck(models.Model):
         for check in self:
             check.alert_count = mapped_data.get(check.id, 0)
 
-    @api.depends('alert_ids', 'quality_state')
+    @api.depends('alert_ids.stage_id', 'quality_state')
     def _compute_alert_result(self):
         for rec in self:
             if rec.quality_state == 'fail':
@@ -196,6 +198,7 @@ class ElwQualityCheck(models.Model):
         if self.quality_state == 'none':
             self.quality_state = 'fail'
 
+    @api.depends('measure_data_ids')
     def do_measure(self):
         qa_measure_state = []
         measure_names = []

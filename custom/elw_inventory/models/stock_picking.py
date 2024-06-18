@@ -141,6 +141,7 @@ class Picking(models.Model):
                                 vals['partner_id'] = rec.partner_id.id
                                 vals['product_id'] = qa_product_id  #
                                 vals['point_id'] = qa_product_ids_obj.id
+                                # create quality.check record for no tracking product
                                 # print("vals ", vals)#
                                 # special cmd to create child record. must use []
                                 rec.quality_check_ids = [Command.create(vals)]
