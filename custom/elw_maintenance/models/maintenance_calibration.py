@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 
@@ -47,10 +48,9 @@ class MaintenanceCalibration(models.Model):
                                   string='Category', store=True, readonly=True, ondelete='cascade')
     sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10,
                                                            required=True, store=False)
-    calibration_due_date = fields.Date(string="Calibration Due Date", store=True,
-                                       compute='_compute_calibration_due_date')
     # calibration_date = fields.Date(string="Calibration Due Date", compute='_compute_calibration_date', tracking=True, store=True, required=True, default = datetime.today().date() )
-    calibration_date = fields.Date(string="Calibration Due Date", tracking=True, store=True)
+    calibration_due_date = fields.Date(string="Calibration Due Date", compute='_compute_calibration_due_date',
+                                       tracking=True, store=True)
     send_email_date = fields.Date(string="Send Email Notification after", compute='_compute_send_email_date',
                                   tracking=True, store=True)
     priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority',
@@ -68,15 +68,6 @@ class MaintenanceCalibration(models.Model):
         ('month', 'Months'),
         ('year', 'Years'),
     ], default='month', store=True)
-    repeat_type = fields.Selection([
-        ('forever', 'Forever'),
-        ('until', 'Until'),
-    ], default="forever", string="Until", store=True)
-    repeat_until = fields.Date(string="End Date",store=True)
-
-    def _compute_calibration_due_date(self):
-        pass
-
 
     # send_email_date = fields.Date(string="Send Email Notification On", store=True)
 
@@ -108,6 +99,15 @@ class MaintenanceCalibration(models.Model):
 
     # member_ids = fields.Many2many('hr.employee', string="Team Members from HR")
     # company_id = fields.Many2one('hr.employee',string="Company")
+
+    @api.depends('repeat_interval', 'repeat_unit')
+    def _compute_calibration_due_date(self):
+        for rec in self:
+            if rec.repeat_interval and rec.repeat_unit:
+                rec.calibration_due_date = rec.request_date
+                rec.calibration_due_date += relativedelta(**{f"{self.repeat_unit}s": self.repeat_interval})
+            else:
+                raise UserError(_("Failed to get Calibration Due Date"))
 
     # def name_get(self):
     #     result = []
@@ -161,23 +161,17 @@ class MaintenanceCalibration(models.Model):
     #             else:
     #                 record.calibration_date = today + timedelta(days=record.calibration_interval)
     #                 record.state = "pending_calibration"  # force it to be "pending"
-
-    @api.depends('sending_email_notification_days_ahead')
+    @api.depends('sending_email_notification_days_ahead','calibration_due_date')
     def _compute_send_email_date(self):
-        pass
-        # for record in self:
-        #     if record.is_calibration_required:
-        #         if record.calibration_date:
-        #             record.send_email_date = record.calibration_date - timedelta(
-        #                 days=record.sending_email_notification_days_ahead)
-        #             # print('=====================record',record.send_email_date, timedelta(days=record.sending_email_notification_days_ahead) )   #record maintenance.equipment(8,) 2024-06-14
-        #             day_delta = (record.send_email_date - datetime.today().date()).days
-        #             # print('===============', day_delta)
-        #             if day_delta < 0:  # overdue case
-        #                 record.send_email_date = datetime.today().date()
-        #         else:
-        #             raise ValidationError(_("Failed to obtain send email date!"))
-        #     print('------------record', record, record.send_email_date)
+        for rec in self:
+            if rec.calibration_due_date:
+                rec.send_email_date = rec.calibration_due_date - timedelta(
+                    days=rec.sending_email_notification_days_ahead)
+                if rec.send_email_date <= datetime.today().date():
+                    rec.send_email_date = datetime.today().date()
+            else:
+                raise ValidationError(_("No calibration due date to derive the send email date!"))
+
 
     @api.model
     def get_email_to(self):

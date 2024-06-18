@@ -45,6 +45,7 @@
                                 <field name="close_date" readonly="True" invisible="not done"/>
                                 <field name="technician_doing_calibration_id"/>
                                 <field name="company_id" invisible="1"/>
+                                <field name="calibration_due_date"/>
                             </group>
                             <group>
                                 <field name="owner_user_id"/>
@@ -56,16 +57,12 @@
                                            style="max-width: 2rem !important;"/>
                                     <field name="repeat_unit" required="True" class="me-2"
                                            style="max-width: 6rem !important;"/>
-                                    <field name="repeat_type" required="True" class="me-2"
-                                           style="max-width: 8rem !important;"/>
-                                    <field name="repeat_until" invisible="repeat_type != 'until'"
-                                           required="repeat_type == 'until'" class="me-2"
-                                           style="max-width: 8rem !important;"/>
                                 </div>
                                 <label for="sending_email_notification_days_ahead"/>
                                 <div class="d-flex">
                                     <field name="sending_email_notification_days_ahead" class="me-2" style="max-width: 2rem !important;"/>
-                                    <span class="oe_inline">days ahead of due date</span>
+                                    <span class="oe_inline">days ahead of calibration due date Send Email Date :</span>
+                                    <field name="send_email_date"  style="max-width: 6rem !important;"/>
                                 </div>
                                 <field name="priority" widget="priority"/>
 
