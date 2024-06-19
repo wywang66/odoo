@@ -1,42 +1,45 @@
 <odoo>
     <data>
         <!-- elw.maintenance.calibration: search views -->
-    <record id="elw_maintenance_calibration_view_search" model="ir.ui.view">
-        <field name="name">equipment.calibration.request.search</field>
-        <field name="model">elw.maintenance.calibration</field>
-        <field name="arch" type="xml">
-            <search string="Calibration Request Search">
-                <field name="name" string="Request"/>
-                <field name="category_id"/>
-                <field name="owner_user_id"/>
-                <field name="equipment_id"/>
-                <field name="owner_user_id"/>
-                <field name="stage_id"/>
-                <field name="maintenance_team_id"/>
-                <filter string="My Maintenances" name="my_maintenances" domain="[('owner_user_id', '=', uid)]"/>
-                <separator/>
-                <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
-                <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
-<!--                <filter string="Blocked" name="kanban_state_block" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'blocked')]"/>-->
-<!--                <filter string="Ready" name="done" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'done')]"/>-->
-                <separator/>
-                <filter string="High-priority" name="high_priority" domain="[('stage_id.done', '=', False), ('priority', '=', '3')]"/>
-                <separator/>
-                <filter name="filter_request_date" date="request_date"/>
-                <filter name="filter_calibration_date" date="calibration_due_date"/>
-                <filter name="filter_close_date" date="close_date"/>
-                <separator/>
-                <filter string="Active" name="active" domain="[('archive', '=', False)]"/>
-                <filter string="Archived" name="inactive" domain="[('archive', '=', True)]"/>
-                <group  expand='0' string='Group by...'>
-                    <filter string='Assigned to' name="assigned" domain="[]" context="{'group_by': 'technician_doing_calibration_id'}"/>
-                    <filter string='Category' name="category" domain="[]" context="{'group_by' : 'category_id'}"/>
-                    <filter string='Stage' name="stages" domain="[]" context="{'group_by' : 'stage_id'}"/>
-                    <filter string='Created By' name='created_by' domain="[]" context="{'group_by': 'owner_user_id'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
+        <record id="elw_maintenance_calibration_view_search" model="ir.ui.view">
+            <field name="name">equipment.calibration.request.search</field>
+            <field name="model">elw.maintenance.calibration</field>
+            <field name="arch" type="xml">
+                <search string="Calibration Request Search">
+                    <field name="name" string="Request"/>
+                    <field name="category_id"/>
+                    <field name="owner_user_id"/>
+                    <field name="equipment_id"/>
+                    <field name="owner_user_id"/>
+                    <field name="stage_id"/>
+                    <field name="maintenance_team_id"/>
+                    <filter string="My Maintenances" name="my_maintenances" domain="[('owner_user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
+                    <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <!--                <filter string="Blocked" name="kanban_state_block" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'blocked')]"/>-->
+                    <!--                <filter string="Ready" name="done" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'done')]"/>-->
+                    <separator/>
+                    <filter string="High-priority" name="high_priority"
+                            domain="[('stage_id.done', '=', False), ('priority', '=', '3')]"/>
+                    <separator/>
+                    <filter name="filter_request_date" date="request_date"/>
+                    <filter name="filter_calibration_date" date="calibration_due_date"/>
+                    <filter name="filter_close_date" date="close_date"/>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('archive', '=', False)]"/>
+                    <filter string="Archived" name="inactive" domain="[('archive', '=', True)]"/>
+                    <group expand='0' string='Group by...'>
+                        <filter string='Assigned to' name="assigned" domain="[]"
+                                context="{'group_by': 'technician_doing_calibration_id'}"/>
+                        <filter string='Category' name="category" domain="[]" context="{'group_by' : 'category_id'}"/>
+                        <filter string='Stage' name="stages" domain="[]" context="{'group_by' : 'stage_id'}"/>
+                        <filter string='Created By' name='created_by' domain="[]"
+                                context="{'group_by': 'owner_user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
 
 
         <record model="ir.ui.view" id="elw_maintenance_calibration_tree_view">
@@ -67,17 +70,22 @@
                 <form string="Calibration Request">
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="not archive"/>
                     <header>
-<!--                        <button string="Archive" name="archive_calibration_request"-->
-<!--                                help="Archive is to hide the calibration request without deleting it."-->
-<!--                                type="object" invisible="archive"/>-->
-<!--                        <button string="Reopen Request" name="reset_calibration_request" type="object"-->
-<!--                                help="This is to hide the calibration request without deleting it."-->
-<!--                                invisible="not archive"/>-->
+                        <!--                        <button string="Archive" name="archive_calibration_request"-->
+                        <!--                                help="Archive is to hide the calibration request without deleting it."-->
+                        <!--                                type="object" invisible="archive"/>-->
+                        <!--                        <button string="Reopen Request" name="reset_calibration_request" type="object"-->
+                        <!--                                help="This is to hide the calibration request without deleting it."-->
+                        <!--                                invisible="not archive"/>-->
                         <!-- remove options="{'clickable': '1'} so it is not clickable -->
                         <field name="stage_id" widget="statusbar"/>
-                        <button string="Doing" name="action_doing_calibration" type="object" invisible="stage_id != 1"/>
-                        <button string="Passed" name="action_passed_calibration" type="object" invisible="stage_id != 2 or stage_id == 5"/>
-                        <button string="Failed" name="action_failed_calibration" type="object" invisible="stage_id != 2 or stage_id == 5"/>
+                        <button string="Doing" name="action_doing_calibration" type="object" class="btn-primary"
+                                invisible="stage_id != 1"/>
+                        <button string="Passed" name="action_passed_calibration" type="object" class="btn-primary"
+                                invisible="stage_id != 2 or stage_id == 5"/>
+                        <button string="Failed" name="action_failed_calibration" type="object" class="btn-primary"
+                                invisible="stage_id != 2 or stage_id == 5"/>
+                        <button string="Reschedule Calibration" name="action_reschedule_calibration_overdue"
+                                class="btn-primary" type="object" invisible="stage_id != 5"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
@@ -144,7 +152,9 @@
                                 </group>
                             </page>
                             <page string="Reason for Calibration Overdue">
-                                <field name='reason_for_overdue' placeholder="Write down reasons for calibration overdue" required="is_calibration_overdue"/>
+                                <field name='reason_for_overdue'
+                                       placeholder="Write down reasons for calibration overdue"
+                                       required="is_calibration_overdue"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -372,11 +382,11 @@
                   parent="menu_equipment_calibration"
                   sequence="1"/>
 
-<!--        <menuitem id="menu_calibration_stages_submenu"-->
-<!--                  name="Calibration Stages"-->
-<!--                  action="elw_eq_calibration_stage_action"-->
-<!--                  parent="maintenance.menu_maintenance_configuration"-->
-<!--                  sequence="4"/>-->
+        <!--        <menuitem id="menu_calibration_stages_submenu"-->
+        <!--                  name="Calibration Stages"-->
+        <!--                  action="elw_eq_calibration_stage_action"-->
+        <!--                  parent="maintenance.menu_maintenance_configuration"-->
+        <!--                  sequence="4"/>-->
 
         <!-- add a menu no error but the menu is no show -->
         <!-- add a submenmu action is a must to show up this menu -->

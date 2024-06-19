@@ -5,7 +5,8 @@ from odoo.exceptions import ValidationError, UserError
 from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
-
+from markupsafe import Markup
+import datetime
 
 class CalibrationStage(models.Model):
     """ Model for case stages. This models the main stages of a Calibration Request management flow. """
@@ -45,7 +46,7 @@ class MaintenanceCalibration(models.Model):
                              help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True,
                                    ondelete='cascade')
-    request_date = fields.Date('Request Date', tracking=True,  store=True, default=fields.Date.context_today,
+    request_date = fields.Date('Request Date', tracking=True, store=True, default=fields.Date.context_today,
                                help="Date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
                                     ondelete='cascade')
@@ -73,19 +74,12 @@ class MaintenanceCalibration(models.Model):
         ('month', 'Months'),
         ('year', 'Years'),
     ], default='month', store=True)
-
-    # send_email_date = fields.Date(string="Send Email Notification On", store=True)
-
     is_calibration_overdue = fields.Boolean(string="Is Calibration Overdue", compute='_compute_is_calibration_overdue',
                                             store=True)
-
-    # is_doing_calibration = fields.Boolean(string="Is Doing Calibration", default=False, store=False, compute='action_doing_calibration')
     calibration_completion_date = fields.Date(string='Calibration Completion Date', required=True, store=True,
                                               default=fields.Date.context_today)
     technician_doing_calibration_id = fields.Many2one('res.users', string='Technician Doing Calibration', store=True,
                                                       default=lambda self: self.env.uid, ondelete='cascade')
-    # list sequence is same as xml's statusbar sequence
-
     stage_id = fields.Many2one('elw.calibration.stage', string='Stage', ondelete='restrict', tracking=True,
                                group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
     done = fields.Boolean(related='stage_id.done', store=True)
@@ -298,6 +292,7 @@ class MaintenanceCalibration(models.Model):
         stage_ids = stages._search([], order=order, access_rights_uid=SUPERUSER_ID)
         return stages.browse(stage_ids)
 
+    @api.depends('stage_id')
     def action_doing_calibration(self):
         for rec in self:
             if rec.stage_id.id == 1:
@@ -306,6 +301,7 @@ class MaintenanceCalibration(models.Model):
                 raise UserError(
                     _("You cannot change to 'In Progress' if this equipment is not in 'Pending Calibration' state"))
 
+    @api.depends('stage_id')
     def action_passed_calibration(self):
         for rec in self:
             if rec.stage_id.id == 2:
@@ -314,6 +310,7 @@ class MaintenanceCalibration(models.Model):
                 raise UserError(
                     _("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
 
+    @api.depends('stage_id')
     def action_failed_calibration(self):
         for rec in self:
             if rec.stage_id.id == 2:
@@ -322,14 +319,17 @@ class MaintenanceCalibration(models.Model):
                 raise UserError(
                     _("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
 
-    class Dbb_CalibrationOverdue(models.Model):
-        _name = 'dbb.maintenance.calibrationoverdue'
-        _description = 'Digital BigBite Maintenance Scheduled Calibration Overdue'
+    @api.depends('stage_id')
+    def action_reschedule_calibration_overdue(self):
+        self.ensure_one()
+        # current_data = self.env['elw.maintenance.calibration'].browse(self.id).copy()
+        # print('current_data', current_data) #elw.maintenance.calibration(2,)
+        # current_data = self.env['elw.maintenance.calibration'].search_read([('id', '=', self.id)])
+        # current_data = self.env['elw.maintenance.calibration'].browse(self.id).read()
+        # data = current_data[0]
 
-        equipment_sequence_id = fields.Many2one(comodel_name='maintenance.equipment', string="Equipment")
-        # appointment_id = fields.Many2one(comodel_name='hospital.appointment', string ="Appointment",domain=['|',('state','=','draft'),('priority','in', ('0','1', False))]) # prioriry is a selection in appointment.py, false : no data
-        reason = fields.Text(string="Reason", required=True, default="equipment was breaking down")
-        date_rescheduled = fields.Date(string="Reschedule Calibartion Date")
-
-        def action_reschedule_calibration(self):
-            return
+        vals = {
+            'calibration_id': self.id,
+        }
+        calibration_overdue_obj = self.env['elw.calibration.overdue'].create(vals)
+        print(calibration_overdue_obj )
