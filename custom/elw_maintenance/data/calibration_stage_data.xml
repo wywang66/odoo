@@ -26,7 +26,6 @@
         <record id="stage_5" model="elw.calibration.stage">
             <field name="name">Calibration Overdue</field>
             <field name="sequence" eval="5"/>
-
         </record>
     </data>
 </odoo>

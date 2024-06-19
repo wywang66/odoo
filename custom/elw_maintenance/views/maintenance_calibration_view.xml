@@ -51,7 +51,6 @@
                     <field name="category_id" optional="show"/>
                     <field name="stage_id" decoration-success="stage_id == 3"
                            decoration-info="stage_id in (1,2)"
-                           decoration-warning="stage_id == 5"
                            decoration-danger="stage_id == 4" widget="badge" optional="show"/>
                     <field name="technician_doing_calibration_id" optional="hide" widget="many2one_avatar_user"/>
                     <field name="company_id" optional="hide"/>
@@ -67,10 +66,17 @@
                 <form string="Calibration Request">
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="not archive"/>
                     <header>
-                        <button string="Archive" name="archive_calibration_request" type="object" invisible="archive"/>
-                        <button string="Reopen Request" name="reset_calibration_request" type="object"
-                                invisible="not archive"/>
-                        <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+<!--                        <button string="Archive" name="archive_calibration_request"-->
+<!--                                help="Archive is to hide the calibration request without deleting it."-->
+<!--                                type="object" invisible="archive"/>-->
+<!--                        <button string="Reopen Request" name="reset_calibration_request" type="object"-->
+<!--                                help="This is to hide the calibration request without deleting it."-->
+<!--                                invisible="not archive"/>-->
+                        <!-- remove options="{'clickable': '1'} so it is not clickable -->
+                        <field name="stage_id" widget="statusbar"/>
+                        <button string="Doing" name="action_doing_calibration" type="object" invisible="stage_id != 1"/>
+                        <button string="Passed" name="action_passed_calibration" type="object" invisible="stage_id != 2 or stage_id == 5"/>
+                        <button string="Failed" name="action_failed_calibration" type="object" invisible="stage_id != 2 or stage_id == 5"/>
                     </header>
                     <sheet>
                         <div class="oe_title">

@@ -298,6 +298,30 @@ class MaintenanceCalibration(models.Model):
         stage_ids = stages._search([], order=order, access_rights_uid=SUPERUSER_ID)
         return stages.browse(stage_ids)
 
+    def action_doing_calibration(self):
+        for rec in self:
+            if rec.stage_id.id == 1:
+                rec.stage_id = 2
+            else:
+                raise UserError(
+                    _("You cannot change to 'In Progress' if this equipment is not in 'Pending Calibration' state"))
+
+    def action_passed_calibration(self):
+        for rec in self:
+            if rec.stage_id.id == 2:
+                rec.stage_id = 3
+            else:
+                raise UserError(
+                    _("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
+
+    def action_failed_calibration(self):
+        for rec in self:
+            if rec.stage_id.id == 2:
+                rec.stage_id = 4
+            else:
+                raise UserError(
+                    _("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
+
     class Dbb_CalibrationOverdue(models.Model):
         _name = 'dbb.maintenance.calibrationoverdue'
         _description = 'Digital BigBite Maintenance Scheduled Calibration Overdue'
