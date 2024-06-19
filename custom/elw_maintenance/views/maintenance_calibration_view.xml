@@ -51,6 +51,7 @@
                     <field name="category_id" optional="show"/>
                     <field name="stage_id" decoration-success="stage_id == 3"
                            decoration-info="stage_id in (1,2)"
+                           decoration-warning="stage_id ==5"
                            decoration-danger="stage_id == 4" widget="badge" optional="show"/>
                     <field name="technician_doing_calibration_id" optional="hide" widget="many2one_avatar_user"/>
                     <field name="company_id" optional="hide"/>
