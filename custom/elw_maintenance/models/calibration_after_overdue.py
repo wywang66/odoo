@@ -29,3 +29,19 @@ class CalibrationOverdue(models.Model):
                                            help="Paste the url of your Google Slide. Make sure the access to the document is public.")
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue")
+
+    @api.model_create_multi
+    def create(self, data_list):
+        for vals in data_list:
+            vals['name'] = self.env['ir.sequence'].next_by_code('calibration.overdue.sequence')
+            # print("Success ............", vals)
+        return super(CalibrationOverdue, self).create(vals)
+
+    # #  no decorator needed
+
+    def write(self, vals):
+        # print("write Success ............", self.name, vals.get('name'))
+        if not vals.get('name') and self.name == "New":
+            vals['name'] = self.env['ir.sequence'].next_by_code('calibration.overdue.sequence')
+            # print("write Success 2 ............", vals.get('name'))
+        return super(CalibrationOverdue, self).write(vals)

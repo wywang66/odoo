@@ -268,7 +268,7 @@ class MaintenanceCalibration(models.Model):
     @api.model_create_multi
     def create(self, data_list):
         for vals in data_list:
-            vals['name'] = self.env['ir.sequence'].next_by_code('maintenance.equipment.sequence')
+            vals['name'] = self.env['ir.sequence'].next_by_code('maintenance.calibration.sequence')
             # print("Success ............", vals)
         return super(MaintenanceCalibration, self).create(vals)
 
@@ -277,7 +277,7 @@ class MaintenanceCalibration(models.Model):
     def write(self, vals):
         # print("write Success ............", self.name, vals.get('name'))
         if not vals.get('name') and self.name == "New":
-            vals['name'] = self.env['ir.sequence'].next_by_code('maintenance.equipment.sequence')
+            vals['name'] = self.env['ir.sequence'].next_by_code('maintenance.calibration.sequence')
             # print("write Success 2 ............", vals.get('name'))
         return super(MaintenanceCalibration, self).write(vals)
 
