@@ -34,14 +34,14 @@ class QualityAlert(models.Model):
         ('3', 'Very High')], string="Priority", tracking=True, store=True,
         help="1 star: Low, 2 stars: High, 3 stars: Very High")
     check_id = fields.Many2one('elw.quality.check', string='Check Ref#', readonly=False, ondelete='cascade',
-                               store=True, domain="[('quality_state', '=', 'fail')]")  # check_id is name of quality.check
+                               store=True,
+                               domain="[('quality_state', '=', 'fail')]")  # check_id is name of quality.check
     point_id = fields.Many2one('elw.quality.point', related='check_id.point_id', string='Control Point ID',
                                ondelete='set null')
-    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', domain="[('product_id', '=', product_id)]")
-    # related='check_id.lot_name' making a change on alert will update the change in quality.check
-    lot_name = fields.Char(string='Lots/Serials', store=True)
+    lot_ids = fields.Many2many('stock.lot', string='Lots/Serials', compute='_get_lot_ids', inverse='_inverse_lot_ids',
+                               store=True)
+    lot_name = fields.Char(string='Lots/Serials', store=True, compute='_get_lot_ids', inverse='_inverse_lot_ids')
     has_lot_id = fields.Boolean(string='Has Lot ids', related='check_id.has_lot_id', store=True)
-
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='set null', tracking=True)
     picking_code = fields.Selection(related='picking_id.picking_type_id.code', readonly=True)
@@ -78,6 +78,16 @@ class QualityAlert(models.Model):
             # print("lot_id_------", lot_ids_.lot_name, lot_ids_.lot_ids.ids, rec.check_id.id)
             rec.lot_ids = lot_ids_.lot_ids if lot_ids_.lot_ids else None
             rec.lot_name = lot_ids_.lot_name if lot_ids_.lot_name else None
+
+    def _inverse_lot_ids(self):
+        for rec in self:
+            if rec.check_id:
+                check_lot_ids_ = self.env['elw.quality.check'].browse(rec.check_id.id)
+                # print("lot_id_------", rec.lot_ids, rec.lot_name, rec.check_id.id)
+                if rec.picking_code == 'outgoing':
+                    check_lot_ids_ = rec.lot_ids if rec.lot_ids else None
+                if rec.picking_code == 'incoming':
+                    check_lot_name = rec.lot_name if rec.lot_name else None
 
     @api.depends('title')
     def _compute_display_name(self):
