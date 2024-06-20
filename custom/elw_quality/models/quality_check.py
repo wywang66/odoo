@@ -351,11 +351,10 @@ class ElwQualityCheck(models.Model):
     # auto load product for Measure test type
     @api.onchange('point_id')
     def onchange_point_id(self):
-        for rec in self:
-            if rec.point_id:
-                if rec.test_type_id.id == 5:
-                    # print("rec.point_id", rec.point_id, rec.point_id.product_id)
-                    self.product_id = rec.point_id.product_id.id
+        self.ensure_one()
+        if self.point_id:
+            if self.test_type_id.id == 5:
+                self.product_id = self.point_id.product_id.id
 
     # below is to add a dynamic domain on product_id
     @api.depends('point_id')
