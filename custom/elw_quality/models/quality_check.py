@@ -102,7 +102,7 @@ class ElwQualityCheck(models.Model):
             else:
                 rec.measure_spec_ids = None
 
-    @api.depends('measure_spec_ids')
+    @api.depends('measure_data_ids.measured_value')
     def _compute_measure_data_count(self):
         for rec in self:
             rec.measure_data_count = self.env['elw.quality.measure.data'].search_count(
