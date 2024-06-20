@@ -116,9 +116,15 @@ class QualityAlert(models.Model):
             raise ValidationError(_("Can not delete the record that links to Quality Check or Deliveries/Receipts"))
         return super(QualityAlert, self).unlink()
 
-    def action_see_alerts(self):
-        pass
-
-    # this return to the correct ID in quality.check. not sure why
+    # this return to the correct ID in quality.check
     def action_see_check(self):
-        pass
+        return {
+            'name': _('Quality Check'),
+            'res_model': 'elw.quality.check',
+            'res_id': self.check_id.id,  # open the corresponding form
+            # 'domain': [('id', '=', self.alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            # 'view_mode': 'tree,form',
+            'target': 'current',
+        }
