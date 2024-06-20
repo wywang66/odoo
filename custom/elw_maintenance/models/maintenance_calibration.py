@@ -53,6 +53,9 @@ class MaintenanceCalibration(models.Model):
                                     ondelete='cascade')
     category_id = fields.Many2one('maintenance.equipment.category', related='equipment_id.category_id',
                                   string='Category', store=True, readonly=True, ondelete='cascade')
+    overdue_id = fields.Many2one('elw.calibration.overdue', string='Calibration Overdue Ref#', store=True,
+                                 readonly=True, ondelete='cascade')
+    overdue_count = fields.Integer(string=' ', default=1)
     sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10,
                                                            required=True, store=False)
     # calibration_date = fields.Date(string="Calibration Due Date", compute='_compute_calibration_date', tracking=True, store=True, required=True, default = datetime.today().date() )
@@ -343,7 +346,17 @@ class MaintenanceCalibration(models.Model):
         for key in keys_to_remove:
             data.pop(key)
         data['calibration_id'] = self.id
-        print(data)
+        # print(data)
+        self.overdue_id = self.env['elw.calibration.overdue'].create(data)
 
-        calibration_overdue_obj = self.env['elw.calibration.overdue'].create(data)
-        print(calibration_overdue_obj)
+    def action_see_calibration_overdue(self):
+        return {
+            'name': _('Calibration Overdue'),
+            'res_model': 'elw.calibration.overdue',
+            'res_id': self.overdue_id.id,  # open the corresponding form
+            # 'domain': [('id', '=', self.alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            # 'view_mode': 'tree,form',
+            'target': 'current',
+        }

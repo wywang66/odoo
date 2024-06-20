@@ -1,5 +1,5 @@
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _, SUPERUSER_ID
+from odoo.exceptions import ValidationError, UserError
 from datetime import datetime, timedelta
 from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 
@@ -11,6 +11,10 @@ class CalibrationOverdue(models.Model):
                 ]  # add a chatter
     _description = 'Redo calibration after calibration is overdue'
     _order = 'id desc, name desc'  # Move the newest record to the top
+
+    @api.returns('self')
+    def _default_stage(self):
+        return self.env['elw.calibration.stage'].search([], limit=1)
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True,
@@ -46,7 +50,9 @@ class CalibrationOverdue(models.Model):
     technician_doing_calibration_id = fields.Many2one('res.users', string='Technician Doing Calibration', store=True,
                                                       ondelete='cascade')
     stage_id = fields.Many2one('elw.calibration.stage', string='Stage', ondelete='restrict', tracking=True,
-                                copy=False)
+                               group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
+    ori_stage_id = fields.Many2one('elw.calibration.stage', string='Original Stage', ondelete='restrict', tracking=True,
+                               copy=False)
     done = fields.Boolean(related='stage_id.done', store=True)
     description = fields.Html('Description')
     instruction_type = fields.Selection([
@@ -58,6 +64,14 @@ class CalibrationOverdue(models.Model):
                                            help="Paste the url of your Google Slide. Make sure the access to the document is public.")
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue", related='calibration_id.reason_for_overdue')
+
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        """ Read group customization in order to display all the stages in the
+            kanban view, even if they are empty
+        """
+        stage_ids = stages._search([], order=order, access_rights_uid=SUPERUSER_ID)
+        return stages.browse(stage_ids)
 
     @api.model_create_multi
     def create(self, data_list):
@@ -74,3 +88,42 @@ class CalibrationOverdue(models.Model):
             vals['name'] = self.env['ir.sequence'].next_by_code('calibration.overdue.sequence')
             # print("write Success 2 ............", vals.get('name'))
         return super(CalibrationOverdue, self).write(vals)
+
+    def action_see_calibration(self):
+        return {
+            'name': _('Calibration Overdue'),
+            'res_model': 'elw.maintenance.calibration',
+            'res_id': self.calibration_id.id,  # open the corresponding form
+            # 'domain': [('id', '=', self.alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            # 'view_mode': 'tree,form',
+            'target': 'current',
+        }
+
+    @api.depends('stage_id')
+    def action_doing_calibration(self):
+        for rec in self:
+            if rec.stage_id.id == 1:
+                rec.stage_id = 2
+            else:
+                raise UserError(
+                    _("You cannot change to 'In Progress' if this equipment is not in 'Pending Calibration' state"))
+
+    @api.depends('stage_id')
+    def action_passed_calibration(self):
+        for rec in self:
+            if rec.stage_id.id == 2:
+                rec.stage_id = 3
+            else:
+                raise UserError(
+                    _("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
+
+    @api.depends('stage_id')
+    def action_failed_calibration(self):
+        for rec in self:
+            if rec.stage_id.id == 2:
+                rec.stage_id = 4
+            else:
+                raise UserError(
+                    _("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
