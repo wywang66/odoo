@@ -93,35 +93,28 @@
 
                             </group>
                             <group>
-                                <!--                                <field name="owner_user_id"/>-->
-                                <!--                                <field name="maintenance_team_id" options="{'no_create': True, 'no_open': True}"/>-->
+                                <field name="owner_user_id"/>
+                                <field name="maintenance_team_id" options="{'no_create': True, 'no_open': True}"/>
 
-                                <!--                                <label for="repeat_interval"/>-->
-                                <!--                                <div class="d-flex">-->
-                                <!--                                    <field name="repeat_interval" required="True" class="me-2"-->
-                                <!--                                           style="max-width: 2rem !important;"/>-->
-                                <!--                                    <field name="repeat_unit" required="True" class="me-2"-->
-                                <!--                                           style="max-width: 6rem !important;"/>-->
-                                <!--                                </div>-->
-                                <!--                                <label for="sending_email_notification_days_ahead"/>-->
-                                <!--                                <div class="d-flex">-->
-                                <!--                                    <field name="sending_email_notification_days_ahead" class="me-2"-->
-                                <!--                                           style="max-width: 2rem !important;"/>-->
-                                <!--                                    <span class="oe_inline">days before cali due date-->
-                                <!--                                        <strong>Send Email On:</strong>-->
-                                <!--                                    </span>-->
-                                <!--                                    <field name="send_email_date" class="me-2" style="max-width: 6rem !important;"/>-->
-                                <!--                                </div>-->
-                                <!--                                <field name="priority" widget="priority"/>-->
-                                <!--                                <field name="is_calibration_overdue" invisible="1"/>-->
-
+                                <label for="repeat_interval"/>
+                                <div class="d-flex">
+                                    <field name="repeat_interval" required="True" class="me-2"
+                                           style="max-width: 2rem !important;"/>
+                                    <field name="repeat_unit" required="True" class="me-2"
+                                           style="max-width: 6rem !important;"/>
+                                </div>
+                                <field name="priority" widget="priority"/>
+                                <field name="is_calibration_overdue" invisible="1"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Notes">
-                                <field name='description' placeholder="Internal Notes"/>
+                                <field name='calibration_id' options="{'no_create': True}"/>
+                                <field name='description' placeholder="Please refer to above link"/>
                             </page>
                             <page string="Instructions">
+                                <field name='calibration_id' options="{'no_create': True, 'no_edit': True}"/>
+                                <field name='description' placeholder="Please refer to above link"/>
                                 <group col="1">
                                     <field name="instruction_type" widget="radio" nolabel="1"/>
                                     <field name="instruction_pdf" help="Upload your PDF file." widget="pdf_viewer"

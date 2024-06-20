@@ -8,6 +8,7 @@ from odoo.addons.base.models.ir_mail_server import MailDeliveryException
 from markupsafe import Markup
 import datetime
 
+
 class CalibrationStage(models.Model):
     """ Model for case stages. This models the main stages of a Calibration Request management flow. """
     _name = 'elw.calibration.stage'
@@ -140,8 +141,8 @@ class MaintenanceCalibration(models.Model):
             if rec.calibration_due_date:
                 rec.send_email_date = rec.calibration_due_date - timedelta(
                     days=rec.sending_email_notification_days_ahead)
-                if rec.send_email_date <= datetime.today().date():
-                    rec.send_email_date = datetime.today().date()
+                if rec.send_email_date <= fields.Date.today():
+                    rec.send_email_date = fields.Date.today()
             else:
                 raise ValidationError(_("No calibration due date to derive the send email date!"))
 
@@ -325,11 +326,24 @@ class MaintenanceCalibration(models.Model):
         # current_data = self.env['elw.maintenance.calibration'].browse(self.id).copy()
         # print('current_data', current_data) #elw.maintenance.calibration(2,)
         # current_data = self.env['elw.maintenance.calibration'].search_read([('id', '=', self.id)])
-        # current_data = self.env['elw.maintenance.calibration'].browse(self.id).read()
-        # data = current_data[0]
+        data = self.env['elw.maintenance.calibration'].browse(self.id).read(
+            ['name', 'company_id', 'equipment_id', 'request_date', 'owner_user_id', 'category_id',
+             'calibration_due_date', 'priority', 'maintenance_team_id', 'repeat_interval', 'repeat_unit',
+             'technician_doing_calibration_id', 'done', 'description', 'instruction_type', 'instruction_pdf',
+             'instruction_google_slide', 'instruction_text',
+             # 'reason_for_overdue',
+             ])
+        data = data[0]
+        for key, value in data.items():
+            if isinstance(value, tuple):
+                data[key] = value[0]
 
-        vals = {
-            'calibration_id': self.id,
-        }
-        calibration_overdue_obj = self.env['elw.calibration.overdue'].create(vals)
-        print(calibration_overdue_obj )
+        # Remove the first 2 key-value pair 'id':1, 'name': 'ECxxxxx'
+        keys_to_remove = list(data.keys())[:2]
+        for key in keys_to_remove:
+            data.pop(key)
+        data['calibration_id'] = self.id
+        print(data)
+
+        calibration_overdue_obj = self.env['elw.calibration.overdue'].create(data)
+        print(calibration_overdue_obj)

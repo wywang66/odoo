@@ -382,11 +382,11 @@
                   parent="menu_equipment_calibration"
                   sequence="1"/>
 
-        <!--        <menuitem id="menu_calibration_stages_submenu"-->
-        <!--                  name="Calibration Stages"-->
-        <!--                  action="elw_eq_calibration_stage_action"-->
-        <!--                  parent="maintenance.menu_maintenance_configuration"-->
-        <!--                  sequence="4"/>-->
+        <menuitem id="menu_calibration_stages_submenu"
+                  name="Calibration Stages"
+                  action="elw_eq_calibration_stage_action"
+                  parent="maintenance.menu_maintenance_configuration"
+                  sequence="4"/>
 
         <!-- add a menu no error but the menu is no show -->
         <!-- add a submenmu action is a must to show up this menu -->
