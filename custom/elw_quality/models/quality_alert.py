@@ -42,6 +42,8 @@ class QualityAlert(models.Model):
                                store=True)
     lot_name = fields.Char(string='Lots/Serials', store=True, compute='_get_lot_ids', inverse='_inverse_lot_ids')
     has_lot_id = fields.Boolean(string='Has Lot ids', related='check_id.has_lot_id', store=True)
+    #  this for doing check by pass inventory
+    lot_info = fields.Char(string='Lot Info', store=True, related="check_id.lot_info")
     stage_id = fields.Many2one('elw.quality.alert.stage', string='Stage', default=_default_stage, store=True, copy=True,
                                ondelete='set null', tracking=True)
     picking_code = fields.Selection(related='picking_id.picking_type_id.code', readonly=True)
