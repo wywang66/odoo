@@ -62,7 +62,7 @@ class ElwQualityCheck(models.Model):
 
     product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
-    @api.depends('has_lot_id', 'picking_id','picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
+    @api.depends('has_lot_id', 'picking_id', 'picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
     def _get_lot_name(self):
         for rec in self:
             if rec.has_lot_id and rec.picking_id:
@@ -176,14 +176,28 @@ class ElwQualityCheck(models.Model):
         rtn = super(ElwQualityCheck, self).write(vals)
         return rtn
 
+    def unlink_alert_ids(self):
+        for alert_id in self.alert_ids:
+            alert_id.write({
+                'check_id': False,
+                'picking_id': False,
+                'product_id': self.product_id,
+            })
+            # print(self.env['elw.quality.alert'].browse(alert_id.id).read(['name','picking_id','check_id','product_id']))
+            alert_id.unlink()
+
     def unlink(self):
-        for rec in self:
-            if rec.quality_state != 'none' or rec.picking_id:
-                raise ValidationError(
-                    _("Can not delete the record that is not in 'To Do' or has Deliveries/Receipts order"))
-            elif len(rec.measure_data_ids) > 0:
-                # unlink child's records
-                rec.measure_data_ids.unlink()
+        self.ensure_one()
+        if self.quality_state != 'none':
+            raise ValidationError(
+                _("Can not delete the record that is not in 'To Do'. \nPlease cancel it to reset to 'To Do' state"))
+        elif self.picking_id:
+            raise ValidationError(
+                _("Can not delete the record that has Deliveries/Receipts order. \nPlease cancel it to in Inventory"))
+        elif len(self.measure_data_ids) > 0:
+            # unlink child's records
+            self.measure_data_ids.unlink()
+        self.unlink_alert_ids()
         return super(ElwQualityCheck, self).unlink()
 
     @api.depends('quality_state')
@@ -191,6 +205,12 @@ class ElwQualityCheck(models.Model):
         self.ensure_one()
         if self.quality_state == 'none':
             self.quality_state = 'pass'
+
+    @api.depends('quality_state')
+    def do_cancel(self):
+        self.ensure_one()
+        if self.quality_state != 'none':
+            self.quality_state = 'none'
 
     @api.depends('quality_state')
     def do_fail(self):
