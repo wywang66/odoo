@@ -109,24 +109,6 @@ class QualityAlert(models.Model):
     def action_see_alerts(self):
         pass
 
-    @api.depends('quality_state')
-    def do_pass(self):
-        for rec in self:
-            if rec.quality_state == 'none':
-                rec.quality_state = 'pass'
-
-    @api.depends('quality_state')
-    def do_fail(self):
-        for rec in self:
-            if rec.quality_state == 'none':
-                rec.quality_state = 'fail'
-
-    def do_measure(self):
-        pass
-
-    def do_alert(self):
-        pass
-
     # this return to the correct ID in quality.check. not sure why
     def action_see_check(self):
         pass
