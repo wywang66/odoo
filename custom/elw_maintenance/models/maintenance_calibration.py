@@ -17,7 +17,7 @@ class CalibrationStage(models.Model):
 
     name = fields.Char('Name', required=True, translate=True)
     sequence = fields.Integer('Sequence', default=20)
-    done = fields.Boolean('Request Done')
+    done = fields.Boolean('Request Done', default=False)
 
 
 class MaintenanceCalibration(models.Model):

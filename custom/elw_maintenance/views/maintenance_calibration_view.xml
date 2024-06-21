@@ -85,7 +85,7 @@
                         <button string="Failed" name="action_failed_calibration" type="object" class="btn-primary"
                                 invisible="stage_id != 2 or stage_id == 5"/>
                         <button string="Reschedule Calibration" name="action_reschedule_calibration_overdue"
-                                class="btn-primary" type="object" invisible="stage_id != 5"/>
+                                class="btn-primary" type="object" invisible="stage_id not in (4,5) or overdue_id"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -122,7 +122,7 @@
                                 <field name="company_id" invisible="1"/>
                                 <field name="duplicate_id" invisible="1"/>
                                 <field name="calibration_due_date" force_save="1"/>
-                                <field name="overdue_id" invisible="not is_calibration_overdue"/>
+                                <field name="overdue_id" invisible="stage_id not in (4,5)"/>
                                 <field name="is_overdue_cali_done" invisible="1"/>
                                 <field name="calibration_completion_date" invisible="not stage_id in (2,3,4)" required="stage_id in (2,3,4)"/>
                             </group>

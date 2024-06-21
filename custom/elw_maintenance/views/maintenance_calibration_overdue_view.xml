@@ -75,6 +75,7 @@
                                 <field name="category_id"/>
                                 <field name="request_date" readonly="True"/>
                                 <field name="calibration_due_date" />
+                                <field name="stage_id" invisible="1"/>
                                 <field name="done" invisible="1"/>
                                 <field name="company_id" invisible="1"/>
                             </group>
