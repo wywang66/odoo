@@ -24,20 +24,20 @@ class CalibrationOverdue(models.Model):
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name',
                                    required=True, store=True,
                                    ondelete='cascade')
-    ori_request_date = fields.Date('Request Date', tracking=True, store=True, related='calibration_id.request_date',
-                                   help="Date requested for calibration")
+    request_date = fields.Date('Request Date', tracking=True, store=True, related='calibration_id.request_date',
+                               readonly=True, help="Original date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User',
                                     ondelete='cascade')
     category_id = fields.Many2one('maintenance.equipment.category',
                                   string='Category', store=True, readonly=True, ondelete='cascade')
 
-    ori_calibration_due_date = fields.Date(string="Calibration Due Date", tracking=True, store=True)
+    calibration_due_date = fields.Date(string="Original Calibration Due Date", tracking=True, store=True, readonly=True)
     priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority',
-                                store=True)
+                                store=True, default='3')
     maintenance_team_id = fields.Many2one('maintenance.team', string='Team', required=True,
                                           store=True, readonly=False,
                                           check_company=True, ondelete='cascade')
-    repeat_interval = fields.Integer(string='Repeat Every', default=3, store=True)
+    repeat_interval = fields.Integer(string='Repeat Every', default=3, readonly=True,store=True)
     repeat_unit = fields.Selection([
         ('day', 'Days'),
         ('week', 'Weeks'),
@@ -45,14 +45,14 @@ class CalibrationOverdue(models.Model):
         ('year', 'Years'),
     ], default='month', store=True)
     is_calibration_overdue = fields.Boolean(string="Is Calibration Overdue", store=True)
-    calibration_completion_date = fields.Date(string='Calibration Completion Date', required=True, store=True,
-                                              default=fields.Date.context_today, help="Date of the calibration is done.")
+    calibration_completion_date = fields.Date(string='Calibration Completion Date', store=True,
+                                              help="Date of the calibration is done.")
     technician_doing_calibration_id = fields.Many2one('res.users', string='Technician Doing Calibration', store=True,
                                                       ondelete='cascade')
     stage_id = fields.Many2one('elw.calibration.stage', string='Stage', ondelete='restrict', tracking=True,
                                group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
     ori_stage_id = fields.Many2one('elw.calibration.stage', string='Original Stage', ondelete='restrict', tracking=True,
-                                   copy=False)
+                                   readonly=True, copy=False)
     done = fields.Boolean(related='stage_id.done', store=True)
     description = fields.Html('Description')
     instruction_type = fields.Selection([

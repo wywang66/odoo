@@ -58,11 +58,8 @@ class MaintenanceCalibration(models.Model):
     overdue_count = fields.Integer(string=' ', default=1)
     sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10,
                                                            required=True, store=False)
-    # calibration_date = fields.Date(string="Calibration Due Date", compute='_compute_calibration_date', tracking=True, store=True, required=True, default = datetime.today().date() )
-    calibration_due_date = fields.Date(string="Calibration Due Date", compute='_compute_calibration_due_date',
-                                       tracking=True, store=True)
-    send_email_date = fields.Date(string="Send Email Notification after", compute='_compute_send_email_date',
-                                  tracking=True, store=True)
+    calibration_due_date = fields.Date(string="Calibration Due Date", readonly=True, tracking=True, store=True)
+    send_email_date = fields.Date(string="Send Email Notification From", readonly=True, store=True)
     priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority',
                                 store=True)
     color = fields.Integer('Color Index')
@@ -79,10 +76,10 @@ class MaintenanceCalibration(models.Model):
     ], default='month', store=True)
     is_calibration_overdue = fields.Boolean(string="Is Calibration Overdue", compute='_compute_is_calibration_overdue',
                                             store=True)
-    calibration_completion_date = fields.Date(string='Calibration Completion Date', required=True, store=True,
+    calibration_completion_date = fields.Date(string='Calibration Completion Date', store=True,
                                               default=fields.Date.context_today, help="Date of the calibration is done.")
     technician_doing_calibration_id = fields.Many2one('res.users', string='Technician Doing Calibration', store=True,
-                                                      default=lambda self: self.env.uid, ondelete='cascade')
+                                                      ondelete='cascade')
     stage_id = fields.Many2one('elw.calibration.stage', string='Status', ondelete='restrict', tracking=True,
                                group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
     done = fields.Boolean(related='stage_id.done', store=True)
@@ -107,8 +104,8 @@ class MaintenanceCalibration(models.Model):
             else:
                 rec.is_calibration_overdue = False
 
-    @api.depends('repeat_interval', 'repeat_unit')
-    def _compute_calibration_due_date(self):
+    @api.onchange('repeat_interval', 'repeat_unit')
+    def _onchange_calibration_due_date(self):
         for rec in self:
             if rec.repeat_interval and rec.repeat_unit:
                 rec.calibration_due_date = rec.request_date
@@ -137,8 +134,8 @@ class MaintenanceCalibration(models.Model):
     #             if rec.calibration_completion_date > fields.Date.today():
     #                 raise ValidationError(_("Calibration completion date cannot be after today !"))
 
-    @api.depends('sending_email_notification_days_ahead', 'calibration_due_date')
-    def _compute_send_email_date(self):
+    @api.onchange('sending_email_notification_days_ahead', 'calibration_due_date')
+    def _onchange_send_email_date(self):
         for rec in self:
             if rec.calibration_due_date:
                 rec.send_email_date = rec.calibration_due_date - timedelta(
@@ -345,10 +342,11 @@ class MaintenanceCalibration(models.Model):
         for key in keys_to_remove:
             data.pop(key)
         data['calibration_id'] = self.id
-        print('data before', data)
         value = data.pop('stage_id')
         data['ori_stage_id'] = value
-        print(data)
+        data['priority'] = '3'
+
+        # print(data)
         self.overdue_id = self.env['elw.calibration.overdue'].create(data)
 
     def action_see_calibration_overdue(self):

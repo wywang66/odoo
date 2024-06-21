@@ -101,9 +101,9 @@
                         </div>
                         <div class="oe_title">
                             <label for="name" string="Request"/>
-                            <h1>
+                            <h3>
                                 <field name="name"/>
-                            </h1>
+                            </h3>
                         </div>
                         <group>
                             <group>
@@ -135,14 +135,12 @@
                                 <div class="d-flex">
                                     <field name="sending_email_notification_days_ahead" class="me-2"
                                            style="max-width: 2rem !important;"/>
-                                    <span class="oe_inline">days before cali due date
-                                        <strong>Send Email On:</strong>
-                                    </span>
-                                    <field name="send_email_date" class="me-2" style="max-width: 6rem !important;"/>
+                                    <span class="oe_inline">days before calibration due date </span>
                                 </div>
+                                <field name="send_email_date" />
                                 <field name="priority" widget="priority"/>
                                 <field name="is_calibration_overdue" invisible="1"/>
-                                <field name="calibration_completion_date" invisible="not done"/>
+                                <field name="calibration_completion_date" invisible="not done" required="done"/>
                             </group>
                         </group>
                         <notebook>
