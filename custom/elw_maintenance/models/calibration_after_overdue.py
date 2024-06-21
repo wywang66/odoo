@@ -51,7 +51,7 @@ class CalibrationOverdue(models.Model):
                                                       ondelete='cascade')
     stage_id = fields.Many2one('elw.calibration.stage', string='Stage', ondelete='restrict', tracking=True,
                                group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
-    ori_stage_id = fields.Many2one('elw.calibration.stage', string='Original Stage', ondelete='restrict', tracking=True,
+    ori_stage_id = fields.Many2one('elw.calibration.stage', string='Original Status', ondelete='restrict', tracking=True,
                                    readonly=True, copy=False)
     done = fields.Boolean(related='stage_id.done', store=True)
     description = fields.Html('Description')

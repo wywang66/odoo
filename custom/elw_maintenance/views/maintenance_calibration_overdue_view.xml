@@ -90,17 +90,15 @@
                                 </div>
                                 <field name="priority" widget="priority"/>
                                 <field name="is_calibration_overdue" invisible="1"/>
-                                <field name="calibration_completion_date" required="done"/>
-                                <field name="technician_doing_calibration_id"/>
+                                <field name="calibration_completion_date" required="stage_id in (2,3,4)"/>
+                                <field name="technician_doing_calibration_id" required="stage_id in (2,3,4)"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Notes">
-                                <field name='calibration_id' options="{'no_create': True}"/>
                                 <field name='description' placeholder="Please refer to above link"/>
                             </page>
                             <page string="Instructions">
-                                <field name='calibration_id' options="{'no_create': True, 'no_edit': True}"/>
                                 <field name='description' placeholder="Please refer to above link"/>
                                 <group col="1">
                                     <field name="instruction_type" widget="radio" nolabel="1"/>

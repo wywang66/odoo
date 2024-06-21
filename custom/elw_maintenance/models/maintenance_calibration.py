@@ -53,8 +53,9 @@ class MaintenanceCalibration(models.Model):
                                     ondelete='cascade')
     category_id = fields.Many2one('maintenance.equipment.category', related='equipment_id.category_id',
                                   string='Category', store=True, readonly=True, ondelete='cascade')
-    overdue_id = fields.Many2one('elw.calibration.overdue', string='Calibration Overdue Ref#', store=True,
+    overdue_id = fields.Many2one('elw.calibration.overdue', string='Reschedule Calibration Ref#', store=True,
                                  readonly=True, ondelete='cascade')
+    is_overdue_cali_done = fields.Boolean(default=False, compute="_compute_is_overdue_cali_done", store=True)
     overdue_count = fields.Integer(string=' ', default=1)
     sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10,
                                                            required=True, store=False)
@@ -74,10 +75,9 @@ class MaintenanceCalibration(models.Model):
         ('month', 'Months'),
         ('year', 'Years'),
     ], default='month', store=True)
-    is_calibration_overdue = fields.Boolean(string="Is Calibration Overdue", compute='_compute_is_calibration_overdue',
-                                            store=True)
+    is_calibration_overdue = fields.Boolean(string="Is Calibration Overdue", store=True)
     calibration_completion_date = fields.Date(string='Calibration Completion Date', store=True,
-                                              default=fields.Date.context_today, help="Date of the calibration is done.")
+                                              help="Date of the calibration is done.")
     technician_doing_calibration_id = fields.Many2one('res.users', string='Technician Doing Calibration', store=True,
                                                       ondelete='cascade')
     stage_id = fields.Many2one('elw.calibration.stage', string='Status', ondelete='restrict', tracking=True,
@@ -94,24 +94,32 @@ class MaintenanceCalibration(models.Model):
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue")
 
-    @api.depends('calibration_due_date')
-    def _compute_is_calibration_overdue(self):
+    @api.onchange('stage_id')
+    def _onchange_priority(self):
+        if self.stage_id.id == 5:
+            self.priority = '3'
+
+    @api.depends('overdue_id.done')
+    def _compute_is_overdue_cali_done(self):
         for rec in self:
-            if rec.calibration_due_date and rec.calibration_due_date < fields.Date.today():
-                rec.is_calibration_overdue = True
-                rec.stage_id = 5
-                # print('rec.calibration_due_date', rec.stage_id, rec.is_calibration_overdue)
-            else:
-                rec.is_calibration_overdue = False
+            rec.is_overdue_cali_done = True if rec.overdue_id.done else False
+
+    @api.onchange('calibration_due_date')
+    def _onchange_is_calibration_overdue(self):
+        if self.calibration_due_date and self.calibration_due_date < fields.Date.today():
+            self.is_calibration_overdue = True
+            self.stage_id = 5
+            # print('rec.calibration_due_date', rec.stage_id, rec.is_calibration_overdue)
+        else:
+            self.is_calibration_overdue = False
 
     @api.onchange('repeat_interval', 'repeat_unit')
     def _onchange_calibration_due_date(self):
-        for rec in self:
-            if rec.repeat_interval and rec.repeat_unit:
-                rec.calibration_due_date = rec.request_date
-                rec.calibration_due_date += relativedelta(**{f"{self.repeat_unit}s": self.repeat_interval})
-            else:
-                raise UserError(_("Failed to get Calibration Due Date"))
+        if self.repeat_interval and self.repeat_unit:
+            self.calibration_due_date = self.request_date
+            self.calibration_due_date += relativedelta(**{f"{self.repeat_unit}s": self.repeat_interval})
+        else:
+            raise UserError(_("Failed to get Calibration Due Date"))
 
     # def name_get(self):
     #     result = []
@@ -136,14 +144,13 @@ class MaintenanceCalibration(models.Model):
 
     @api.onchange('sending_email_notification_days_ahead', 'calibration_due_date')
     def _onchange_send_email_date(self):
-        for rec in self:
-            if rec.calibration_due_date:
-                rec.send_email_date = rec.calibration_due_date - timedelta(
-                    days=rec.sending_email_notification_days_ahead)
-                if rec.send_email_date <= fields.Date.today():
-                    rec.send_email_date = fields.Date.today()
-            else:
-                raise ValidationError(_("No calibration due date to derive the send email date!"))
+        if self.calibration_due_date:
+            self.send_email_date = self.calibration_due_date - timedelta(
+                days=self.sending_email_notification_days_ahead)
+            if self.send_email_date <= fields.Date.today():
+                self.send_email_date = fields.Date.today()
+        else:
+            raise ValidationError(_("No calibration due date to derive the send email date!"))
 
     @api.model
     def get_email_to(self):
