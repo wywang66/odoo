@@ -3,30 +3,29 @@
     <data noupdate="1">
 
         <!-- Standard stages for Calibration Request -->
-        <record id="stage_0" model="elw.calibration.stage">
+        <record id="stage_1" model="elw.calibration.stage">
             <field name="name">Pending Calibration</field>
             <field name="sequence" eval="1"/>
 
         </record>
-        <record id="stage_1" model="elw.calibration.stage">
-            <field name="name">Doing Calibration</field>
+        <record id="stage_2" model="elw.calibration.stage">
+            <field name="name">In Progress</field>
             <field name="sequence" eval="2"/>
 
         </record>
         <record id="stage_3" model="elw.calibration.stage">
-            <field name="name">Calibration Passed</field>
+            <field name="name">Passed</field>
             <field name="sequence" eval="3"/>
             <field name="done" eval="True"/>
         </record>
         <record id="stage_4" model="elw.calibration.stage">
-            <field name="name">Calibration Failed</field>
+            <field name="name">Failed</field>
             <field name="sequence" eval="4"/>
             <field name="done" eval="True"/>
         </record>
         <record id="stage_5" model="elw.calibration.stage">
             <field name="name">Calibration Overdue</field>
             <field name="sequence" eval="5"/>
-
         </record>
     </data>
 </odoo>

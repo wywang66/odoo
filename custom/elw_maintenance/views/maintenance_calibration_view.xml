@@ -1,5 +1,47 @@
 <odoo>
     <data>
+        <!-- elw.maintenance.calibration: search views -->
+        <record id="elw_maintenance_calibration_view_search" model="ir.ui.view">
+            <field name="name">equipment.calibration.request.search</field>
+            <field name="model">elw.maintenance.calibration</field>
+            <field name="arch" type="xml">
+                <search string="Calibration Request Search">
+                    <field name="name" string="Request"/>
+                    <field name="category_id"/>
+                    <field name="stage_id"/>
+                    <field name="owner_user_id"/>
+                    <field name="equipment_id"/>
+                    <field name="owner_user_id"/>
+                    <field name="maintenance_team_id"/>
+                    <field name="calibration_completion_date"/>
+                    <filter string="My Maintenances" name="my_maintenances" domain="[('owner_user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
+                    <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <!--                <filter string="Blocked" name="kanban_state_block" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'blocked')]"/>-->
+                    <!--                <filter string="Ready" name="done" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'done')]"/>-->
+                    <separator/>
+                    <filter string="High-priority" name="high_priority"
+                            domain="[('stage_id.done', '=', False), ('priority', '=', '3')]"/>
+                    <separator/>
+                    <filter name="filter_request_date" date="request_date"/>
+                    <filter name="filter_calibration_date" date="calibration_due_date"/>
+                    <filter name="filter_close_date" date="calibration_completion_date"/>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('archive', '=', False)]"/>
+                    <filter string="Archived" name="inactive" domain="[('archive', '=', True)]"/>
+                    <group expand='0' string='Group by...'>
+                        <filter string='Assigned to' name="assigned" domain="[]"
+                                context="{'group_by': 'technician_doing_calibration_id'}"/>
+                        <filter string='Category' name="category" domain="[]" context="{'group_by' : 'category_id'}"/>
+                        <filter string='Stage' name="stages" domain="[]" context="{'group_by' : 'stage_id'}"/>
+                        <filter string='Created By' name='created_by' domain="[]"
+                                context="{'group_by': 'owner_user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
 
         <record model="ir.ui.view" id="elw_maintenance_calibration_tree_view">
             <field name="name">elw_maintenance_calibration_tree_view</field>
@@ -9,14 +51,14 @@
                     <field name="name"/>
                     <field name="equipment_id" optional="show"/>
                     <field name="request_date" groups="base.group_no_one"/>
-                    <field name="owner_user_id" optional="show"/>
-                    <field name="category_id" optional="show"/>
-                    <field name="stage_id" decoration-success="stage_id == 'Calibration Passed'"
-                           decoration-info="stage_id =='Pending Calibration'"
-                           decoration-warning="stage_id in('Doing Calibration', 'Calibration Overdue')"
-                           decoration-danger="stage_id =='Calibration Failed'" widget="badge" optional="show"/>
+                    <field name="stage_id" decoration-success="stage_id == 3"
+                           decoration-info="stage_id in (1,2)"
+                           decoration-warning="stage_id ==5"
+                           decoration-danger="stage_id == 4" widget="badge" optional="show"/>
                     <field name="technician_doing_calibration_id" optional="hide" widget="many2one_avatar_user"/>
                     <field name="company_id" optional="hide"/>
+                    <field name="owner_user_id" optional="show"/>
+                    <field name="category_id" optional="show"/>
                 </tree>
             </field>
         </record>
@@ -26,7 +68,37 @@
             <field name="model">elw.maintenance.calibration</field>
             <field name="arch" type="xml">
                 <form string="Calibration Request">
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="not archive"/>
+                    <header>
+                        <!--                        <button string="Archive" name="archive_calibration_request"-->
+                        <!--                                help="Archive is to hide the calibration request without deleting it."-->
+                        <!--                                type="object" invisible="archive"/>-->
+                        <!--                        <button string="Reopen Request" name="reset_calibration_request" type="object"-->
+                        <!--                                help="This is to hide the calibration request without deleting it."-->
+                        <!--                                invisible="not archive"/>-->
+                        <!-- remove options="{'clickable': '1'} so it is not clickable -->
+                        <field name="stage_id" widget="statusbar"/>
+                        <button string="Doing" name="action_doing_calibration" type="object" class="btn-primary"
+                                invisible="stage_id != 1"/>
+                        <button string="Passed" name="action_passed_calibration" type="object" class="btn-primary"
+                                invisible="stage_id != 2 or stage_id == 5"/>
+                        <button string="Failed" name="action_failed_calibration" type="object" class="btn-primary"
+                                invisible="stage_id != 2 or stage_id == 5"/>
+                        <button string="Reschedule Calibration" name="action_reschedule_calibration_overdue"
+                                class="btn-primary" type="object" invisible="stage_id != 5"/>
+                        <!--                        class="btn-primary" type="object" invisible="stage_id != 5 or overdue_id != False"/>-->
+                    </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_see_calibration_overdue" icon="fa-bell" type="object"
+                                    class="oe_stat_button text-danger"
+                                    invisible="not overdue_id" string="Start ReCalibration">
+                            </button>
+                            <button name="action_see_calibration_overdue" icon="fa-bell" type="object"
+                                    class="oe_stat_button text-success"
+                                    invisible="stage_id != 5 or not done" string="Start ReCalibration ">
+                            </button>
+                        </div>
                         <div class="oe_title">
                             <label for="name" string="Request"/>
                             <h1>
@@ -35,6 +107,7 @@
                         </div>
                         <group>
                             <group>
+                                <field name="archive" invisible="1"/>
                                 <field name="owner_user_id" string="Requested By" invisible="1"/>
                                 <field name="equipment_id"
                                        context="{'default_company_id':company_id, 'default_category_id':category_id}"/>
@@ -42,9 +115,10 @@
                                        context="{'default_company_id':company_id}" invisible="not equipment_id"/>
                                 <field name="request_date" readonly="True"/>
                                 <field name="done" invisible="1"/>
-                                <field name="close_date" readonly="True" invisible="not done"/>
                                 <field name="technician_doing_calibration_id"/>
                                 <field name="company_id" invisible="1"/>
+                                <field name="calibration_due_date"/>
+                                <field name="overdue_id" invisible="not is_calibration_overdue"/>
                             </group>
                             <group>
                                 <field name="owner_user_id"/>
@@ -56,23 +130,50 @@
                                            style="max-width: 2rem !important;"/>
                                     <field name="repeat_unit" required="True" class="me-2"
                                            style="max-width: 6rem !important;"/>
-                                    <field name="repeat_type" required="True" class="me-2"
-                                           style="max-width: 8rem !important;"/>
-                                    <field name="repeat_until" invisible="repeat_type != 'until'"
-                                           required="repeat_type == 'until'" class="me-2"
-                                           style="max-width: 8rem !important;"/>
                                 </div>
                                 <label for="sending_email_notification_days_ahead"/>
                                 <div class="d-flex">
-                                    <field name="sending_email_notification_days_ahead" class="me-2" style="max-width: 2rem !important;"/>
-                                    <span class="oe_inline">days ahead of due date</span>
+                                    <field name="sending_email_notification_days_ahead" class="me-2"
+                                           style="max-width: 2rem !important;"/>
+                                    <span class="oe_inline">days before cali due date
+                                        <strong>Send Email On:</strong>
+                                    </span>
+                                    <field name="send_email_date" class="me-2" style="max-width: 6rem !important;"/>
                                 </div>
                                 <field name="priority" widget="priority"/>
-
-
+                                <field name="is_calibration_overdue" invisible="1"/>
+                                <field name="calibration_completion_date" invisible="not done"/>
                             </group>
                         </group>
+                        <notebook>
+                            <page string="Notes">
+                                <field name='description' placeholder="Internal Notes"/>
+                            </page>
+                            <page string="Instructions">
+                                <group col="1">
+                                    <field name="instruction_type" widget="radio" nolabel="1"/>
+                                    <field name="instruction_pdf" help="Upload your PDF file." widget="pdf_viewer"
+                                           invisible="instruction_type != 'pdf'" required="instruction_type == 'pdf'"
+                                           nolabel="1"/>
+                                    <field name="instruction_google_slide" placeholder="Google Slide Link"
+                                           widget="embed_viewer" invisible="instruction_type != 'google_slide'"
+                                           required="instruction_type == 'google_slide'" nolabel="1"/>
+                                    <field name="instruction_text" placeholder="Your instructions"
+                                           invisible="instruction_type != 'text'" nolabel="1"/>
+                                </group>
+                            </page>
+                            <page string="Reason for Calibration Overdue">
+                                <field name='reason_for_overdue'
+                                       placeholder="Write down reasons for calibration overdue"
+                                       required="is_calibration_overdue"/>
+                            </page>
+                        </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -264,6 +365,7 @@
             <field name="name">Equipment Calibration</field>
             <field name="res_model">elw.maintenance.calibration</field>
             <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_active': True, 'default_user_id': uid}</field>
             <!--            <field name="target">new</field>-->
         </record>
 
@@ -273,7 +375,7 @@
         <!--        </record>-->
 
         <menuitem id="menu_equipment_calibration"
-                  name="Equipment Calibration"
+                  name="Calibration"
                   parent="maintenance.menu_maintenance_title"
                   action="elw_equipment_calibration_action"
                   groups="base.group_user"
@@ -282,6 +384,12 @@
         <menuitem id="menu_calibration_submenu"
                   name="Calibration"
                   action="elw_equipment_calibration_action"
+                  parent="menu_equipment_calibration"
+                  sequence="1"/>
+
+        <menuitem id="menu_calibration_overdue_submenu"
+                  name="Calibration for Overdue"
+                  action="elw_equipment_calibration_overdue_action"
                   parent="menu_equipment_calibration"
                   sequence="1"/>
 

@@ -36,6 +36,8 @@ class ElwQualityCheck(models.Model):
                                readonly=False, domain="[('product_id', '=', product_id)]", store=True)
     lot_name = fields.Char(string='Lots/Serials', compute='_get_lot_name', readonly=False, store=True)
     has_lot_id = fields.Boolean(string='Has Lot ids', compute="_compute_has_lot_id", store=True)
+    #  this for doing check by pass inventory
+    lot_info = fields.Char(string='Lot Info', store=True)
     picking_code = fields.Selection(related='picking_id.picking_type_id.code', readonly=True)
     user_id = fields.Many2one('res.users', string='Checked By', ondelete="cascade")
     test_type_id = fields.Many2one(related='point_id.test_type_id', string='Test Type', ondelete='Set NULL', store=True)
@@ -62,7 +64,7 @@ class ElwQualityCheck(models.Model):
 
     product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
-    @api.depends('has_lot_id', 'picking_id','picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
+    @api.depends('has_lot_id', 'picking_id', 'picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
     def _get_lot_name(self):
         for rec in self:
             if rec.has_lot_id and rec.picking_id:
@@ -100,7 +102,7 @@ class ElwQualityCheck(models.Model):
             else:
                 rec.measure_spec_ids = None
 
-    @api.depends('measure_spec_ids')
+    @api.depends('measure_data_ids.measured_value')
     def _compute_measure_data_count(self):
         for rec in self:
             rec.measure_data_count = self.env['elw.quality.measure.data'].search_count(
@@ -176,14 +178,28 @@ class ElwQualityCheck(models.Model):
         rtn = super(ElwQualityCheck, self).write(vals)
         return rtn
 
+    def unlink_alert_ids(self):
+        for alert_id in self.alert_ids:
+            alert_id.write({
+                'check_id': False,
+                'picking_id': False,
+                'product_id': self.product_id,
+            })
+            # print(self.env['elw.quality.alert'].browse(alert_id.id).read(['name','picking_id','check_id','product_id']))
+            alert_id.unlink()
+
     def unlink(self):
-        for rec in self:
-            if rec.quality_state != 'none' or rec.picking_id:
-                raise ValidationError(
-                    _("Can not delete the record that is not in 'To Do' or has Deliveries/Receipts order"))
-            elif len(rec.measure_data_ids) > 0:
-                # unlink child's records
-                rec.measure_data_ids.unlink()
+        self.ensure_one()
+        if self.quality_state != 'none':
+            raise ValidationError(
+                _("Can not delete the record that is not in 'To Do'. \nPlease cancel it to reset to 'To Do' state"))
+        elif self.picking_id:
+            raise ValidationError(
+                _("Can not delete the record that has Deliveries/Receipts order. \nPlease cancel it to in Inventory"))
+        elif len(self.measure_data_ids) > 0:
+            # unlink child's records
+            self.measure_data_ids.unlink()
+        self.unlink_alert_ids()
         return super(ElwQualityCheck, self).unlink()
 
     @api.depends('quality_state')
@@ -191,6 +207,12 @@ class ElwQualityCheck(models.Model):
         self.ensure_one()
         if self.quality_state == 'none':
             self.quality_state = 'pass'
+
+    @api.depends('quality_state')
+    def do_cancel(self):
+        self.ensure_one()
+        if self.quality_state != 'none':
+            self.quality_state = 'none'
 
     @api.depends('quality_state')
     def do_fail(self):
@@ -351,11 +373,10 @@ class ElwQualityCheck(models.Model):
     # auto load product for Measure test type
     @api.onchange('point_id')
     def onchange_point_id(self):
-        for rec in self:
-            if rec.point_id:
-                if rec.test_type_id.id == 5:
-                    # print("rec.point_id", rec.point_id, rec.point_id.product_id)
-                    self.product_id = rec.point_id.product_id.id
+        self.ensure_one()
+        if self.point_id:
+            if self.test_type_id.id == 5:
+                self.product_id = self.point_id.product_id.id
 
     # below is to add a dynamic domain on product_id
     @api.depends('point_id')

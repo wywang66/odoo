@@ -172,6 +172,8 @@
                                 string="Create Alert" data-hotkey="g"/>
                         <button name="do_alert" type="object" class="btn-primary"
                                 invisible="alert_ids or quality_state != 'fail'" string="Create Alert" data-hotkey="g"/>
+                        <button name="do_cancel" type="object"
+                                string="Cancel" data-hotkey="c"/>
                         <field name="quality_state" widget="statusbar" nolabel="1" statusbar_visible="none,pass,fail"/>
                     </header>
                     <sheet>
@@ -204,6 +206,7 @@
                                 <field name="control_date"/>
                                 <field name="user_id"/>
                                 <field name="alert_result" invisible="1"/>
+                                <field name="lot_info" invisible="picking_id"/>
                                 <field name="has_lot_id" invisible="1"/>
                                 <field name="picking_code" invisible="1"/>
                                 <field name="lot_ids" widget="many2many_tags" invisible="picking_code != 'outgoing' or not has_lot_id" required="has_lot_id" force_save="1"/>
