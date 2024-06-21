@@ -78,8 +78,7 @@
                         <!--                                invisible="not archive"/>-->
                         <!-- remove options="{'clickable': '1'} so it is not clickable -->
                         <field name="stage_id" widget="statusbar"/>
-                        <button string="Doing" name="action_doing_calibration" type="object" class="btn-primary"
-                                invisible="stage_id != 1"/>
+                        <button string="Doing" name="action_doing_calibration" type="object" class="btn-primary" invisible="stage_id != 1"/>
                         <button string="Passed" name="action_passed_calibration" type="object" class="btn-primary"
                                 invisible="stage_id != 2 or stage_id == 5"/>
                         <button string="Failed" name="action_failed_calibration" type="object" class="btn-primary"
@@ -89,16 +88,13 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_see_calibration_overdue" icon="fa-bell" type="object"
-                                    class="oe_stat_button text-danger"
+                            <button name="action_see_calibration_overdue" icon="fa-bell" type="object" class="oe_stat_button text-danger"
                                     invisible="not overdue_id or is_overdue_cali_done" string="Start ReCalibration">
                             </button>
-                            <button name="action_see_calibration_overdue" icon="fa-bell" type="object"
-                                    class="oe_stat_button text-success"
+                            <button name="action_see_calibration_overdue" icon="fa-bell" type="object" class="oe_stat_button text-success"
                                     invisible="not overdue_id or not is_overdue_cali_done" string="Start ReCalibration">
                             </button>
-                            <button name="action_see_new_calibration_request" icon="fa-pencil-square-o" type="object"
-                                    class="oe_stat_button"
+                            <button name="action_see_new_calibration_request" icon="fa-pencil-square-o" type="object" class="oe_stat_button"
                                     invisible="not duplicate_id" string="New Calibration Request">
                             </button>
                         </div>
@@ -112,10 +108,8 @@
                             <group>
                                 <field name="archive" invisible="1"/>
                                 <field name="owner_user_id" string="Requested By" invisible="1"/>
-                                <field name="equipment_id"
-                                       context="{'default_company_id':company_id, 'default_category_id':category_id}"/>
-                                <field name="category_id"
-                                       context="{'default_company_id':company_id}" invisible="not equipment_id"/>
+                                <field name="equipment_id" context="{'default_company_id':company_id, 'default_category_id':category_id}"/>
+                                <field name="category_id" context="{'default_company_id':company_id}" invisible="not equipment_id"/>
                                 <field name="request_date" readonly="True"/>
                                 <field name="done" invisible="1"/>
                                 <field name="technician_doing_calibration_id" required="stage_id in (2,3,4)"/>
@@ -132,16 +126,13 @@
 
                                 <label for="repeat_interval"/>
                                 <div class="d-flex">
-                                    <field name="repeat_interval" required="True" class="me-2"
-                                           style="max-width: 2rem !important;"/>
-                                    <field name="repeat_unit" required="True" class="me-2"
-                                           style="max-width: 6rem !important;"/>
+                                    <field name="repeat_interval" required="True" class="me-2" style="max-width: 2rem !important;"/>
+                                    <field name="repeat_unit" required="True" class="me-2" style="max-width: 6rem !important;"/>
                                 </div>
                                 <label for="sending_email_notification_days_ahead"/>
                                 <div class="d-flex">
-                                    <field name="sending_email_notification_days_ahead" class="me-2"
-                                           style="max-width: 2rem !important;"/>
-                                    <span class="oe_inline">days before calibration due date </span>
+                                    <field name="sending_email_notification_days_ahead" class="me-2" style="max-width: 2rem !important;"/>
+                                    <span class="oe_inline">days before calibration due date</span>
                                 </div>
                                 <field name="send_email_date" force_save="1"/>
                                 <field name="priority" widget="priority"/>
@@ -155,19 +146,16 @@
                             <page string="Instructions">
                                 <group col="1">
                                     <field name="instruction_type" widget="radio" nolabel="1"/>
-                                    <field name="instruction_pdf" help="Upload your PDF file." widget="pdf_viewer"
-                                           invisible="instruction_type != 'pdf'" required="instruction_type == 'pdf'"
-                                           nolabel="1"/>
+                                    <field name="instruction_pdf" help="Upload your PDF file." widget="pdf_viewer" invisible="instruction_type != 'pdf'"
+                                           required="instruction_type == 'pdf'" nolabel="1"/>
                                     <field name="instruction_google_slide" placeholder="Google Slide Link"
                                            widget="embed_viewer" invisible="instruction_type != 'google_slide'"
                                            required="instruction_type == 'google_slide'" nolabel="1"/>
-                                    <field name="instruction_text" placeholder="Your instructions"
-                                           invisible="instruction_type != 'text'" nolabel="1"/>
+                                    <field name="instruction_text" placeholder="Your instructions" invisible="instruction_type != 'text'" nolabel="1"/>
                                 </group>
                             </page>
                             <page string="Reason for Calibration Overdue">
-                                <field name='reason_for_overdue'
-                                       placeholder="Write down reasons for calibration overdue"
+                                <field name='reason_for_overdue' placeholder="Write down reasons for calibration overdue"
                                        required="is_calibration_overdue"/>
                             </page>
                         </notebook>
@@ -180,188 +168,6 @@
                 </form>
             </field>
         </record>
-
-        <!--    &lt;!&ndash; inherit the search view &ndash;&gt;-->
-        <!--    <record model="ir.ui.view" id="dbb_maintenance_search_extend">-->
-        <!--      <field name="name">dbb.maintenance.search.extend</field>-->
-        <!--      <field name="model">maintenance.equipment</field>-->
-        <!--      <field name="inherit_id" ref="maintenance.hr_equipment_view_search" />-->
-        <!--      <field name="arch" type="xml">-->
-        <!--        <search>-->
-        <!--          &lt;!&ndash; below is to create a defaule filter under Filters menu &ndash;&gt;-->
-        <!--          <filter name="filter_calibration_required" string="Calibration Required"-->
-        <!--            domain="[('is_calibration_required','=', True)]" />-->
-        <!--          <filter name="filter_calibration_not_required" string="Calibration Not Required"-->
-        <!--            domain="[('is_calibration_required','=', False)]" />-->
-        <!--          &lt;!&ndash; <separator/> &ndash;&gt;-->
-        <!--          &lt;!&ndash; <filter name="filter_calibration_pending" string="Pending Calibration"-->
-        <!--          domain="[('state','=', 'pending_calibration')]" /> &ndash;&gt;-->
-        <!--          &lt;!&ndash; <filter name="filter_calibration_doing" string="Doing Calibration"-->
-        <!--          domain="[('state','=', 'doing_calibration')]" /> &ndash;&gt;-->
-        <!--          <group expand="0" string="Group By">-->
-        <!--            <filter string="Is Calibration Required" name="group_by_is_calibration_required"-->
-        <!--              domain="" context="{'group_by':'is_calibration_required'}" />-->
-        <!--            <separator />-->
-        <!--            <filter string="Calibration Status" name="group_by_state" domain=""-->
-        <!--              context="{'group_by':'state'}" />-->
-        <!--          </group>-->
-        <!--          <searchpanel>-->
-        <!--            &lt;!&ndash; icon="fa-users" likely refers to the use of an icon from the Font Awesome icon-->
-        <!--            library. &ndash;&gt;-->
-        <!--            <field name="technician_user_id" string="Technician in Charge" icon="fa fa-users"-->
-        <!--              aria-hidden="true" select="multi" enable_counters="1" />-->
-        <!--          </searchpanel>-->
-        <!--        </search>-->
-        <!--      </field>-->
-        <!--    </record>-->
-
-        <!--    <record id="dbb_maintenance_view_kanban_extend" model="ir.ui.view">-->
-        <!--      <field name="name">dbb.maintenance.view.kanban.extend</field>-->
-        <!--      <field name="model">maintenance.equipment</field>-->
-        <!--      <field name="inherit_id" ref="maintenance.hr_equipment_view_kanban" />-->
-        <!--      <field name="arch" type="xml">-->
-        <!--        &lt;!&ndash; 'replace' means to replace the all things in <kanban> &ndash;&gt;-->
-        <!--        <xpath expr="//kanban" position="attributes">-->
-        <!--          &lt;!&ndash; disallow drap and drop &ndash;&gt;-->
-        <!--          <attribute name='records_draggable'>False</attribute>-->
-        <!--          <attribute name='edit'>false</attribute>-->
-        <!--          <attribute name='quick_create'>false</attribute>-->
-        <!--          <attribute name="default_group_by">state</attribute>-->
-        <!--        </xpath>-->
-        <!--        <xpath expr="//templates//field[@name='name']" position='after'>-->
-        <!--          <div class="o_kanban_record_body">-->
-        <!--            <div t-if="record.name_sequence.raw_value != 'New'">-->
-        <!--              <field name="name_sequence" />-->
-        <!--            </div>-->
-        <!--          </div>-->
-
-        <!--        </xpath>-->
-        <!--      </field>-->
-        <!--    </record>-->
-
-        <!--        &lt;!&ndash; inherit the tree view &ndash;&gt;-->
-        <!--        <record model="ir.ui.view" id="dbb_maintenance_view_tree_extend">-->
-        <!--            <field name="name">dbb.maintenance.tree.extend</field>-->
-        <!--            <field name="model">maintenance.equipment</field>-->
-        <!--            <field name="inherit_id" ref="maintenance.hr_equipment_view_tree"/>-->
-        <!--            <field name="mode">primary</field>-->
-        <!--            <field name="arch" type="xml">-->
-        <!--                <xpath expr="//field[@name='name']" position="before">-->
-        <!--                    <field name="name_sequence"/>-->
-        <!--                </xpath>-->
-        <!--                <xpath expr="//field[@name='name']" position="after">-->
-        <!--                    <field name="is_calibration_required"/>-->
-        <!--                    <field name="calibration_date"/>-->
-        <!--                    <field name="state" decoration-success="state == 'done_calibration'"-->
-        <!--                           decoration-info="state =='pending_calibration'"-->
-        <!--                           decoration-warning="state in('doing_calibration')"-->
-        <!--                           decoration-danger="state =='calibration_overdue'" widget="badge" optional="show"/>-->
-        <!--                </xpath>-->
-        <!--            </field>-->
-        <!--        </record>-->
-
-        <!--        <record model="ir.ui.view" id="dbb_maintenance_view_form_extend">-->
-        <!--            <field name="name">dbb.maintenance.form.extend</field>-->
-        <!--            <field name="model">maintenance.equipment</field>-->
-        <!--            <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>-->
-        <!--            <field name="mode">primary</field>-->
-        <!--            <field name="arch" type="xml">-->
-        <!--                <xpath expr="//sheet" position="before">-->
-        <!--                    <header invisible="is_calibration_required == False">-->
-        <!--                        <button name="action_pending_calibration" type="object" string="Pending Calibration"-->
-        <!--                                class="btn btn-warning" data-hotkey="p"/>-->
-        <!--                        <button name="action_doing_calibration" type="object" string="Doing Calibration"-->
-        <!--                                class="btn btn-secondary text-success" data-hotkey="c"/>-->
-        <!--                        <button name="action_done_calibration" type="object" string="Done Calibration"-->
-        <!--                                class="btn btn-success" data-hotkey="d"/>-->
-        <!--                        &lt;!&ndash; <button name="action_calibration_overdue" type="object" string="Calibration-->
-        <!--                        Overdue" class="btn btn-danger" data-hotkey="o"/> &ndash;&gt;-->
-        <!--                        <field name="state" widget="statusbar" nolabel="1"-->
-        <!--                               statusbar_visible="pending_calibration,doing_calibration,done_calibration,calibration_overdue"/>-->
-        <!--                    </header>-->
-        <!--                </xpath>-->
-
-        <!--                <xpath expr="//field[@name='name']" position="attributes">-->
-        <!--                    <field name="name_sequence"/>-->
-        <!--                    <attribute name='string'>Equipment Sequence Number and Name</attribute>-->
-        <!--                </xpath>-->
-        <!--                <xpath expr="//field[@name='technician_user_id']" position="replace">-->
-        <!--                    &lt;!&ndash; replace the ori of <field name="technician_user_id" domain="[('share', '=',-->
-        <!--                    False)]"/> so to use 'hr.employee' &ndash;&gt;-->
-        <!--                    <field name="technician_user_id"/>-->
-        <!--                </xpath>-->
-        <!--                <xpath expr="//field[@name='name']" position="before">-->
-        <!--                    <field name="name_sequence"/>-->
-        <!--                    &lt;!&ndash; <field name="maintenance_team_id" position="move" /> &ndash;&gt;-->
-        <!--                </xpath>-->
-
-        <!--                <group>-->
-        <!--                    <group>-->
-        <!--                        <field name="is_calibration_required"/>-->
-        <!--                        <label for="calibration_interval" invisible="is_calibration_required == False"/>-->
-        <!--                        <div invisible="is_calibration_required == False">-->
-        <!--                            <field name="calibration_interval" class="oe_inline"/>-->
-        <!--                            <field name="calibration_interval_by" class="oe_inline"/>-->
-        <!--                        </div>-->
-
-        <!--                        <field name="calibration_date" invisible="is_calibration_required == False"/>-->
-
-
-        <!--                        <label for="sending_email_notification_days_ahead"-->
-        <!--                               invisible="is_calibration_required == False"/>-->
-        <!--                        <div invisible="is_calibration_required == False">-->
-        <!--                            <field name="sending_email_notification_days_ahead" class="oe_inline"/>-->
-        <!--                            <span class="oe_inline">days ahead of due date</span>-->
-        <!--                        </div>-->
-        <!--                        <label for="send_email_date" invisible="is_calibration_required == False"/>-->
-        <!--                        <div invisible="is_calibration_required == False">-->
-        <!--                            <field name="send_email_date" class="oe_inline"/>-->
-        <!--                            <span class="oe_inline">-->
-        <!--                                <button name="action_send_pm_notification_email" type="object"-->
-        <!--                                        string="Send Email Notification Now" class="btn-outline-primary oe_inline"-->
-        <!--                                        data-hotkey="s"/>-->
-        <!--                            </span>-->
-        <!--                        </div>-->
-        <!--                    </group>-->
-        <!--                    <group>-->
-        <!--                        &lt;!&ndash; <field name="is_doing_calibration" /> &ndash;&gt;-->
-        <!--                        <field name="is_calibration_done" invisible="1"/>-->
-        <!--                        &lt;!&ndash; <field name="calibration_completion_date" /> &ndash;&gt;-->
-        <!--                        &lt;!&ndash; <field name="technician_doing_calibration_id"/> &ndash;&gt;-->
-        <!--                        <field name="calibration_completion_date"-->
-        <!--                               invisible="is_calibration_done == False or is_calibration_required == False"/>-->
-        <!--                        <field name="technician_doing_calibration_id"-->
-        <!--                               invisible="state in ('pending_calibration','calibration_overdue') or is_calibration_required == False"/>-->
-        <!--                        <field name="is_calibration_overdue" invisible="1 or is_calibration_required == False"/>-->
-        <!--                        &lt;!&ndash; <field name="reason_overdue" invisible="is_calibration_overdue == False" /> &ndash;&gt;-->
-        <!--                    </group>-->
-        <!--                </group>-->
-        <!--            </field>-->
-        <!--        </record>-->
-
-
-        <!-- explicit list view definition for calibration overdue -->
-        <!--        <record model="ir.ui.view" id="dbb_calibration_overdue_form_view">-->
-        <!--            <field name="name">dbb.calibration.overdue.form.view</field>-->
-        <!--            <field name="model">dbb.maintenance.calibrationoverdue</field>-->
-        <!--            <field name="arch" type="xml">-->
-        <!--                <form>-->
-        <!--                    <group>-->
-        <!--                        <group>-->
-        <!--                            <field name="equipment_sequence_id"/>-->
-        <!--                            <field name="reason"/>-->
-        <!--                            &lt;!&ndash; <field name="date_rescheduled" /> &ndash;&gt;-->
-        <!--                        </group>-->
-        <!--                    </group>-->
-        <!--                    <footer>-->
-        <!--                        <button name="action_reschedule_calibration" string="Save"-->
-        <!--                                type="object" class="btn-primary" data-hotkey="r"/>-->
-        <!--                        <button string="Close" class="btn-secondary" special="cancel"-->
-        <!--                                data-hotkey="x"/>-->
-        <!--                    </footer>-->
-        <!--                </form>-->
-        <!--            </field>-->
-        <!--        </record>-->
 
         <!-- actions opening views on models -->
         <record model="ir.actions.act_window" id="elw_equipment_calibration_action">
@@ -401,18 +207,6 @@
                   action="elw_eq_calibration_stage_action"
                   parent="maintenance.menu_maintenance_configuration"
                   sequence="4"/>
-
-        <!-- add a menu no error but the menu is no show -->
-        <!-- add a submenmu action is a must to show up this menu -->
-        <!--    <menuitem id="menu_reschedule_calibration_submenu" name="Calibration Overdue"-->
-        <!--      action="dbb_maintenance.dbb_calibration_overdue_action" -->
-        <!--      parent="maintenance.menu_equipment_form" -->
-        <!--      sequence="3" />-->
-
-        <!-- <menuitem id="menu_equipment_calibration" name="Scheduled Preventive Maintenance"
-        action="maintenance.hr_equipment_action" parent="maintenance.menu_equipment_form" sequence="3"
-        /> -->
-
 
     </data>
 </odoo>
