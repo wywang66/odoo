@@ -40,33 +40,23 @@ class MaintenanceCalibration(models.Model):
         return self.env['elw.calibration.stage'].search([], limit=1)
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
-    company_id = fields.Many2one('res.company', string='Company', required=True,
-                                 default=lambda self: self.env.company, ondelete='cascade')
-    archive = fields.Boolean(default=False,
-                             help="Set archive to true to hide the calibration request without deleting it.")
-    equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True,
-                                   ondelete='cascade')
-    request_date = fields.Date('Request Date', tracking=True, store=True, default=fields.Date.context_today,
-                               help="Date requested for calibration")
-    owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid,
-                                    ondelete='cascade')
-    category_id = fields.Many2one('maintenance.equipment.category', related='equipment_id.category_id',
-                                  string='Category', store=True, readonly=True, ondelete='cascade')
-    overdue_id = fields.Many2one('elw.calibration.overdue', string='Reschedule Calibration Ref#', store=True,
-                                 readonly=True, ondelete='cascade')
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company, ondelete='cascade')
+    archive = fields.Boolean(default=False, help="Set archive to true to hide the calibration request without deleting it.")
+    equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True, ondelete='cascade')
+    request_date = fields.Date('Request Date', tracking=True, store=True, default=fields.Date.context_today, help="Date requested for calibration")
+    owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid, ondelete='cascade')
+    category_id = fields.Many2one('maintenance.equipment.category', related='equipment_id.category_id', string='Category', store=True, readonly=True,
+                                  ondelete='cascade')
+    overdue_id = fields.Many2one('elw.calibration.overdue', string='Reschedule Calibration Ref#', store=True, readonly=True, ondelete='cascade')
     is_overdue_cali_done = fields.Boolean(default=False, compute="_compute_is_overdue_cali_done", store=True)
     overdue_count = fields.Integer(string=' ', default=1)
-    sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10,
-                                                           required=True, store=False)
+    sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10, required=True, store=False)
     calibration_due_date = fields.Date(string="Calibration Due Date", readonly=True, tracking=True, store=True)
     send_email_date = fields.Date(string="Send Email Notification From", readonly=True, store=True)
-    priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority',
-                                store=True)
+    priority = fields.Selection([('0', 'Very Low'), ('1', 'Low'), ('2', 'Normal'), ('3', 'High')], string='Priority', store=True)
     color = fields.Integer('Color Index')
-    maintenance_team_id = fields.Many2one('maintenance.team', string='Team', required=True,
-                                          default=_get_default_team_id,
-                                          compute='_compute_maintenance_team_id', store=True, readonly=False,
-                                          check_company=True, ondelete='cascade')
+    maintenance_team_id = fields.Many2one('maintenance.team', string='Team', required=True, default=_get_default_team_id,
+                                          compute='_compute_maintenance_team_id', store=True, readonly=False, check_company=True, ondelete='cascade')
     repeat_interval = fields.Integer(string='Repeat Every', default=3, store=True)
     repeat_unit = fields.Selection([
         ('day', 'Days'),
@@ -75,12 +65,11 @@ class MaintenanceCalibration(models.Model):
         ('year', 'Years'),
     ], default='month', store=True)
     is_calibration_overdue = fields.Boolean(string="Is Calibration Overdue", store=True)
-    calibration_completion_date = fields.Date(string='Calibration Completion Date', store=True,
-                                              help="Date of the calibration is done.")
+    calibration_completion_date = fields.Date(string='Calibration Completion Date', store=True, help="Date of the calibration is done.")
     technician_doing_calibration_id = fields.Many2one('res.users', string='Technician Doing Calibration', store=True,
                                                       ondelete='cascade')
-    stage_id = fields.Many2one('elw.calibration.stage', string='Status', ondelete='restrict', tracking=True,
-                               group_expand='_read_group_stage_ids', default=_default_stage, copy=False)
+    stage_id = fields.Many2one('elw.calibration.stage', string='Status', ondelete='restrict', tracking=True, group_expand='_read_group_stage_ids',
+                               default=_default_stage, copy=False)
     done = fields.Boolean(related='stage_id.done', store=True)
     description = fields.Html('Description')
     instruction_type = fields.Selection([
@@ -88,8 +77,7 @@ class MaintenanceCalibration(models.Model):
         string="Instruction", default="text"
     )
     instruction_pdf = fields.Binary('PDF')
-    instruction_google_slide = fields.Char('Google Slide',
-                                           help="Paste the url of your Google Slide. Make sure the access to the document is public.")
+    instruction_google_slide = fields.Char('Google Slide', help="Paste the url of your Google Slide. Make sure the access to the document is public.")
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue")
     duplicate_id = fields.Many2one('elw.maintenance.calibration')
@@ -131,19 +119,12 @@ class MaintenanceCalibration(models.Model):
     #         result.append(vals.id, name)
     #     return result
 
-    # @api.constrains('calibration_interval')  # execute when clicking the 'save'
-    # def check_calibration_interval(self):
-    #     for rec in self:
-    #         # print("----------", rec.calibration_interval)
-    #         if rec.calibration_interval < -20:
-    #             raise ValidationError(_("Calibration interval must be > 1 !"))
-
-    # @api.constrains('calibration_completion_date')  # execute when clicking the 'save'
-    # def check_calibration_completion_date(self):
-    #     for rec in self:
-    #         if rec.calibration_completion_date:  # has data?
-    #             if rec.calibration_completion_date > fields.Date.today():
-    #                 raise ValidationError(_("Calibration completion date cannot be after today !"))
+    @api.constrains('calibration_completion_date')  # execute when clicking the 'save'
+    def check_calibration_completion_date(self):
+        for rec in self:
+            if rec.calibration_completion_date:  # has data?
+                if rec.calibration_completion_date > fields.Date.today():
+                    raise UserError(_("Calibration completion date cannot be after today !"))
 
     @api.onchange('sending_email_notification_days_ahead', 'calibration_due_date')
     def _onchange_send_email_date(self):
@@ -194,80 +175,6 @@ class MaintenanceCalibration(models.Model):
     #             raise ValidationError(
     #                 _("You cannot delete if this equipment is in 'Doing Calibration' or 'Calibration Overdue' state"))
 
-    # @api.depends('is_calibration_required', 'state')
-    # def action_doing_calibration(self):
-    #     for rec in self:
-    #         if rec.is_calibration_required and rec.state == "pending_calibration":
-    #             rec.state = 'doing_calibration'
-    #         else:
-    #             raise ValidationError(
-    #                 _("You cannot change to 'Doing Calibration' if this equipment is not in 'Pending Calibration' state"))
-
-    # @api.depends('calibration_date', 'is_calibration_required')
-    # def action_pending_calibration(self):
-    #     for rec in self:
-    #         # from today to PM_date is "pending_calibration"
-    #         if rec.is_calibration_required and rec.calibration_date:
-    #             if datetime.today().date() <= rec.calibration_date:
-    #                 rec.state = "pending_calibration"
-    #                 rec.is_calibration_done = False
-    #             else:
-    #                 raise ValidationError(_("Please check if 'Cailbration Date' field is invalid"))
-    #         else:
-    #             raise ValidationError(_("Please check if 'Cailbration Date' field is empty"))
-
-    # @api.depends('calibration_date', 'is_calibration_required')
-    # def action_calibration_overdue(self):
-    #     for rec in self:
-    #         if rec.is_calibration_required:
-    #             if datetime.today().date() > rec.calibration_date:
-    #                 rec.state = "calibration_overdue"
-    #                 rec.is_calibration_done = False
-    #                 rec.is_calibration_overdue = True
-    #             else:
-    #                 rec.is_calibration_overdue = False
-
-    # @api.depends('calibration_date', 'is_calibration_required')
-    # def _compute_calibration_overdue(self):
-    #     for rec in self:
-    #         if rec.is_calibration_required and rec.calibration_date:
-    #             overdue_days = (datetime.today().date() - rec.calibration_date).days
-    #             if overdue_days > 0:
-    #                 rec.state = "calibration_overdue"
-    #                 rec.is_calibration_done = False
-    #                 rec.is_calibration_overdue = True  # Assign True if maintenance is overdue
-    #         else:
-    #             rec.is_calibration_overdue = False
-
-    # @api.depends('is_calibration_required')
-    # def action_done_calibration(self):
-    #     for rec in self:
-    #         if rec.is_calibration_required and rec.state == "doing_calibration":
-    #             rec.state = 'done_calibration'
-    #             # update two fields
-    #             rec.is_calibration_done = True
-    #             rec.calibration_completion_date = fields.Date.today()
-    #             # rec.technician_doing_calibration_id = rec.technician_user_id
-    #             # archive the record once the calibration is done
-    #             rec.active = False
-    #             return {
-    #                 'type': 'ir.actions.client',
-    #                 'tag': 'display_notification',
-    #                 'params': {
-    #                     'title': _("Notification"),
-    #                     'type': 'warning',
-    #                     'message': _("Please check if 'Technician Doing Calibration' is updated"),
-    #                     'sticky': True,
-    #                 },
-    #             }
-    #             # return {
-    #             #     'effect': {
-    #             #         'fadeout': 'slow',
-    #             #         'message': "Calibration is Done",
-    #             #         'type': 'rainbow_man',
-    #             #     }
-    #             # }
-
     # below is inherit method from model to avoid warning not override use @api.model_create_multi
     @api.model_create_multi
     def create(self, data_list):
@@ -308,8 +215,7 @@ class MaintenanceCalibration(models.Model):
         if self.stage_id.id == 1:
             self.stage_id = 2
         else:
-            raise UserError(
-                _("You cannot change to 'In Progress' if this equipment is not in 'Pending Calibration' state"))
+            raise UserError(_("You cannot change to 'In Progress' if this equipment is not in 'Pending Calibration' state"))
 
     @api.depends('stage_id')
     def action_passed_calibration(self):
@@ -318,25 +224,21 @@ class MaintenanceCalibration(models.Model):
             self.stage_id = 3
             self.duplicate_id = self.copy({
                 'request_date': fields.Date.today() + timedelta(days=1),
-                'calibration_due_date': self.calibration_due_date - self.request_date + fields.Date.today() + timedelta(
-                    days=1),
+                'calibration_due_date': self.calibration_due_date - self.request_date + fields.Date.today() + timedelta(days=1),
             })
             if self.duplicate_id:
                 self.archive = True
                 return {
                     'effect': {
                         'fadeout': 'slow',
-                        'message': (_("A new calibration request %s is created. Please check if all fields are correct",
-                                      self.duplicate_id.name)),
+                        'message': (_("A new calibration request %s is created. Please check if all fields are correct", self.duplicate_id.name)),
                         'type': 'rainbow_man',
                     }
                 }
             else:
-                raise ValidationError(
-                    _("Failed to create a new calibration request for equipment %s", self.equipment_id.name))
+                raise ValidationError(_("Failed to create a new calibration request for equipment %s", self.equipment_id.name))
         else:
-            raise UserError(
-                _("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
+            raise UserError(_("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
 
 
     @api.depends('stage_id')
@@ -345,8 +247,7 @@ class MaintenanceCalibration(models.Model):
         if self.stage_id.id == 2:
             self.stage_id = 4
         else:
-            raise UserError(
-                _("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
+            raise UserError(_("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
 
     @api.depends('stage_id')
     def action_reschedule_calibration_overdue(self):
