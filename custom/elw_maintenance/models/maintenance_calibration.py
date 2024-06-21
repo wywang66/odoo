@@ -42,7 +42,6 @@ class MaintenanceCalibration(models.Model):
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True,
                                  default=lambda self: self.env.company, ondelete='cascade')
-    # active = fields.Boolean(default=True)
     archive = fields.Boolean(default=False,
                              help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True,
@@ -93,6 +92,7 @@ class MaintenanceCalibration(models.Model):
                                            help="Paste the url of your Google Slide. Make sure the access to the document is public.")
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue")
+    duplicate_id = fields.Many2one('elw.maintenance.calibration')
 
     @api.onchange('stage_id')
     def _onchange_priority(self):
@@ -316,13 +316,14 @@ class MaintenanceCalibration(models.Model):
         self.ensure_one()
         if self.stage_id.id == 2:
             self.stage_id = 3
-            duplicate_cali_id = self.copy()
-            if duplicate_cali_id:
+            self.duplicate_id = self.copy()
+            if self.duplicate_id:
+                self.archive = True
                 return {
                     'effect': {
                         'fadeout': 'slow',
                         'message': (_("A new calibration request %s is created. Please check if all fields are correct",
-                                      duplicate_cali_id.name)),
+                                      self.duplicate_id.name)),
                         'type': 'rainbow_man',
                     }
                 }
@@ -379,6 +380,18 @@ class MaintenanceCalibration(models.Model):
             'name': _('Calibration Overdue'),
             'res_model': 'elw.calibration.overdue',
             'res_id': self.overdue_id.id,  # open the corresponding form
+            # 'domain': [('id', '=', self.alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            # 'view_mode': 'tree,form',
+            'target': 'current',
+        }
+
+    def action_see_new_calibration_request(self):
+        return {
+            # 'name': _('Calibration Overdue'),
+            'res_model': 'elw.maintenance.calibration',
+            'res_id': self.duplicate_id.id,  # open the corresponding form
             # 'domain': [('id', '=', self.alert_ids.ids)],
             'type': 'ir.actions.act_window',
             'view_mode': 'form',

@@ -97,6 +97,10 @@
                                     class="oe_stat_button text-success"
                                     invisible="not overdue_id or not is_overdue_cali_done" string="Start ReCalibration">
                             </button>
+                            <button name="action_see_new_calibration_request" icon="fa-pencil-square-o" type="object"
+                                    class="oe_stat_button"
+                                    invisible="not duplicate_id" string="New Calibration Request">
+                            </button>
                         </div>
                         <div class="oe_title">
                             <label for="name" string="Request"/>
@@ -116,10 +120,11 @@
                                 <field name="done" invisible="1"/>
                                 <field name="technician_doing_calibration_id" required="stage_id in (2,3,4)"/>
                                 <field name="company_id" invisible="1"/>
+                                <field name="duplicate_id" invisible="1"/>
                                 <field name="calibration_due_date" force_save="1"/>
                                 <field name="overdue_id" invisible="not is_calibration_overdue"/>
                                 <field name="is_overdue_cali_done" invisible="1"/>
-                                <field name="calibration_completion_date" invisible="not stage_id in (3,4)" required="stage_id in (3,4)"/>
+                                <field name="calibration_completion_date" invisible="not stage_id in (2,3,4)" required="stage_id in (2,3,4)"/>
                             </group>
                             <group>
                                 <field name="owner_user_id"/>
