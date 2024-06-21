@@ -117,7 +117,7 @@
                                 <field name="done" invisible="1"/>
                                 <field name="technician_doing_calibration_id"/>
                                 <field name="company_id" invisible="1"/>
-                                <field name="calibration_due_date"/>
+                                <field name="calibration_due_date" force_save="1"/>
                                 <field name="overdue_id" invisible="not is_calibration_overdue"/>
                             </group>
                             <group>
@@ -137,7 +137,7 @@
                                            style="max-width: 2rem !important;"/>
                                     <span class="oe_inline">days before calibration due date </span>
                                 </div>
-                                <field name="send_email_date" />
+                                <field name="send_email_date" force_save="1"/>
                                 <field name="priority" widget="priority"/>
                                 <field name="is_calibration_overdue" invisible="1"/>
                                 <field name="calibration_completion_date" invisible="not done" required="done"/>

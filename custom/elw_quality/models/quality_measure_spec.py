@@ -12,7 +12,6 @@ class QualityMeasureSpec(models.Model):
     name = fields.Char('Sequence', readonly=True)
     measure_name = fields.Char('Measure Name', required=True, tracking=True, store=True)
     target_value = fields.Float(string="Target Value")
-    # measured_value = fields.Float(string="Measured Value", tracking=True, store=True)
     target_value_unit = fields.Char(string="Unit", tracking=True, required=True, store=True)
     upper_limit = fields.Float(string="Upper Limit", tracking=True, required=True, store=True)
     lower_limit = fields.Float(string="Lower Limit", tracking=True, required=True, store=True)
