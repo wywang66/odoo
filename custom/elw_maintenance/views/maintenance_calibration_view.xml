@@ -86,7 +86,6 @@
                                 invisible="stage_id != 2 or stage_id == 5"/>
                         <button string="Reschedule Calibration" name="action_reschedule_calibration_overdue"
                                 class="btn-primary" type="object" invisible="stage_id != 5"/>
-                        <!--                        class="btn-primary" type="object" invisible="stage_id != 5 or overdue_id != False"/>-->
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -96,7 +95,7 @@
                             </button>
                             <button name="action_see_calibration_overdue" icon="fa-bell" type="object"
                                     class="oe_stat_button text-success"
-                                    invisible="not overdue_id or not is_overdue_cali_done" string="Start ReCalibration ">
+                                    invisible="not overdue_id or not is_overdue_cali_done" string="Start ReCalibration">
                             </button>
                         </div>
                         <div class="oe_title">

@@ -96,6 +96,7 @@ class MaintenanceCalibration(models.Model):
 
     @api.onchange('stage_id')
     def _onchange_priority(self):
+        self.ensure_one()
         if self.stage_id.id == 5:
             self.priority = '3'
 
@@ -106,6 +107,7 @@ class MaintenanceCalibration(models.Model):
 
     @api.onchange('calibration_due_date')
     def _onchange_is_calibration_overdue(self):
+        self.ensure_one()
         if self.calibration_due_date and self.calibration_due_date < fields.Date.today():
             self.is_calibration_overdue = True
             self.stage_id = 5
@@ -115,6 +117,7 @@ class MaintenanceCalibration(models.Model):
 
     @api.onchange('repeat_interval', 'repeat_unit')
     def _onchange_calibration_due_date(self):
+        self.ensure_one()
         if self.repeat_interval and self.repeat_unit:
             self.calibration_due_date = self.request_date
             self.calibration_due_date += relativedelta(**{f"{self.repeat_unit}s": self.repeat_interval})
@@ -301,30 +304,44 @@ class MaintenanceCalibration(models.Model):
 
     @api.depends('stage_id')
     def action_doing_calibration(self):
-        for rec in self:
-            if rec.stage_id.id == 1:
-                rec.stage_id = 2
-            else:
-                raise UserError(
-                    _("You cannot change to 'In Progress' if this equipment is not in 'Pending Calibration' state"))
+        self.ensure_one()
+        if self.stage_id.id == 1:
+            self.stage_id = 2
+        else:
+            raise UserError(
+                _("You cannot change to 'In Progress' if this equipment is not in 'Pending Calibration' state"))
 
     @api.depends('stage_id')
     def action_passed_calibration(self):
-        for rec in self:
-            if rec.stage_id.id == 2:
-                rec.stage_id = 3
+        self.ensure_one()
+        if self.stage_id.id == 2:
+            self.stage_id = 3
+            duplicate_cali_id = self.copy()
+            if duplicate_cali_id:
+                return {
+                    'effect': {
+                        'fadeout': 'slow',
+                        'message': (_("A new calibration request %s is created. Please check if all fields are correct",
+                                      duplicate_cali_id.name)),
+                        'type': 'rainbow_man',
+                    }
+                }
             else:
-                raise UserError(
-                    _("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
+                raise ValidationError(
+                    _("Failed to create a new calibration request for equipment %s", self.equipment_id.name))
+        else:
+            raise UserError(
+                _("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
+
 
     @api.depends('stage_id')
     def action_failed_calibration(self):
-        for rec in self:
-            if rec.stage_id.id == 2:
-                rec.stage_id = 4
-            else:
-                raise UserError(
-                    _("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
+        self.ensure_one()
+        if self.stage_id.id == 2:
+            self.stage_id = 4
+        else:
+            raise UserError(
+                _("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
 
     @api.depends('stage_id')
     def action_reschedule_calibration_overdue(self):
