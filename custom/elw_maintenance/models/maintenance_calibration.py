@@ -352,7 +352,8 @@ class MaintenanceCalibration(models.Model):
         value = data.pop('stage_id')
         data['ori_stage_id'] = value
         data['priority'] = '3'
-
+        data['technician_doing_calibration_id'] = False
+        data['calibration_completion_date'] = False
         # print(data)
         self.overdue_id = self.env['elw.calibration.overdue'].create(data)
 
