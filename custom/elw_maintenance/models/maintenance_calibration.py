@@ -316,7 +316,11 @@ class MaintenanceCalibration(models.Model):
         self.ensure_one()
         if self.stage_id.id == 2:
             self.stage_id = 3
-            self.duplicate_id = self.copy()
+            self.duplicate_id = self.copy({
+                'request_date': fields.Date.today() + timedelta(days=1),
+                'calibration_due_date': self.calibration_due_date - self.request_date + fields.Date.today() + timedelta(
+                    days=1),
+            })
             if self.duplicate_id:
                 self.archive = True
                 return {
