@@ -7,6 +7,29 @@
             <field name="arch" type="xml">
                 <search string="Calibration Overdue Request Search">
                     <field name="name" string="Request"/>
+                    <field name="category_id"/>
+                    <field name="stage_id"/>
+                    <field name="owner_user_id"/>
+                    <field name="equipment_id"/>
+                    <field name="owner_user_id"/>
+                    <field name="calibration_id"/>
+                    <field name="maintenance_team_id"/>
+                    <field name="calibration_completion_date"/>
+                    <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
+                    <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <separator/>
+                    <filter name="filter_request_date" date="request_date"/>
+                    <filter name="filter_calibration_date" date="calibration_due_date"/>
+                    <filter name="filter_close_date" date="calibration_completion_date"/>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('archive', '=', False)]"/>
+                    <filter string="Archived" name="inactive" domain="[('archive', '=', True)]"/>
+                    <group expand='0' string='Group by...'>
+                        <filter string='Category' name="category" domain="[]" context="{'group_by' : 'category_id'}"/>
+                        <filter string='Stage' name="stages" domain="[]" context="{'group_by' : 'stage_id'}"/>
+                        <filter string='Calibration Ref By' name='calibration_id_by' domain="[]"
+                                context="{'group_by': 'calibration_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -17,16 +40,17 @@
             <field name="arch" type="xml">
                 <tree string="Calibration Request" multi_edit="1" sample="1">
                     <field name="name"/>
-                    <!--                    <field name="equipment_id" optional="show"/>-->
-                    <!--                    <field name="request_date" groups="base.group_no_one"/>-->
-                    <!--                    <field name="owner_user_id" optional="show"/>-->
+                    <field name="equipment_id" optional="show"/>
+                    <field name="category_id" optional="show"/>
+                    <field name="calibration_id"/>
+                    <field name="owner_user_id" optional="hide"/>
                     <!--                    <field name="category_id" optional="show"/>-->
-                    <!--                    <field name="stage_id" decoration-success="stage_id == 3"-->
-                    <!--                           decoration-info="stage_id in (1,2)"-->
-                    <!--                           decoration-warning="stage_id == 5"-->
-                    <!--                           decoration-danger="stage_id == 4" widget="badge" optional="show"/>-->
-                    <!--                    <field name="technician_doing_calibration_id" optional="hide" widget="many2one_avatar_user"/>-->
-                    <!--                    <field name="company_id" optional="hide"/>-->
+                    <field name="stage_id" decoration-success="stage_id == 3"
+                           decoration-info="stage_id in (1,2)"
+                           decoration-warning="stage_id == 5"
+                           decoration-danger="stage_id == 4" widget="badge" optional="show"/>
+                    <field name="technician_doing_calibration_id" optional="show" widget="many2one_avatar_user"/>
+                    <field name="company_id" optional="hide"/>
 
                 </tree>
             </field>

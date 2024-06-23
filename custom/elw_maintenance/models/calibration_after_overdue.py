@@ -51,6 +51,8 @@ class CalibrationOverdue(models.Model):
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue", related='calibration_id.reason_for_overdue')
 
+
+
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
         """ Read group customization in order to display all the stages in the
@@ -100,6 +102,14 @@ class CalibrationOverdue(models.Model):
         for rec in self:
             if rec.stage_id.id == 2:
                 rec.stage_id = 3
+                self.archive = True
+                return {
+                    'effect': {
+                        'fadeout': 'slow',
+                        'message': (_("Calibration passed!")),
+                        'type': 'rainbow_man',
+                    }
+                }
             else:
                 raise UserError(_("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
 

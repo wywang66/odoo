@@ -9,16 +9,17 @@
                     <field name="name" string="Request"/>
                     <field name="category_id"/>
                     <field name="stage_id"/>
+                    <field name="overdue_id"/>
                     <field name="owner_user_id"/>
                     <field name="equipment_id"/>
                     <field name="owner_user_id"/>
                     <field name="maintenance_team_id"/>
                     <field name="calibration_completion_date"/>
-                    <filter string="My Maintenances" name="my_maintenances" domain="[('owner_user_id', '=', uid)]"/>
+                    <filter string="My Calibration" name="my_calibrations" domain="[('owner_user_id', '=', uid)]"/>
                     <separator/>
                     <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
                     <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
-                    <!--                <filter string="Blocked" name="kanban_state_block" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'blocked')]"/>-->
+                    <filter string="ReSchedule" name="reschedule" domain="[('overdue_id', '!=', False)]"/>
                     <!--                <filter string="Ready" name="done" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'done')]"/>-->
                     <separator/>
                     <filter string="High-priority" name="high_priority"
