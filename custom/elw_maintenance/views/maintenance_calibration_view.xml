@@ -113,10 +113,10 @@
                                 <field name="category_id" context="{'default_company_id':company_id}" invisible="not equipment_id"/>
                                 <field name="request_date" readonly="True"/>
                                 <field name="done" invisible="1"/>
+                                <field name="calibration_due_date" force_save="1"/>
                                 <field name="technician_doing_calibration_id" required="stage_id in (2,3,4)"/>
                                 <field name="company_id" invisible="1"/>
                                 <field name="duplicate_id" invisible="1"/>
-                                <field name="calibration_due_date" force_save="1"/>
                                 <field name="overdue_id" invisible="stage_id not in (4,5)"/>
                                 <field name="is_overdue_cali_done" invisible="1"/>
                                 <field name="calibration_completion_date" invisible="not stage_id in (2,3,4)" required="stage_id in (2,3,4)"/>

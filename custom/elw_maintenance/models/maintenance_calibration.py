@@ -41,7 +41,7 @@ class MaintenanceCalibration(models.Model):
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company, ondelete='cascade')
-    archive = fields.Boolean(default=False, help="Set archive to true to hide the calibration request without deleting it.")
+    archive = fields.Boolean(default=False, compute='_compute_archive', store=True, help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True, ondelete='cascade')
     request_date = fields.Date('Request Date', tracking=True, store=True, default=fields.Date.context_today, help="Date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid, ondelete='cascade')
@@ -81,6 +81,12 @@ class MaintenanceCalibration(models.Model):
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue")
     duplicate_id = fields.Many2one('elw.maintenance.calibration')
+
+    @api.depends('is_overdue_cali_done', 'stage_id')
+    def _compute_archive(self):
+        self.ensure_one()
+        if self.is_overdue_cali_done and self.stage_id.id == 5:
+            self.archive = True
 
     @api.onchange('stage_id')
     def _onchange_priority(self):
