@@ -38,7 +38,7 @@
             <field name="name">elw_calibration_overdue_tree_view</field>
             <field name="model">elw.calibration.overdue</field>
             <field name="arch" type="xml">
-                <tree string="Calibration Request" multi_edit="1" sample="1">
+                <tree string="Calibration Request" multi_edit="1" sample="1" create="0">
                     <field name="name"/>
                     <field name="equipment_id" optional="show"/>
                     <field name="category_id" optional="show"/>
@@ -60,7 +60,7 @@
             <field name="name">elw_calibration_overdue_form_view</field>
             <field name="model">elw.calibration.overdue</field>
             <field name="arch" type="xml">
-                <form string="Calibration Request">
+                <form string="Calibration Request" create="0">
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="not archive"/>
                     <header>
                         <field name="stage_id" widget="statusbar"/>

@@ -41,7 +41,8 @@ class MaintenanceCalibration(models.Model):
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company, ondelete='cascade')
-    archive = fields.Boolean(default=False, compute='_compute_archive', store=True, help="Set archive to true to hide the calibration request without deleting it.")
+    archive = fields.Boolean(default=False, compute='_compute_archive', store=True,
+                             help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True, ondelete='cascade')
     request_date = fields.Date('Request Date', tracking=True, store=True, default=fields.Date.context_today, help="Date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid, ondelete='cascade')
@@ -118,13 +119,6 @@ class MaintenanceCalibration(models.Model):
         else:
             raise UserError(_("Failed to get Calibration Due Date"))
 
-    # def name_get(self):
-    #     result = []
-    #     for vals in self:
-    #         name = vals.name + ' ' + vals.category_id
-    #         result.append(vals.id, name)
-    #     return result
-
     @api.constrains('calibration_completion_date')  # execute when clicking the 'save'
     def check_calibration_completion_date(self):
         for rec in self:
@@ -142,44 +136,44 @@ class MaintenanceCalibration(models.Model):
         else:
             raise ValidationError(_("No calibration due date to derive the send email date!"))
 
+    # below is call by elw_email_template_data.xml
     @api.model
     def get_email_to(self):
         user_group = self.env.ref("maintenance.group_equipment_manager")
         email_list = [
             usr.partner_id.email for usr in user_group.users if usr.partner_id.email]
-        # print("---------------", email_list) #--------------- ['wendy.bigbite@gmail.com', 'admin@yourcompany.example.com', 'taknetwendy@gmail.com']
+        # print("---------------", email_list) #--------------- ['admin@yourcompany.example.com', 'taknetwendy@gmail.com']
         return ",".join(email_list)
 
     # send a email now by clicking the btn
-    def action_send_pm_notification_email(self):
-        template = self.env.ref('dbb_maintenance.dbb_calibration_email_template')
-        for rec in self:
-            try:
-                template.send_mail(rec.id, force_send=True)
-            except MailDeliveryException as e:
-                raise ValidationError(_("Sending mail error: ", e))
+    def action_send_notification_email_now(self):
+        template = self.env.ref('elw_maintenance.dbb_calibration_email_template')
+        try:
+            template.send_mail(self.id, force_send=True)
+        except MailDeliveryException as e:
+            raise ValidationError(_("Sending mail error: ", e))
 
-    # send a scheduled email. stop sending if is_calibration_done= True
-    @api.depends('send_email_date')
+    # send a scheduled email. stop sending if done = True
+    @api.depends('send_email_date', 'done')
     def action_send_email_on_scheduled_date(self):
-        template = self.env.ref('dbb_maintenance.dbb_calibration_email_template')
-        records_of_send_email_today = self.env['maintenance.equipment'].search(
-            [('send_email_date', '=', fields.Date.today())])
-        # print("++++++++++++++", records_of_send_email_date_met)
+        # from elw_email_template_data.xml <record id="elw_calibration_email_template" model="mail.template">
+        template = self.env.ref('elw_maintenance.elw_calibration_email_template')
+        records_of_send_email_today = self.env['elw.maintenance.calibration'].search(
+            [('send_email_date', '>=', fields.Date.today())])
+        # print("++++++++++++++", records_of_send_email_today)
         for record in records_of_send_email_today:
-            if record.send_email_date == fields.Date.today() and record.is_calibration_done == False:
+            if record.send_email_date == fields.Date.today() and (not record.done or not record.is_overdue_cali_done):
                 try:
                     template.send_mail(record.id, force_send=True)
                 except MailDeliveryException as e:
                     raise ValidationError(_("Sending mail error: ", e))
 
-    # # disallow delete the record if is_calibration_required=True
-    # @api.ondelete(at_uninstall=False)
-    # def _disallow_delete(self):
-    #     for rec in self:
-    #         if rec.state == 'doing_calibration' or rec.state == 'calibration_overdue':
-    #             raise ValidationError(
-    #                 _("You cannot delete if this equipment is in 'Doing Calibration' or 'Calibration Overdue' state"))
+    def unlink(self):
+        self.ensure_one()
+        # if self.stage_id != 1:
+        #     raise ValidationError(_("Can delete record that is not in 'To Do' state"))
+        self.overdue_id.unlink()
+        return super(MaintenanceCalibration, self).unlink()
 
     # below is inherit method from model to avoid warning not override use @api.model_create_multi
     @api.model_create_multi
@@ -245,7 +239,6 @@ class MaintenanceCalibration(models.Model):
                 raise ValidationError(_("Failed to create a new calibration request for equipment %s", self.equipment_id.name))
         else:
             raise UserError(_("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
-
 
     @api.depends('stage_id')
     def action_failed_calibration(self):

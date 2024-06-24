@@ -1,6 +1,6 @@
 <odoo>
   <data noupdate="0">
-    <record id="dbb_calibration_email_template" model="mail.template">
+    <record id="elw_calibration_email_template" model="mail.template">
       <field name="name">Scheduled calibration notification template</field>
       <field name="model_id" ref="elw_maintenance.model_elw_maintenance_calibration" />
       <!-- <field name="subject">{{ object.create_uid.name }} from {{ object.company_id.name }}
@@ -30,14 +30,13 @@
                           <td valign="middle">
                             <br />
                             <span style="font-size: 15px; font-weight: bold;">
-                            <t t-if="datetime.date.today() >=object.calibration_date">
-                              Equipment <t t-out="object.name" /> is <span style="color: red;">overdue</span> for calibration
+                            <t t-if="datetime.date.today() >=object.calibration_due_date">
+                              Equipment <span style="color: red;"><t t-out="object.equipment_id.name" /> is overdue</span> for calibration
                             </t>   
                             <t t-else="">
-                              Equipment <t t-out="object.name" /> is due for calibration
+                              Equipment <t t-out="object.equipment_id.name" /> is due for calibration
                             </t>
                             </span>
-                              
                           </td>
                         </tr>
                         <tr>
@@ -57,19 +56,19 @@
                         <tr>
                           <td valign="top" style="font-size: 13px;">
                             <div>
-                              Dear <t t-out="object.technician_user_id.name" />,
-                              
+                              Dear <t t-out="object.owner_user_id.name" />,
+
                              <br />
-                              Above equipment <br/> 
-                              model: <t t-out="object.model" /><br /> 
-                              serial no: <t t-out="object.serial_no" /> <br/> 
-                              <t t-if="datetime.date.today() >=object.calibration_date">
-                                has been due since <span style="color: red;"><strong><t t-out="object.calibration_date" /></strong></span>.
-                                Please arrange preventive maintenance as soon as possible!
-                              </t>   
+                              Above equipment <br/>
+                              model: <t t-out="object.equipment_id.model" /><br />
+                              serial no: <t t-out="object.equipment_id.serial_no" /> <br/>
+                              <t t-if="datetime.date.today() >=object.calibration_due_date">
+                                has been due since <span style="color: red;"><strong><t t-out="object.calibration_due_date" /></strong></span>.
+                                Please arrange the calibration as soon as possible!
+                              </t>
                               <t t-else="">
-                                will be due for preventive maintenance on <strong><t t-out="object.calibration_date" /></strong>. <br/>
-                                Please schedule the preventative maintenance before the due date. 
+                                will be due for the calibration on <strong><t t-out="object.calibration_due_date" /></strong>. <br/>
+                                Please schedule the calibration before the due date.
                               </t>
                               <br /><br />
                               Thanks and Regards,<br/>
@@ -116,9 +115,6 @@
               </table>
             </td>
           </tr>
-
-
-
         </table>
       </field>
       <field name="auto_delete" eval="True" />

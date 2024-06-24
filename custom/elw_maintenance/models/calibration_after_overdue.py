@@ -51,7 +51,12 @@ class CalibrationOverdue(models.Model):
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue", related='calibration_id.reason_for_overdue')
 
-
+    @api.constrains('calibration_completion_date')  # execute when clicking the 'save'
+    def check_calibration_completion_date(self):
+        for rec in self:
+            if rec.calibration_completion_date:  # has data?
+                if rec.calibration_completion_date > fields.Date.today():
+                    raise UserError(_("Calibration completion date cannot be after today !"))
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
