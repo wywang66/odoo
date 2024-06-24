@@ -26,7 +26,7 @@ Digital Bigbite equipment calibration
     'data': [
         'security/ir.model.access.csv',
         'data/elw_email_template_data.xml',
-        # 'data/dbb_email_cron_data.xml',
+        'data/elw_email_cron_data.xml',
         'data/sequence_data.xml',
         'data/calibration_stage_data.xml',
         'views/calibration_stage_view.xml',

@@ -138,7 +138,7 @@
                                 <div>
                                     <field name="send_email_date" force_save="1" class="me-2" style="max-width: 8rem !important;"/>
                                     <button name="action_send_notification_email_now" icon="fa-solid fa-envelope" type="object" class="oe_stat_button oe_inline"
-                                            invisible="not send_email_date" string="Send email"/>
+                                            invisible="not send_email_date" string="Send Email Manually"/>
                                 </div>
                                 <field name="priority" widget="priority"/>
                                 <field name="is_calibration_overdue" invisible="1"/>

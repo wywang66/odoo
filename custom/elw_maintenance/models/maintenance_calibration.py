@@ -41,7 +41,8 @@ class MaintenanceCalibration(models.Model):
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company, ondelete='cascade')
-    archive = fields.Boolean(default=False, compute='_compute_archive', store=True, help="Set archive to true to hide the calibration request without deleting it.")
+    archive = fields.Boolean(default=False, compute='_compute_archive', store=True,
+                             help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True, ondelete='cascade')
     request_date = fields.Date('Request Date', tracking=True, store=True, default=fields.Date.context_today, help="Date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid, ondelete='cascade')
@@ -152,15 +153,15 @@ class MaintenanceCalibration(models.Model):
         except MailDeliveryException as e:
             raise ValidationError(_("Sending mail error: ", e))
 
-    # send a scheduled email. stop sending if is_calibration_done= True
-    @api.depends('send_email_date')
+    # send a scheduled email. stop sending if done = True
+    @api.depends('send_email_date', 'done')
     def action_send_email_on_scheduled_date(self):
-        template = self.env.ref('dbb_maintenance.dbb_calibration_email_template')
-        records_of_send_email_today = self.env['maintenance.equipment'].search(
-            [('send_email_date', '=', fields.Date.today())])
+        template = self.env.ref('elw_maintenance.elw_calibration_email_template')
+        records_of_send_email_today = self.env['maintenance.calibration'].search(
+            [('send_email_date', '>=', fields.Date.today())])
         # print("++++++++++++++", records_of_send_email_date_met)
         for record in records_of_send_email_today:
-            if record.send_email_date == fields.Date.today() and record.is_calibration_done == False:
+            if record.send_email_date == fields.Date.today() and (not record.done or not record.is_overdue_cali_done):
                 try:
                     template.send_mail(record.id, force_send=True)
                 except MailDeliveryException as e:
@@ -237,7 +238,6 @@ class MaintenanceCalibration(models.Model):
                 raise ValidationError(_("Failed to create a new calibration request for equipment %s", self.equipment_id.name))
         else:
             raise UserError(_("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
-
 
     @api.depends('stage_id')
     def action_failed_calibration(self):
