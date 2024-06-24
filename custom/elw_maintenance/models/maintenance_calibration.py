@@ -118,13 +118,6 @@ class MaintenanceCalibration(models.Model):
         else:
             raise UserError(_("Failed to get Calibration Due Date"))
 
-    # def name_get(self):
-    #     result = []
-    #     for vals in self:
-    #         name = vals.name + ' ' + vals.category_id
-    #         result.append(vals.id, name)
-    #     return result
-
     @api.constrains('calibration_completion_date')  # execute when clicking the 'save'
     def check_calibration_completion_date(self):
         for rec in self:
@@ -147,17 +140,16 @@ class MaintenanceCalibration(models.Model):
         user_group = self.env.ref("maintenance.group_equipment_manager")
         email_list = [
             usr.partner_id.email for usr in user_group.users if usr.partner_id.email]
-        # print("---------------", email_list) #--------------- ['wendy.bigbite@gmail.com', 'admin@yourcompany.example.com', 'taknetwendy@gmail.com']
+        print("---------------", email_list) #--------------- ['wendy.bigbite@gmail.com', 'admin@yourcompany.example.com', 'taknetwendy@gmail.com']
         return ",".join(email_list)
 
     # send a email now by clicking the btn
-    def action_send_pm_notification_email(self):
-        template = self.env.ref('dbb_maintenance.dbb_calibration_email_template')
-        for rec in self:
-            try:
-                template.send_mail(rec.id, force_send=True)
-            except MailDeliveryException as e:
-                raise ValidationError(_("Sending mail error: ", e))
+    def action_send_notification_email_now(self):
+        template = self.env.ref('elw_maintenance.dbb_calibration_email_template')
+        try:
+            template.send_mail(self.id, force_send=True)
+        except MailDeliveryException as e:
+            raise ValidationError(_("Sending mail error: ", e))
 
     # send a scheduled email. stop sending if is_calibration_done= True
     @api.depends('send_email_date')

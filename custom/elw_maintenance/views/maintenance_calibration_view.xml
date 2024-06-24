@@ -124,7 +124,6 @@
                             <group>
                                 <field name="owner_user_id"/>
                                 <field name="maintenance_team_id" options="{'no_create': True, 'no_open': True}"/>
-
                                 <label for="repeat_interval"/>
                                 <div class="d-flex">
                                     <field name="repeat_interval" required="True" class="me-2" style="max-width: 2rem !important;"/>
@@ -135,7 +134,12 @@
                                     <field name="sending_email_notification_days_ahead" class="me-2" style="max-width: 2rem !important;"/>
                                     <span class="oe_inline">days before calibration due date</span>
                                 </div>
-                                <field name="send_email_date" force_save="1"/>
+                                <label for="send_email_date"/>
+                                <div>
+                                    <field name="send_email_date" force_save="1" class="me-2" style="max-width: 8rem !important;"/>
+                                    <button name="action_send_notification_email_now" icon="fa-solid fa-envelope" type="object" class="oe_stat_button oe_inline"
+                                            invisible="not send_email_date" string="Send email"/>
+                                </div>
                                 <field name="priority" widget="priority"/>
                                 <field name="is_calibration_overdue" invisible="1"/>
                             </group>
