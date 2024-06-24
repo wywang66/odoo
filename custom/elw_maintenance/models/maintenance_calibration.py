@@ -135,12 +135,13 @@ class MaintenanceCalibration(models.Model):
         else:
             raise ValidationError(_("No calibration due date to derive the send email date!"))
 
+    # below is call by elw_email_template_data.xml
     @api.model
     def get_email_to(self):
         user_group = self.env.ref("maintenance.group_equipment_manager")
         email_list = [
             usr.partner_id.email for usr in user_group.users if usr.partner_id.email]
-        print("---------------", email_list) #--------------- ['wendy.bigbite@gmail.com', 'admin@yourcompany.example.com', 'taknetwendy@gmail.com']
+        # print("---------------", email_list) #--------------- ['admin@yourcompany.example.com', 'taknetwendy@gmail.com']
         return ",".join(email_list)
 
     # send a email now by clicking the btn
