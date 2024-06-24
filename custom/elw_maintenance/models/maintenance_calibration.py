@@ -173,13 +173,12 @@ class MaintenanceCalibration(models.Model):
                 except MailDeliveryException as e:
                     raise ValidationError(_("Sending mail error: ", e))
 
-    # # disallow delete the record if is_calibration_required=True
-    # @api.ondelete(at_uninstall=False)
-    # def _disallow_delete(self):
-    #     for rec in self:
-    #         if rec.state == 'doing_calibration' or rec.state == 'calibration_overdue':
-    #             raise ValidationError(
-    #                 _("You cannot delete if this equipment is in 'Doing Calibration' or 'Calibration Overdue' state"))
+    def unlink(self):
+        self.ensure_one()
+        # if self.stage_id != 1:
+        #     raise ValidationError(_("Can delete record that is not in 'To Do' state"))
+        self.overdue_id.unlink()
+        return super(MaintenanceCalibration, self).unlink()
 
     # below is inherit method from model to avoid warning not override use @api.model_create_multi
     @api.model_create_multi
