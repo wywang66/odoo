@@ -20,7 +20,7 @@
                     <separator/>
                     <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
                     <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
-                    <filter string="Undone Calibration Overdue" name="undone_overdue" domain="[('is_overdue_cali_done', '=', False)]"/>
+                    <filter string="Undone Calibration Overdue" name="undone_overdue" domain="[('is_overdue_cali_done', '=', False), ('overdue_id', '!=', False)]"/>
                     <filter string="Failed" name="fail" domain="[('stage_id', '=', 4)]"/>
                     <filter string="ReSchedule" name="reschedule" domain="[('overdue_id', '!=', False)]"/>
                     <separator/>
