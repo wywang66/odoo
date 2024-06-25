@@ -15,12 +15,14 @@
                     <field name="owner_user_id"/>
                     <field name="maintenance_team_id"/>
                     <field name="calibration_completion_date"/>
+                    <field name="is_overdue_cali_done"/>
                     <filter string="My Calibration" name="my_calibrations" domain="[('owner_user_id', '=', uid)]"/>
                     <separator/>
                     <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
                     <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <filter string="Undone Calibration Overdue" name="undone_overdue" domain="[('is_overdue_cali_done', '=', False), ('overdue_id', '!=', False)]"/>
+                    <filter string="Failed" name="fail" domain="[('stage_id', '=', 4)]"/>
                     <filter string="ReSchedule" name="reschedule" domain="[('overdue_id', '!=', False)]"/>
-                    <!--                <filter string="Ready" name="done" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'done')]"/>-->
                     <separator/>
                     <filter string="High-priority" name="high_priority"
                             domain="[('stage_id.done', '=', False), ('priority', '=', '3')]"/>
@@ -96,7 +98,8 @@
                                     invisible="not overdue_id or not is_overdue_cali_done" string="Start ReCalibration">
                             </button>
                             <button name="action_see_new_calibration_request" icon="fa-pencil-square-o" type="object" class="oe_stat_button"
-                                    invisible="not duplicate_id" string="New Calibration Request">
+                                    invisible="not duplicate_id" >
+                                    <field name="duplicate_id" invisible="not duplicate_id" widget="statinfo" string="Created a New Calibration Request"/>
                             </button>
                         </div>
                         <div class="oe_title">
@@ -109,25 +112,25 @@
                             <group>
                                 <field name="archive" invisible="1"/>
                                 <field name="owner_user_id" string="Requested By" invisible="1"/>
-                                <field name="equipment_id" context="{'default_company_id':company_id, 'default_category_id':category_id}"/>
+                                <field name="equipment_id" context="{'default_company_id':company_id, 'default_category_id':category_id}" readonly = "archive"/>
                                 <field name="category_id" context="{'default_company_id':company_id}" invisible="not equipment_id"/>
                                 <field name="request_date" readonly="True"/>
                                 <field name="done" invisible="1"/>
                                 <field name="calibration_due_date" force_save="1"/>
-                                <field name="technician_doing_calibration_id" required="stage_id in (2,3,4)"/>
+                                <field name="technician_doing_calibration_id" required="stage_id in (2,3,4)" readonly = "archive"/>
                                 <field name="company_id" invisible="1"/>
                                 <field name="duplicate_id" invisible="1"/>
                                 <field name="overdue_id" invisible="stage_id not in (4,5)"/>
                                 <field name="is_overdue_cali_done" invisible="1"/>
-                                <field name="calibration_completion_date" invisible="not stage_id in (2,3,4)" required="stage_id in (2,3,4)"/>
+                                <field name="calibration_completion_date" invisible="not stage_id in (2,3,4)" required="stage_id in (2,3,4)" readonly = "archive"/>
                             </group>
                             <group>
                                 <field name="owner_user_id"/>
-                                <field name="maintenance_team_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="maintenance_team_id" options="{'no_create': True, 'no_open': True}" readonly = "archive"/>
                                 <label for="repeat_interval"/>
                                 <div class="d-flex">
-                                    <field name="repeat_interval" required="True" class="me-2" style="max-width: 2rem !important;"/>
-                                    <field name="repeat_unit" required="True" class="me-2" style="max-width: 6rem !important;"/>
+                                    <field name="repeat_interval" required="True" class="me-2" style="max-width: 2rem !important;" readonly = "archive"/>
+                                    <field name="repeat_unit" required="True" class="me-2" style="max-width: 6rem !important;" readonly = "archive"/>
                                 </div>
                                 <label for="sending_email_notification_days_ahead"/>
                                 <div class="d-flex">
@@ -182,6 +185,18 @@
             <field name="context">{'search_default_active': True, 'default_user_id': uid}</field>
             <!--            <field name="target">new</field>-->
         </record>
+
+        <!-- all fields are not-editable after archiving -->
+<!--        <record model="ir.rule" id="no_edit_in_done_state">-->
+<!--            <field name="name">No Edit in done state</field>-->
+<!--            <field name="model_id" ref="model_elw_maintenance_calibration"/>-->
+<!--            <field name="groups" eval="[(4, ref('base.group_user'))]"/>-->
+<!--            <field eval="0" name="perm_unlink"/>-->
+<!--            <field eval="0" name="perm_write"/>-->
+<!--            <field eval="1" name="perm_read"/>-->
+<!--            <field eval="0" name="perm_create"/>-->
+<!--            <field name="domain_force">[('archive', '=', True)]</field>-->
+<!--        </record>-->
 
         <!-- below changes 'Equipment' to 'Equipment Info' -->
         <!--        <record id="maintenance.menu_equipment_form" model="ir.ui.menu">-->
