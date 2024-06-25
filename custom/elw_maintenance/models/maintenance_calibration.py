@@ -147,7 +147,7 @@ class MaintenanceCalibration(models.Model):
 
     # send a email now by clicking the btn
     def action_send_notification_email_now(self):
-        template = self.env.ref('elw_maintenance.dbb_calibration_email_template')
+        template = self.env.ref('elw_maintenance.elw_calibration_email_template')
         try:
             template.send_mail(self.id, force_send=True)
         except MailDeliveryException as e:
@@ -162,7 +162,7 @@ class MaintenanceCalibration(models.Model):
             [('send_email_date', '>=', fields.Date.today())])
         # print("++++++++++++++", records_of_send_email_today)
         for record in records_of_send_email_today:
-            if record.send_email_date == fields.Date.today() and (not record.done or not record.is_overdue_cali_done):
+            if record.send_email_date >= fields.Date.today() and (not record.done or not record.is_overdue_cali_done):
                 try:
                     template.send_mail(record.id, force_send=True)
                 except MailDeliveryException as e:
