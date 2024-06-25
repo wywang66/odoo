@@ -15,12 +15,14 @@
                     <field name="owner_user_id"/>
                     <field name="maintenance_team_id"/>
                     <field name="calibration_completion_date"/>
+                    <field name="is_overdue_cali_done"/>
                     <filter string="My Calibration" name="my_calibrations" domain="[('owner_user_id', '=', uid)]"/>
                     <separator/>
                     <filter string="To Do" name="todo" domain="[('stage_id.done', '=', False)]"/>
                     <filter string="Done" name="done" domain="[('stage_id.done', '=', True)]"/>
+                    <filter string="Undone Calibration Overdue" name="undone_overdue" domain="[('is_overdue_cali_done', '=', False)]"/>
+                    <filter string="Failed" name="fail" domain="[('stage_id', '=', 4)]"/>
                     <filter string="ReSchedule" name="reschedule" domain="[('overdue_id', '!=', False)]"/>
-                    <!--                <filter string="Ready" name="done" domain="[('stage_id.done', '=', False), ('kanban_state', '=', 'done')]"/>-->
                     <separator/>
                     <filter string="High-priority" name="high_priority"
                             domain="[('stage_id.done', '=', False), ('priority', '=', '3')]"/>

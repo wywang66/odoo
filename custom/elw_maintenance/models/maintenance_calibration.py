@@ -50,7 +50,6 @@ class MaintenanceCalibration(models.Model):
                                   ondelete='cascade')
     overdue_id = fields.Many2one('elw.calibration.overdue', string='Reschedule Calibration Ref#', store=True, readonly=True, ondelete='cascade')
     is_overdue_cali_done = fields.Boolean(default=False, compute="_compute_is_overdue_cali_done", store=True)
-    overdue_count = fields.Integer(string=' ', default=1)
     sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10, required=True, store=False)
     calibration_due_date = fields.Date(string="Calibration Due Date", readonly=True, tracking=True, store=True)
     send_email_date = fields.Date(string="Send Email Notification From", readonly=True, store=True)
@@ -98,7 +97,8 @@ class MaintenanceCalibration(models.Model):
     @api.depends('overdue_id.done')
     def _compute_is_overdue_cali_done(self):
         for rec in self:
-            rec.is_overdue_cali_done = True if rec.overdue_id.done else False
+            if rec.overdue_id:
+                rec.is_overdue_cali_done = True if rec.overdue_id.done else False
 
     @api.onchange('calibration_due_date')
     def _onchange_is_calibration_overdue(self):
@@ -302,3 +302,32 @@ class MaintenanceCalibration(models.Model):
             # 'view_mode': 'tree,form',
             'target': 'current',
         }
+
+
+class MaintenanceTeam(models.Model):
+    _inherit = 'maintenance.team'
+    _description = 'Inheritance of Maintenance Teams'
+
+    calibration_request_ids = fields.One2many('elw.maintenance.calibration', 'maintenance_team_id', copy=False)
+    todo_calibration_request_ids = fields.One2many('elw.maintenance.calibration', string="Calibration Requests", copy=False,
+                                                   compute='_compute_todo_calibration_requests')
+    todo_calibration_request_count = fields.Integer(string="Number of Calibration Requests", compute='_compute_todo_calibration_requests')
+    todo_calibration_overdue_count = fields.Integer(string="Number of Calibration Overdue Requests", compute='_compute_todo_calibration_requests')
+    todo_calibration_fail_count = fields.Integer(string="Number of Failed Calibration", compute='_compute_todo_calibration_requests')
+
+    @api.depends('request_ids.stage_id.done')
+    def _compute_todo_calibration_requests(self):
+        for team in self:
+            team.todo_calibration_request_ids = self.env['elw.maintenance.calibration'].search(
+                [('maintenance_team_id', '=', team.id), ('stage_id.done', '=', False), ('is_overdue_cali_done', '=', False), ('archive', '=', False)])
+            # print('team.todo_calibration_request_ids', team.todo_calibration_request_ids) #elw.maintenance.calibration(3, 2, 1)
+            data = self.env['elw.maintenance.calibration']._read_group(
+                [('maintenance_team_id', '=', team.id), ('stage_id.done', '=', False), ('is_overdue_cali_done', '=', False), ('archive', '=', False)],
+                ['done','is_overdue_cali_done', 'stage_id'],
+                ['__count']
+            )
+            # print('data', data) # data [(False, False, elw.calibration.stage(1,), 1), (False, False, elw.calibration.stage(2,), 1), (False, False, elw.calibration.stage(5,), 1)]
+            team.todo_calibration_request_count = sum(count for (_, _, _, count) in data)
+            team.todo_calibration_overdue_count = sum(1 for rec in team.todo_calibration_request_ids if rec.overdue_id and not rec.is_overdue_cali_done)
+            team.todo_calibration_fail_count = sum(count for (_, _, stage_id, count) in data if stage_id.id == 4)
+            # print(team.todo_calibration_request_count,team.todo_calibration_overdue_count,team.todo_calibration_fail_count)

@@ -1,0 +1,67 @@
+<odoo>
+
+    <!-- Calibration Dashboard action -->
+    <record id="calibration_todo_dashboard_action" model="ir.actions.act_window">
+        <field name="name">Calibration Requests</field>
+        <field name="res_model">elw.maintenance.calibration</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{
+            'search_default_active': True,
+            'search_default_maintenance_team_id': active_id,
+            'default_maintenance_team_id': active_id,
+            }
+        </field>
+        <field name="domain">[('maintenance_team_id', '=', active_id)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new calibration request
+            </p>
+            <p>
+                Follow the process of the request and communicate with the collaborator.
+            </p>
+        </field>
+    </record>
+
+    <!--inherit maintenance.team kanban view  -->
+    <record id="maintenance_team_kanban_inherit" model="ir.ui.view">
+        <field name="name">maintenance.team.kanban.inherit</field>
+        <field name="model">maintenance.team</field>
+        <field name="inherit_id" ref="maintenance.maintenance_team_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='todo_request_count_unscheduled']" position="after">
+                <field name="todo_calibration_request_ids"/>
+                <field name="todo_calibration_request_count"/>
+                <field name="todo_calibration_overdue_count"/>
+                <field name="todo_calibration_fail_count"/>
+            </xpath>
+            <xpath expr="//div[@class='col-6 o_kanban_primary_left']" position="after">
+                <div class="col-6 o_kanban_primary_left">
+                    <button class="btn btn-primary" name="%(calibration_todo_dashboard_action)d" type="action"
+                            context="{'search_default_todo': 1}">
+                        <t t-esc="record.todo_calibration_request_count.value"/>
+                        Calibration To Do
+                    </button>
+                </div>
+            </xpath>
+            <xpath expr="//div[@class='col-6 o_kanban_primary_right']" position="after">
+                <div class="col-6 o_kanban_primary_right">
+                    <div t-if="record.todo_calibration_overdue_count.raw_value > 0">
+                        <a name="%(calibration_todo_dashboard_action)d" type="action" context="{'search_default_undone_overdue': 1}">
+                            <t t-esc="record.todo_calibration_overdue_count.value"/>
+                            Calibration Overdue Undone
+                        </a>
+                    </div>
+                    <div t-if="record.todo_calibration_fail_count.raw_value > 0">
+                        <a name="%(calibration_todo_dashboard_action)d" type="action" context="{'search_default_fail': 1}">
+                            <t t-esc="record.todo_calibration_fail_count.value"/>
+                            Calibration Failed
+                        </a>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//t[@t-esc='record.todo_request_count.value']" position="attributes">
+                <attribute name="button">Maintenance To Do </attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
