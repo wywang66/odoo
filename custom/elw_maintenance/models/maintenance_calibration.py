@@ -82,7 +82,7 @@ class MaintenanceCalibration(models.Model):
     @api.onchange('calibration_due_date')
     def _onchange_priority(self):
         self.ensure_one()
-        if fields.Date.today() > self.calibration_due_date:
+        if (self.calibration_due_date - fields.Date.today()).days <= 3:
             self.priority = '3'
 
     @api.onchange('calibration_due_date')
@@ -90,6 +90,7 @@ class MaintenanceCalibration(models.Model):
         self.ensure_one()
         if self.calibration_due_date and self.calibration_due_date < fields.Date.today():
             self.is_calibration_overdue = True
+            self.priority = '3'
             # print('rec.calibration_due_date', rec.stage_id, rec.is_calibration_overdue)
         else:
             self.is_calibration_overdue = False
