@@ -159,7 +159,7 @@ class MaintenanceCalibration(models.Model):
         # from elw_email_template_data.xml <record id="elw_calibration_email_template" model="mail.template">
         template = self.env.ref('elw_maintenance.elw_calibration_email_template')
         records_of_send_email_today = self.env['elw.maintenance.calibration'].search(
-            [('send_email_date', '<=', fields.Date.today())])
+            [('send_email_date', '<=', fields.Date.today()), ('archive', '!=', True), ('done', '!=', True)])
         # print("++++++++++++++", records_of_send_email_today)
         for record in records_of_send_email_today:
             if record.send_email_date <= fields.Date.today() and (not record.done or not record.is_overdue_cali_done):
