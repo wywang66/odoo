@@ -30,7 +30,6 @@ Digital Bigbite equipment calibration
         'data/sequence_data.xml',
         'data/calibration_stage_data.xml',
         'views/calibration_stage_view.xml',
-        'views/maintenance_calibration_overdue_view.xml',
         'views/maintenance_views_inherit.xml',
         'views/maintenance_calibration_view.xml',
     ],
