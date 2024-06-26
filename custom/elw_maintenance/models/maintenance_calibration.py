@@ -231,6 +231,11 @@ class MaintenanceCalibration(models.Model):
         self.ensure_one()
         if self.stage_id.id == 2:
             self.stage_id = 4
+            # duplicate a record for redo this failed calibration
+            self.duplicate_id = self.copy({
+                'technician_doing_calibration_id': False,
+                'calibration_completion_date': False,
+            })
         else:
             raise UserError(_("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
 
