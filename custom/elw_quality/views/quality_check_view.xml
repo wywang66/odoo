@@ -157,19 +157,19 @@
                     <header>
                         <button name="do_pass" type="object" class="btn-primary"
                                 invisible="quality_state != 'none' or test_type_id == 5"
-                                string="Pass" data-hotkey="q"/>
+                                string="All Pass" data-hotkey="q"/>
                         <button name="do_pass" type="object" invisible="quality_state != 'fail'"
-                                string="Pass" data-hotkey="q"/>
+                                string="All Pass" data-hotkey="q"/>
                         <button name="do_fail" type="object" class="btn-primary"
                                 invisible="quality_state != 'none' or test_type_id == 5"
-                                string="Fail" data-hotkey="w"/>
+                                string="All Fail" data-hotkey="w"/>
                         <button name="do_fail" type="object" invisible="quality_state != 'pass'"
-                                string="Fail" data-hotkey="w"/>
+                                string="All Fail" data-hotkey="w"/>
+                        <button name="do_split_lot" type="object" invisible="not has_lot_id or copy_record_id or quality_state == 'none'" class="btn-primary"
+                                string="Split Record" data-hotkey="w"/>
                         <button name="do_measure" type="object" class="btn-primary"
                                 invisible="test_type_id != 5 or quality_state != 'none'" string="Measure"
                                 data-hotkey="v"/>
-                        <button name="do_alert" type="object" invisible="alert_ids or quality_state != 'pass'"
-                                string="Create Alert" data-hotkey="g"/>
                         <button name="do_alert" type="object" class="btn-primary"
                                 invisible="alert_ids or quality_state != 'fail'" string="Create Alert" data-hotkey="g"/>
                         <button name="do_cancel" type="object"
@@ -186,12 +186,14 @@
                                     invisible="not alert_ids or alert_result!='Solved'">
                                 <field name="alert_count" class="text-success" string="Quality Alerts" widget="statinfo"/>
                             </button>
-                            <field name="active" invisible="1"/>
+                            <button name="action_see_split_record" icon="fa-list" type="object" class="oe_stat_button"
+                                    invisible="not copy_record_id">
+                                <field name="copy_record_id" string="Duplicated Record" widget="statinfo"/>
+                            </button>
                             <div class="oe_button_box" name="button_box">
                                 <button name="action_see_quality_measure_data" icon="fa-book" type="object"
                                         class="oe_stat_button" invisible="not measure_data_ids">
-                                    <field name="measure_data_count" string="Quality Measurement Data"
-                                           widget="statinfo"/>
+                                    <field name="measure_data_count" string="Quality Measurement Data" widget="statinfo"/>
                                 </button>
                             </div>
                         </div>
@@ -200,6 +202,7 @@
                         </h3>
                         <group>
                             <group>
+                                <field name="active" invisible="1"/>
                                 <field name="title"/>
                                 <field name="point_id" options="{'no_create': True}"/>
                                 <field name="measure_on" readonly="point_id"/>
@@ -211,7 +214,7 @@
                                 <field name="picking_code" invisible="1"/>
                                 <field name="lot_ids" widget="many2many_tags" invisible="picking_code != 'outgoing' or not has_lot_id" required="has_lot_id" force_save="1"/>
                                 <field name="lot_name" invisible="picking_code != 'incoming' or not has_lot_id" required="has_lot_id" force_save="1"/>
-<!--                                <field name="move_lot_ids" widget="many2many_tags"/>-->
+                                <field name="copy_record_id" invisible="not copy_record_id"/>
                                 <field name="alert_ids" invisible="1">
                                     <tree delete="0" create="0">
                                         <field name="name"/>

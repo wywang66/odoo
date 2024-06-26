@@ -41,15 +41,12 @@ class MaintenanceCalibration(models.Model):
 
     name = fields.Char(string='Ref#', default='New', copy=False, readonly=True)
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company, ondelete='cascade')
-    archive = fields.Boolean(default=False, compute='_compute_archive', store=True,
-                             help="Set archive to true to hide the calibration request without deleting it.")
+    archive = fields.Boolean(default=False, store=True, help="Set archive to true to hide the calibration request without deleting it.")
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment name', required=True, store=True, ondelete='cascade')
     request_date = fields.Date('Request Date', tracking=True, store=True, default=fields.Date.context_today, help="Date requested for calibration")
     owner_user_id = fields.Many2one('res.users', string='Created by User', default=lambda s: s.env.uid, ondelete='cascade')
     category_id = fields.Many2one('maintenance.equipment.category', related='equipment_id.category_id', string='Category', store=True, readonly=True,
                                   ondelete='cascade')
-    overdue_id = fields.Many2one('elw.calibration.overdue', string='Reschedule Calibration Ref#', store=True, readonly=True, ondelete='cascade')
-    is_overdue_cali_done = fields.Boolean(default=False, compute="_compute_is_overdue_cali_done", store=True)
     sending_email_notification_days_ahead = fields.Integer(string="Send a Mail Notification ", default=10, required=True, store=False)
     calibration_due_date = fields.Date(string="Calibration Due Date", readonly=True, tracking=True, store=True)
     send_email_date = fields.Date(string="Send Email Notification From", readonly=True, store=True)
@@ -80,32 +77,21 @@ class MaintenanceCalibration(models.Model):
     instruction_google_slide = fields.Char('Google Slide', help="Paste the url of your Google Slide. Make sure the access to the document is public.")
     instruction_text = fields.Html('Text')
     reason_for_overdue = fields.Html(string="Reason for Overdue")
-    duplicate_id = fields.Many2one('elw.maintenance.calibration')
+    duplicate_id = fields.Many2one('elw.maintenance.calibration', string="Next Calibration Ref#", store=True)
+    original_id = fields.Many2one('elw.maintenance.calibration', string="Original Ref#", store=True)
 
-    @api.depends('is_overdue_cali_done', 'stage_id')
-    def _compute_archive(self):
-        self.ensure_one()
-        if self.is_overdue_cali_done and self.stage_id.id == 5:
-            self.archive = True
-
-    @api.onchange('stage_id')
+    @api.onchange('calibration_due_date')
     def _onchange_priority(self):
         self.ensure_one()
-        if self.stage_id.id == 5:
+        if (self.calibration_due_date - fields.Date.today()).days <= 3:
             self.priority = '3'
-
-    @api.depends('overdue_id.done')
-    def _compute_is_overdue_cali_done(self):
-        for rec in self:
-            if rec.overdue_id:
-                rec.is_overdue_cali_done = True if rec.overdue_id.done else False
 
     @api.onchange('calibration_due_date')
     def _onchange_is_calibration_overdue(self):
         self.ensure_one()
         if self.calibration_due_date and self.calibration_due_date < fields.Date.today():
             self.is_calibration_overdue = True
-            self.stage_id = 5
+            self.priority = '3'
             # print('rec.calibration_due_date', rec.stage_id, rec.is_calibration_overdue)
         else:
             self.is_calibration_overdue = False
@@ -159,10 +145,10 @@ class MaintenanceCalibration(models.Model):
         # from elw_email_template_data.xml <record id="elw_calibration_email_template" model="mail.template">
         template = self.env.ref('elw_maintenance.elw_calibration_email_template')
         records_of_send_email_today = self.env['elw.maintenance.calibration'].search(
-            [('send_email_date', '<=', fields.Date.today())])
+            [('send_email_date', '<=', fields.Date.today()), ('archive', '!=', True), ('done', '!=', True)])
         # print("++++++++++++++", records_of_send_email_today)
         for record in records_of_send_email_today:
-            if record.send_email_date <= fields.Date.today() and (not record.done or not record.is_overdue_cali_done):
+            if record.send_email_date <= fields.Date.today() and not record.done:
                 try:
                     template.send_mail(record.id, force_send=True)
                 except MailDeliveryException as e:
@@ -170,9 +156,8 @@ class MaintenanceCalibration(models.Model):
 
     def unlink(self):
         self.ensure_one()
-        # if self.stage_id != 1:
-        #     raise ValidationError(_("Can delete record that is not in 'To Do' state"))
-        self.overdue_id.unlink()
+        if self.stage_id != 1:
+            raise UserError(_("You cannot delete record that is not in 'To Do' state"))
         return super(MaintenanceCalibration, self).unlink()
 
     # below is inherit method from model to avoid warning not override use @api.model_create_multi
@@ -225,18 +210,23 @@ class MaintenanceCalibration(models.Model):
             self.duplicate_id = self.copy({
                 'request_date': fields.Date.today() + timedelta(days=1),
                 'calibration_due_date': self.calibration_due_date - self.request_date + fields.Date.today() + timedelta(days=1),
+                'technician_doing_calibration_id': False,
+                'calibration_completion_date': False,
             })
             if self.duplicate_id:
                 self.archive = True
+                # archived the original cali record too
+                if self.original_id:
+                    self.original_id.archive = True
                 return {
                     'effect': {
                         'fadeout': 'slow',
-                        'message': (_("A new calibration request %s is created. Please check if all fields are correct", self.duplicate_id.name)),
+                        'message': (_("Next calibration request %s is created. Please check if all fields are correct", self.duplicate_id.name)),
                         'type': 'rainbow_man',
                     }
                 }
             else:
-                raise ValidationError(_("Failed to create a new calibration request for equipment %s", self.equipment_id.name))
+                raise ValidationError(_("Failed to create next calibration request for equipment %s", self.equipment_id.name))
         else:
             raise UserError(_("You cannot change to 'Passed' if this equipment is not in 'In Progress' state"))
 
@@ -245,64 +235,67 @@ class MaintenanceCalibration(models.Model):
         self.ensure_one()
         if self.stage_id.id == 2:
             self.stage_id = 4
+            # duplicate a record for redo this failed calibration
+            self.duplicate_id = self.copy({
+                'technician_doing_calibration_id': False,
+                'calibration_completion_date': False,
+                'original_id': self.id,
+            })
         else:
             raise UserError(_("You cannot change to 'Failed' if this equipment is not in 'In Progress' state"))
 
-    @api.depends('stage_id')
-    def action_reschedule_calibration_overdue(self):
-        self.ensure_one()
-        # current_data = self.env['elw.maintenance.calibration'].browse(self.id).copy()
-        # print('current_data', current_data) #elw.maintenance.calibration(2,)
-        # current_data = self.env['elw.maintenance.calibration'].search_read([('id', '=', self.id)])
-        data = self.env['elw.maintenance.calibration'].browse(self.id).read(
-            ['name', 'company_id', 'equipment_id', 'request_date', 'owner_user_id', 'category_id',
-             'calibration_due_date', 'priority', 'maintenance_team_id', 'repeat_interval', 'repeat_unit',
-             'technician_doing_calibration_id', 'stage_id', 'done', 'description', 'instruction_type', 'instruction_pdf',
-             'instruction_google_slide', 'instruction_text',
-             # 'reason_for_overdue',
-             ])
-        data = data[0]
-        for key, value in data.items():
-            if isinstance(value, tuple):
-                data[key] = value[0]
+    # @api.depends('stage_id')
+    # def action_reschedule_calibration_overdue(self):
+    #     self.ensure_one()
+    #     # current_data = self.env['elw.maintenance.calibration'].browse(self.id).copy()
+    #     # print('current_data', current_data) #elw.maintenance.calibration(2,)
+    #     # current_data = self.env['elw.maintenance.calibration'].search_read([('id', '=', self.id)])
+    #     data = self.env['elw.maintenance.calibration'].browse(self.id).read(
+    #         ['name', 'company_id', 'equipment_id', 'request_date', 'owner_user_id', 'category_id',
+    #          'calibration_due_date', 'priority', 'maintenance_team_id', 'repeat_interval', 'repeat_unit',
+    #          'technician_doing_calibration_id', 'stage_id', 'done', 'description', 'instruction_type', 'instruction_pdf',
+    #          'instruction_google_slide', 'instruction_text',
+    #          # 'reason_for_overdue',
+    #          ])
+    #     data = data[0]
+    #     for key, value in data.items():
+    #         if isinstance(value, tuple):
+    #             data[key] = value[0]
+    #
+    #     # Remove the first 2 key-value pair 'id':1, 'name': 'ECxxxxx'
+    #     keys_to_remove = list(data.keys())[:2]
+    #     for key in keys_to_remove:
+    #         data.pop(key)
+    #     data['calibration_id'] = self.id
+    #     value = data.pop('stage_id')
+    #     data['ori_stage_id'] = value
+    #     data['priority'] = '3'
+    #     data['technician_doing_calibration_id'] = False
+    #     data['calibration_completion_date'] = False
+    #     # print(data)
+    #     self.overdue_id = self.env['elw.calibration.overdue'].create(data)
 
-        # Remove the first 2 key-value pair 'id':1, 'name': 'ECxxxxx'
-        keys_to_remove = list(data.keys())[:2]
-        for key in keys_to_remove:
-            data.pop(key)
-        data['calibration_id'] = self.id
-        value = data.pop('stage_id')
-        data['ori_stage_id'] = value
-        data['priority'] = '3'
-        data['technician_doing_calibration_id'] = False
-        data['calibration_completion_date'] = False
-        # print(data)
-        self.overdue_id = self.env['elw.calibration.overdue'].create(data)
-
-    def action_see_calibration_overdue(self):
+    def action_see_next_calibration_request(self):
         return {
-            'name': _('Calibration Overdue'),
-            'res_model': 'elw.calibration.overdue',
-            'res_id': self.overdue_id.id,  # open the corresponding form
-            # 'domain': [('id', '=', self.alert_ids.ids)],
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            # 'view_mode': 'tree,form',
-            'target': 'current',
-        }
-
-    def action_see_new_calibration_request(self):
-        return {
-            # 'name': _('Calibration Overdue'),
+            'name': _('Next Calibration Request'),
             'res_model': 'elw.maintenance.calibration',
             'res_id': self.duplicate_id.id,  # open the corresponding form
             # 'domain': [('id', '=', self.alert_ids.ids)],
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
-            # 'view_mode': 'tree,form',
             'target': 'current',
         }
 
+    def action_see_original_calibration_request(self):
+        return {
+            'name': _('Original Calibration Request'),
+            'res_model': 'elw.maintenance.calibration',
+            'res_id': self.original_id.id,  # open the corresponding form
+            # 'domain': [('id', '=', self.alert_ids.ids)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
 class MaintenanceTeam(models.Model):
     _inherit = 'maintenance.team'
@@ -312,22 +305,22 @@ class MaintenanceTeam(models.Model):
     todo_calibration_request_ids = fields.One2many('elw.maintenance.calibration', string="Calibration Requests", copy=False,
                                                    compute='_compute_todo_calibration_requests')
     todo_calibration_request_count = fields.Integer(string="Number of Calibration Requests", compute='_compute_todo_calibration_requests')
-    todo_calibration_overdue_count = fields.Integer(string="Number of Calibration Overdue Requests", compute='_compute_todo_calibration_requests')
+    todo_calibration_high_priority_count = fields.Integer(string="Number of High Priority", compute='_compute_todo_calibration_requests')
     todo_calibration_fail_count = fields.Integer(string="Number of Failed Calibration", compute='_compute_todo_calibration_requests')
 
     @api.depends('request_ids.stage_id.done')
     def _compute_todo_calibration_requests(self):
         for team in self:
             team.todo_calibration_request_ids = self.env['elw.maintenance.calibration'].search(
-                [('maintenance_team_id', '=', team.id), ('stage_id.done', '=', False), ('is_overdue_cali_done', '=', False), ('archive', '=', False)])
+                [('maintenance_team_id', '=', team.id), ('stage_id.done', '=', False), ('archive', '=', False)])
             # print('team.todo_calibration_request_ids', team.todo_calibration_request_ids) #elw.maintenance.calibration(3, 2, 1)
             data = self.env['elw.maintenance.calibration']._read_group(
-                [('maintenance_team_id', '=', team.id), ('stage_id.done', '=', False), ('is_overdue_cali_done', '=', False), ('archive', '=', False)],
-                ['done','is_overdue_cali_done', 'stage_id'],
+                [('maintenance_team_id', '=', team.id), ('stage_id.done', '=', False), ('archive', '=', False)],
+                ['done','priority', 'stage_id'],
                 ['__count']
             )
             # print('data', data) # data [(False, False, elw.calibration.stage(1,), 1), (False, False, elw.calibration.stage(2,), 1), (False, False, elw.calibration.stage(5,), 1)]
             team.todo_calibration_request_count = sum(count for (_, _, _, count) in data)
-            team.todo_calibration_overdue_count = sum(1 for rec in team.todo_calibration_request_ids if rec.overdue_id and not rec.is_overdue_cali_done)
+            team.todo_calibration_high_priority_count = sum(count for (_, priority, _, count) in data if priority == '3')
             team.todo_calibration_fail_count = sum(count for (_, _, stage_id, count) in data if stage_id.id == 4)
-            # print(team.todo_calibration_request_count,team.todo_calibration_overdue_count,team.todo_calibration_fail_count)
+            # print(team.todo_calibration_request_count,team.todo_calibration_high_priority_count,team.todo_calibration_fail_count)

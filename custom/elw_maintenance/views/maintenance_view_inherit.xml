@@ -31,7 +31,7 @@
             <xpath expr="//field[@name='todo_request_count_unscheduled']" position="after">
                 <field name="todo_calibration_request_ids"/>
                 <field name="todo_calibration_request_count"/>
-                <field name="todo_calibration_overdue_count"/>
+                <field name="todo_calibration_high_priority_count"/>
                 <field name="todo_calibration_fail_count"/>
             </xpath>
             <xpath expr="//div[@class='col-6 o_kanban_primary_left']" position="after">
@@ -45,10 +45,10 @@
             </xpath>
             <xpath expr="//div[@class='col-6 o_kanban_primary_right']" position="after">
                 <div class="col-6 o_kanban_primary_right">
-                    <div t-if="record.todo_calibration_overdue_count.raw_value > 0">
-                        <a name="%(calibration_todo_dashboard_action)d" type="action" context="{'search_default_undone_overdue': 1}">
-                            <t t-esc="record.todo_calibration_overdue_count.value"/>
-                            Calibration Overdue Undone
+                    <div t-if="record.todo_calibration_high_priority_count.raw_value > 0">
+                        <a name="%(calibration_todo_dashboard_action)d" type="action" context="{'search_default_high_priority': 1}">
+                            <t t-esc="record.todo_calibration_high_priority_count.value"/>
+                            Calibration Top Priority
                         </a>
                     </div>
                     <div t-if="record.todo_calibration_fail_count.raw_value > 0">

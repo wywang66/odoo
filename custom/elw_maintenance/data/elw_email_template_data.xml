@@ -32,10 +32,16 @@
                             <span style="font-size: 15px; font-weight: bold;">
                             <t t-if="datetime.date.today() >=object.calibration_due_date">
                               Equipment <span style="color: red;"><t t-out="object.equipment_id.name" /> is overdue</span> for calibration
-                            </t>   
-                            <t t-else="">
-                              Equipment <t t-out="object.equipment_id.name" /> is due for calibration
                             </t>
+                              <t t-else="">
+                                Equipment <t t-out="object.equipment_id.name"/> is due for calibration<br/>
+                                <t t-if="object.stage_id.name=='Failed'">
+                                  The current calibration status is <span style="color: red;"><t t-out="object.stage_id.name"/></span>
+                                </t>
+                                <t t-else="">
+                                  The current calibration status is <t t-out="object.stage_id.name"/>
+                                </t>
+                              </t>
                             </span>
                           </td>
                         </tr>

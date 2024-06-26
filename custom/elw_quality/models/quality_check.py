@@ -51,17 +51,16 @@ class ElwQualityCheck(models.Model):
     fail_and_not_alert_created = fields.Boolean(string='fail_and_not_alert_created',
                                                 compute='_compute_fail_and_not_alert_created', store=True)
     picture = fields.Binary(string="Picture", store=True)
+    copy_record_id = fields.Many2one('elw.quality.check', string='Duplicate Quality Check ref#', store=True)
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
-
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id',
                                        readonly=False,
                                        compute="_compute_measured_spec", store=False)
     measure_data_count = fields.Integer("Measure Data Count", compute='_compute_measure_data_count', store=True)
     measure_data_ids = fields.One2many('elw.quality.measure.data', 'check_id', readonly=False,
                                        compute="", store=True)
-
     product_id_domain = fields.Char(compute="_compute_product_id_domain", store=True)
 
     @api.depends('has_lot_id', 'picking_id', 'picking_id.move_line_ids.lot_id', 'picking_id.move_line_ids.lot_name')
@@ -219,6 +218,19 @@ class ElwQualityCheck(models.Model):
         self.ensure_one()
         if self.quality_state == 'none':
             self.quality_state = 'fail'
+
+    @api.depends('quality_state', 'has_lot_id')
+    def do_split_lot(self):
+        # copy the record on failing QA case and has lot id
+        if self.quality_state != 'none' and self.has_lot_id:
+            self.copy_record_id = self.copy({
+                'quality_state': 'none',
+            })
+            if not self.copy_record_id:
+                raise ValidationError(_("Failed to duplicate the record %s", self.name))
+
+    def action_see_split_record(self):
+        pass
 
     @api.depends('measure_data_ids')
     def do_measure(self):
