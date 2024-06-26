@@ -87,9 +87,14 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_see_new_calibration_request" icon="fa-pencil-square-o" type="object" class="oe_stat_button"
+                            <button name="action_see_next_calibration_request" icon="fa-solid fa-arrow-right" type="object" class="oe_stat_button"
                                     invisible="not duplicate_id" >
-                                    <field name="duplicate_id" invisible="not duplicate_id" widget="statinfo" string="Created a New Calibration Request"/>
+                                    <field name="duplicate_id" invisible="not duplicate_id or stage_id == 4" widget="statinfo" string="View Next Calibration Request"/>
+                                    <field name="duplicate_id" invisible="not duplicate_id or stage_id != 4" widget="statinfo" string="View ReCalibration Request"/>
+                            </button>
+                            <button name="action_see_original_calibration_request" icon="fa-solid fa-arrow-left" type="object" class="oe_stat_button"
+                                    invisible="not original_id" >
+                                    <field name="original_id" invisible="not original_id" widget="statinfo" string="View Original Calibration Request"/>
                             </button>
                         </div>
                         <div class="oe_title">
@@ -107,8 +112,9 @@
                                 <field name="calibration_due_date" force_save="1"/>
                                 <field name="technician_doing_calibration_id" required="stage_id in (2,3,4)" readonly = "duplicate_id"/>
                                 <field name="company_id" invisible="1"/>
-                                <field name="duplicate_id" invisible="not duplicate_id" readonly="duplicate_id"/>
                                 <field name="calibration_completion_date" invisible="not stage_id in (2,3,4)" required="stage_id in (2,3,4)" readonly = "duplicate_id"/>
+                                <field name="duplicate_id" invisible="not duplicate_id" options="{'no_create': True, 'no_open': True}" readonly = "duplicate_id"/>
+                                <field name="original_id" invisible="not original_id or original_id == name" options="{'no_create': True, 'no_open': True}" readonly = "duplicate_id"/>
                             </group>
                             <group>
                                 <field name="owner_user_id"/>
