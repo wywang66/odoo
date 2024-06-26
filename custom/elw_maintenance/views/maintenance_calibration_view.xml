@@ -53,12 +53,12 @@
                     <field name="request_date" groups="base.group_no_one"/>
                     <field name="calibration_due_date"/>
                     <field name="stage_id" decoration-success="stage_id == 3"
-                           decoration-info="stage_id in (1,2)"
-                           decoration-warning="stage_id ==5"
+                           decoration-info="stage_id == 1"
+                           decoration-warning="stage_id ==2"
                            decoration-danger="stage_id == 4" widget="badge" optional="show"/>
-                    <field name="technician_doing_calibration_id" optional="hide" widget="many2one_avatar_user"/>
+                    <field name="technician_doing_calibration_id" optional="show" widget="many2one_avatar_user"/>
                     <field name="company_id" optional="hide"/>
-                    <field name="owner_user_id" optional="show"/>
+                    <field name="owner_user_id" optional="show" widget="many2one_avatar_user"/>
                     <field name="category_id" optional="show"/>
                 </tree>
             </field>

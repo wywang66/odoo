@@ -208,6 +208,8 @@ class MaintenanceCalibration(models.Model):
             self.duplicate_id = self.copy({
                 'request_date': fields.Date.today() + timedelta(days=1),
                 'calibration_due_date': self.calibration_due_date - self.request_date + fields.Date.today() + timedelta(days=1),
+                'technician_doing_calibration_id': False,
+                'calibration_completion_date': False,
             })
             if self.duplicate_id:
                 self.archive = True
