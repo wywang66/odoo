@@ -275,18 +275,6 @@ class MaintenanceCalibration(models.Model):
     #     # print(data)
     #     self.overdue_id = self.env['elw.calibration.overdue'].create(data)
 
-    # def action_see_calibration_overdue(self):
-    #     return {
-    #         'name': _('Calibration Overdue'),
-    #         'res_model': 'elw.calibration.overdue',
-    #         'res_id': self.overdue_id.id,  # open the corresponding form
-    #         # 'domain': [('id', '=', self.alert_ids.ids)],
-    #         'type': 'ir.actions.act_window',
-    #         'view_mode': 'form',
-    #         # 'view_mode': 'tree,form',
-    #         'target': 'current',
-    #     }
-
     def action_see_next_calibration_request(self):
         return {
             'name': _('Next Calibration Request'),
