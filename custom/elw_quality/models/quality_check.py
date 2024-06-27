@@ -335,6 +335,8 @@ class ElwQualityCheck(models.Model):
             'partner_id': self.partner_id.id,
             'team_id': self.team_id.id,
             'user_id': self.user_id.id,
+            'lot_name': self.lot_name,
+            'lot_info': self.lot_info,
         }
         # print("vals in quality.check---------", vals)
         qa_alert_rec = self._create_qa_alert_record(vals)
