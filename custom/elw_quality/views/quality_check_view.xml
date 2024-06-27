@@ -156,7 +156,7 @@
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <header>
                         <button name="do_split_lot" type="object" invisible="not has_lot_id or quality_state != 'none'"
-                                class="btn-primary" string="Split Failing Records" data-hotkey="w"/>
+                                class="btn-primary" string="Duplicate Records" data-hotkey="w"/>
                         <button name="do_pass" type="object" class="btn-primary"
                                 invisible="quality_state != 'none' or test_type_id == 5"
                                 string="All Pass" data-hotkey="q"/>
