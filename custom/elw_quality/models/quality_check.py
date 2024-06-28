@@ -52,6 +52,7 @@ class ElwQualityCheck(models.Model):
                                                 compute='_compute_fail_and_not_alert_created', store=True)
     picture = fields.Binary(string="Picture", store=True)
     copy_record_id = fields.Many2one('elw.quality.check', string='Duplicate Quality Check ref#', store=True)
+    original_id = fields.Many2one('elw.quality.check', string="Original Ref#", store=True)
     # for notebook
     additional_note = fields.Text('Note')
     note = fields.Html('Instructions')
@@ -188,18 +189,18 @@ class ElwQualityCheck(models.Model):
             alert_id.unlink()
 
     def unlink(self):
-        self.ensure_one()
-        if self.quality_state != 'none':
-            raise ValidationError(
-                _("Can not delete the record that is not in 'To Do'. \nPlease cancel it to reset to 'To Do' state"))
-        elif self.picking_id:
-            raise ValidationError(
-                _("Can not delete the record that has Deliveries/Receipts order. \nPlease cancel it to in Inventory"))
-        elif len(self.measure_data_ids) > 0:
-            # unlink child's records
-            self.measure_data_ids.unlink()
-        self.unlink_alert_ids()
-        return super(ElwQualityCheck, self).unlink()
+        for rec in self:
+            if rec.quality_state != 'none':
+                raise ValidationError(
+                    _("Can not delete the record that is not in 'To Do'. \nPlease cancel it to reset to 'To Do' state"))
+            elif rec.picking_id:
+                raise ValidationError(
+                    _("Can not delete the record that has Deliveries/Receipts order. \nPlease cancel it to in Inventory"))
+            elif len(rec.measure_data_ids) > 0:
+                # unlink child's records
+                rec.measure_data_ids.unlink()
+            rec.unlink_alert_ids()
+            return super(ElwQualityCheck, self).unlink()
 
     @api.depends('quality_state')
     def do_pass(self):
@@ -219,18 +220,46 @@ class ElwQualityCheck(models.Model):
         if self.quality_state == 'none':
             self.quality_state = 'fail'
 
-    @api.depends('quality_state', 'has_lot_id')
+    @api.depends('quality_state', 'has_lot_id', 'original_id')
     def do_split_lot(self):
-        # copy the record on failing QA case and has lot id
-        if self.quality_state != 'none' and self.has_lot_id:
-            self.copy_record_id = self.copy({
-                'quality_state': 'none',
-            })
-            if not self.copy_record_id:
-                raise ValidationError(_("Failed to duplicate the record %s", self.name))
+        # copy the record so users can split passed and failed lot on the product with lot id
+        if self.has_lot_id:
+            if self.quality_state == 'none':
+                # keep one original_id
+                if not self.original_id:
+                    self.copy_record_id = self.copy({'original_id': self.id,})
+                else:
+                    self.copy_record_id = self.copy()
+                if not self.copy_record_id:
+                    raise ValidationError(_("Failed to duplicate the record %s", self.name))
+            else:
+                raise UserError(_("You can split the lot in 'To Do' state"))
+        else:
+            raise UserError(_("You can only split the lot if it has a lot ID"))
 
     def action_see_split_record(self):
-        pass
+        self.ensure_one()
+        return {
+            'name': _('Quality Check Split Record'),
+            'res_model': 'elw.quality.check',
+            'res_id': self.copy_record_id.id,  # open the corresponding form
+            'domain': [('id', '=', self.copy_record_id)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def action_see_original_record(self):
+        self.ensure_one()
+        return {
+            'name': _('Quality Check Original Record'),
+            'res_model': 'elw.quality.check',
+            'res_id': self.original_id.id,  # open the corresponding form
+            # 'domain': [('id', '=', self.copy_record_id)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     @api.depends('measure_data_ids')
     def do_measure(self):
@@ -306,6 +335,8 @@ class ElwQualityCheck(models.Model):
             'partner_id': self.partner_id.id,
             'team_id': self.team_id.id,
             'user_id': self.user_id.id,
+            'lot_name': self.lot_name,
+            'lot_info': self.lot_info,
         }
         # print("vals in quality.check---------", vals)
         qa_alert_rec = self._create_qa_alert_record(vals)
@@ -359,6 +390,7 @@ class ElwQualityCheck(models.Model):
         return result
 
     def action_see_quality_measure_data(self):
+        self.ensure_one()
         return {
             'name': _('Quality Measurement Data'),
             'res_model': 'elw.quality.measure.data',

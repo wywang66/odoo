@@ -155,6 +155,8 @@
                 <form>
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
                     <header>
+                        <button name="do_split_lot" type="object" invisible="not has_lot_id or quality_state != 'none'"
+                                class="btn-primary" string="Duplicate Records" data-hotkey="w"/>
                         <button name="do_pass" type="object" class="btn-primary"
                                 invisible="quality_state != 'none' or test_type_id == 5"
                                 string="All Pass" data-hotkey="q"/>
@@ -165,8 +167,6 @@
                                 string="All Fail" data-hotkey="w"/>
                         <button name="do_fail" type="object" invisible="quality_state != 'pass'"
                                 string="All Fail" data-hotkey="w"/>
-                        <button name="do_split_lot" type="object" invisible="not has_lot_id or copy_record_id or quality_state == 'none'" class="btn-primary"
-                                string="Split Record" data-hotkey="w"/>
                         <button name="do_measure" type="object" class="btn-primary"
                                 invisible="test_type_id != 5 or quality_state != 'none'" string="Measure"
                                 data-hotkey="v"/>
@@ -186,9 +186,13 @@
                                     invisible="not alert_ids or alert_result!='Solved'">
                                 <field name="alert_count" class="text-success" string="Quality Alerts" widget="statinfo"/>
                             </button>
-                            <button name="action_see_split_record" icon="fa-list" type="object" class="oe_stat_button"
+                            <button name="action_see_split_record" icon="fa-arrow-right" type="object" class="oe_stat_button"
                                     invisible="not copy_record_id">
                                 <field name="copy_record_id" string="Duplicated Record" widget="statinfo"/>
+                            </button>
+                            <button name="action_see_original_record" icon="fa-arrow-left" type="object" class="oe_stat_button"
+                                    invisible="not original_id">
+                                <field name="original_id" string="Original Record" widget="statinfo"/>
                             </button>
                             <div class="oe_button_box" name="button_box">
                                 <button name="action_see_quality_measure_data" icon="fa-book" type="object"
@@ -207,19 +211,21 @@
                                 <field name="point_id" options="{'no_create': True}"/>
                                 <field name="measure_on" readonly="point_id"/>
                                 <field name="control_date"/>
-                                <field name="user_id"/>
+                                <field name="user_id" required="quality_state in ('pass','fail')"/>
                                 <field name="alert_result" invisible="1"/>
                                 <field name="lot_info" invisible="picking_id"/>
                                 <field name="has_lot_id" invisible="1"/>
                                 <field name="picking_code" invisible="1"/>
-                                <field name="lot_ids" widget="many2many_tags" invisible="picking_code != 'outgoing' or not has_lot_id" required="has_lot_id" force_save="1"/>
+                                <field name="lot_ids" widget="many2many_tags" invisible="picking_code != 'outgoing' or not has_lot_id" required="has_lot_id"
+                                       force_save="1"/>
                                 <field name="lot_name" invisible="picking_code != 'incoming' or not has_lot_id" required="has_lot_id" force_save="1"/>
-                                <field name="copy_record_id" invisible="not copy_record_id"/>
-                                <field name="alert_ids" invisible="1">
-                                    <tree delete="0" create="0">
-                                        <field name="name"/>
-                                        <field name="stage_id"/>
-                                    </tree>
+                                <field name="copy_record_id" invisible="1"/>
+                                <field name="original_id" invisible="1"/>
+                                <field name="alert_ids" invisible="1" widget="many2many_tags" >
+<!--                                    <tree delete="0" create="0">-->
+<!--                                        <field name="name"/>-->
+<!--                                        <field name="stage_id"/>-->
+<!--                                    </tree>-->
                                 </field>
                                 <!--                                <field name="alert_result" invisible="quality_state == 'pass'"/>-->
                                 <!--                                <field name="fail_and_not_alert_created"/>-->
@@ -231,7 +237,6 @@
                                 <field name="test_type_id"/>
                                 <field name="team_id" options="{'no_create': True}"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
-                                <field name="user_id" string="Control Person" invisible="1"/>
                                 <field name="partner_id" invisible="not partner_id"/>
                                 <field name="measure_data_count" invisible="1"/>
                                 <field name="product_id_domain" invisible="1"/>
