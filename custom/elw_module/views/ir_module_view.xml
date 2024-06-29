@@ -1,21 +1,7 @@
 <odoo>
     <data>
 
-        <!-- display installed and uninstalled modules -->
-<!--        <record id="base_view_view_search_inherit" model="ir.ui.view">-->
-<!--            <field name="name">base.view.view.search.inherit</field>-->
-<!--            <field name="model">ir.module.module</field>-->
-<!--            <field name="inherit_id" ref="base.view_module_filter"/>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <xpath expr="//filter[@name='app']" position="attributes">-->
-<!--                    <attribute name="domain">[('application', '=', True), ('state', 'in', ['installed',-->
-<!--                        'to upgrade', 'to remove', 'uninstalled', 'to install'])]-->
-<!--                    </attribute>-->
-<!--                </xpath>-->
-<!--            </field>-->
-<!--        </record>-->
-
-        <!-- below make module_type (above 'category_id') on UI left search panel invisible -->
+         <!-- below make module_type (above 'category_id') on UI left search panel invisible -->
         <record model="ir.ui.view" id="view_module_filter_apps_inherit_inherit">
             <field name="name">Search Data Modules</field>
             <field name="model">ir.module.module</field>
@@ -33,12 +19,15 @@
             <field name="model">ir.module.module</field>
             <field name="inherit_id" ref="base.module_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='author']" position="attributes">
-                    <attribute name="invisible">1</attribute>
+                <xpath expr="//div[hasclass('mb32')]//..//h4" position="attributes">
+                        <attribute name="invisible">1</attribute>
                 </xpath>
-                <xpath expr="//field[@name='website']" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </xpath>
+<!--                <xpath expr="//field[@name='author']" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//field[@name='website']" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
             </field>
         </record>
 
