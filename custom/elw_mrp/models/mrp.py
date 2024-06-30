@@ -12,3 +12,5 @@ class MrpWorkcenter(models.Model):
 
     equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment',
                                     help="Specific equipment that is used in this work center.", copy=True)
+
+
