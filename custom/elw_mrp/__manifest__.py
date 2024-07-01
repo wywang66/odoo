@@ -26,6 +26,7 @@ Long description of module's purpose
         # 'security/elw_module_security_data.xml',
         # 'security/ir.model.access.csv',
         'views/mrp_view.xml',
+        'views/work_center_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
