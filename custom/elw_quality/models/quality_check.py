@@ -308,7 +308,6 @@ class ElwQualityCheck(models.Model):
         self.ensure_one()
         for item in self.measure_spec_ids:
             # print("item", item) #item elw.quality.measure.spec(6,)
-            obj = self.env['elw.quality.measure.data']
             vals = {
                 'spec_id': item.id,
                 'point_id': item.point_id.id,

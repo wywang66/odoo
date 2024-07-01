@@ -11,9 +11,9 @@
                     <page string="Equipment" name="equipment">
                         <field name="equipment_ids" context="{'default_workcenter_id': id}">
                             <tree string="equipment data " editable="bottom">
-                                <field name="name"/>
-                                <field name="technician_user_id"/>
-                                <field name="category_id"/>
+                                <field name="eq_reference_record"/>
+<!--                                <field name="technician_user_id"/>-->
+<!--                                <field name="category_id"/>-->
                             </tree>
                         </field>
                     </page>
