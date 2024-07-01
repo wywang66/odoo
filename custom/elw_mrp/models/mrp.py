@@ -12,7 +12,12 @@ class MaintenanceEquipment(models.Model):
 class MaintenanceMixin(models.AbstractModel):
     _inherit = 'maintenance.mixin'
 
-    eq_reference_record = fields.Reference(selection=[('maintenance.equipment', 'Equipment')], string="Equipment Record", default='maintenance.equipment,1')
+    @api.returns('self')
+    def _default_equipment(self):
+        return self.env['maintenance.equipment'].search([], limit=1)
+
+    eq_reference_record = fields.Reference(selection=[('maintenance.equipment', 'Equipment')], string="Equipment", default=_default_equipment,
+                                           help='User should select the equipment', required=True)
 
 
 class MrpWorkcenter(models.Model):
