@@ -1,0 +1,13 @@
+<odoo>
+    <data>
+
+        <menuitem id="menu_equipment_calibration"
+                  name="Calibration"
+                  parent="maintenance.menu_maintenance_title"
+                  action="elw_equipment_calibration_action"
+                  groups="base.group_user"
+                  sequence="12"/>
+
+    </data>
+</odoo>
+  
