@@ -5,6 +5,8 @@ class MaintenanceEquipment(models.Model):
     _inherit = 'maintenance.equipment'
 
     workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
+    # validation error on equipment name
+    name = fields.Char('Equipment Name', required=False, translate=True)
 
 
 class MaintenanceMixin(models.AbstractModel):
@@ -12,6 +14,7 @@ class MaintenanceMixin(models.AbstractModel):
 
     equipment_id = fields.Many2one('maintenance.equipment', string='Equipment',
                                    help="Specific equipment that is used in this work center.", copy=True)
+
 
 
 class MrpWorkcenter(models.Model):

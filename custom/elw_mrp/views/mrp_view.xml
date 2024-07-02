@@ -48,12 +48,12 @@
         </field>
     </record>
 
-<!--    <record id="equipment_workcenter_kanban_action" model="ir.actions.act_window">-->
-<!--            <field name="name">Work Center</field>-->
-<!--            <field name="res_model">mrp.workcenter</field>-->
-<!--            <field name="view_mode">kanban,form</field>-->
-<!--            <field name="view_id" ref="view_mrp_workcenter_basic_kanban"/>-->
-<!--        </record>-->
+    <record id="mrp_equipment_workcenter_kanban_action" model="ir.actions.act_window">
+            <field name="name">Work Center</field>
+            <field name="res_model">mrp.workcenter</field>
+            <field name="view_mode">kanban</field>
+            <field name="view_id" ref="mrp_workcenter_kanban_inherit"/>
+        </record>
     </data>
 </odoo>
   
