@@ -60,8 +60,24 @@
                 </div>
             </xpath>
             <xpath expr="//t[@t-esc='record.todo_request_count.value']" position="replace">
-                <attribute name="button">Maintenance To Do </attribute>
+                <attribute name="button">Maintenance To Do</attribute>
             </xpath>
         </field>
     </record>
+
+    <!--add Work center and Machine and Tool under Equipment menu -->
+    <menuitem id="menu_equipment_workcenter"
+              name="Work Center"
+              parent="maintenance.menu_equipment_form"
+              action="maintenance.hr_equipment_action"
+              groups="base.group_user"
+              sequence="1"/>
+
+    <menuitem id="menu_equipment_machine"
+              name="Machines and Tools"
+              parent="maintenance.menu_equipment_form"
+              action="maintenance.hr_equipment_action"
+              groups="base.group_user"
+              sequence="2"/>
+
 </odoo>
