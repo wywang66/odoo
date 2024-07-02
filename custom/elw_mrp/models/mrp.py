@@ -1,4 +1,4 @@
-from odoo import models, fields, api, _
+from odoo import models, fields, api, SUPERUSER_ID, _
 
 
 class MaintenanceEquipment(models.Model):
@@ -12,17 +12,11 @@ class MaintenanceEquipment(models.Model):
 class MaintenanceMixin(models.AbstractModel):
     _inherit = 'maintenance.mixin'
 
-    @api.returns('self')
-    def _default_equipment(self):
-        return self.env['maintenance.equipment'].search([], limit=1)
-
-    eq_reference_record = fields.Reference(selection=[('maintenance.equipment', 'Equipment')], string="Equipment", default=_default_equipment,
-                                           help='User should select the equipment', required=True)
+    equipment_id = fields.Many2one('maintenance.equipment', string='Equipment',
+                                   help="Specific equipment that is used in this work center.", copy=True)
 
 
 class MrpWorkcenter(models.Model):
     _inherit = 'mrp.workcenter'
 
-    equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment',
-                                    help="Specific equipment that is used in this work center.", copy=True)
-
+    equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment', copy=True)
