@@ -16,8 +16,8 @@ class MaintenanceMixin(models.AbstractModel):
 
 class MrpWorkcenter(models.Model):
     _inherit = ['mrp.workcenter',
-                'mail.thread',
-                'mail.activity.mixin',
+                # 'mail.thread',
+                # 'mail.activity.mixin',
                 ]  # add a chatter
 
     equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment', copy=True)
