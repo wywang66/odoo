@@ -1,29 +1,20 @@
 from odoo import models, fields, api, SUPERUSER_ID, _
 
-
-class MaintenanceEquipment(models.Model):
-    _inherit = 'maintenance.equipment'
-
-    workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
-    # validation error on equipment name
-    name = fields.Char('Equipment Name', required=False, translate=True)
-
-
-class MaintenanceMixin(models.AbstractModel):
-    _inherit = 'maintenance.mixin'
-
-    equipment_id = fields.Many2one('maintenance.equipment', string='Equipment',
-                                   help="Specific equipment that is used in this work center.", copy=True)
+# # separate into two inheritance classes to avoid the "equipment_ids" not found error after inheriting 'mail' in MrpWorkcenter1
+# New ValueError: The _name attribute MrpWorkcenter is not valid.
+# class MrpWorkcenter(models.Model):
+#     _inherit = ['mail.thread',
+#                 'mail.activity.mixin',
+#                 ]  # add a chatter
 
 
+class MrpWorkcenter1(models.Model):
+    _inherit = 'mrp.workcenter'
+    # _inherit = ['mail.thread',
+    #             'mail.activity.mixin',
+    #             ]  # add a chatter
 
-class MrpWorkcenter(models.Model):
-    _inherit = ['mrp.workcenter',
-                # 'mail.thread',
-                # 'mail.activity.mixin',
-                ]  # add a chatter
-
-    equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment', copy=True)
+    equipment_ids = fields.Many2many('maintenance.equipment', string='Equipment', copy=True)
 
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     maintenance_ids = fields.One2many('maintenance.request', 'workcenter_id', string='Maintenance', store=True)
@@ -46,7 +37,3 @@ class MrpWorkcenter(models.Model):
             record.maintenance_open_count = len(record.maintenance_ids.filtered(lambda mr: not mr.stage_id.done and not mr.archive))
 
 
-class MaintenanceRequest(models.Model):
-    _inherit = 'maintenance.request'
-
-    workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
