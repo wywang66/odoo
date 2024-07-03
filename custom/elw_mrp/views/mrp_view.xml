@@ -10,22 +10,22 @@
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='capacity']" position="after">
                     <page string="Equipment" name="equipment">
-                        <field name="equipment_ids" context="{'default_workcenter_id': id}">
+                        <field name="equipment_ids" widget="many2many">
                             <tree string="equipment data" editable="bottom">
-                                <field name="equipment_id"/>
+                                <field name="name"/>
                                 <field name="technician_user_id"/>
                                 <field name="category_id"/>
                             </tree>
                         </field>
                     </page>
                 </xpath>
-<!--                 <xpath expr="//field[@name='company_id']" position="after">-->
-<!--                     <field name="maintenance_ids"/>-->
-<!--                     <field name="maintenance_count"/>-->
-<!--                     <field name="maintenance_open_count"/>-->
-<!--                     <field name="maintenance_team_id"/>-->
-<!--                     <field name="technician_user_id"/>-->
-<!--                 </xpath>-->
+                <!--                 <xpath expr="//field[@name='company_id']" position="after">-->
+                <!--                     <field name="maintenance_ids"/>-->
+                <!--                     <field name="maintenance_count"/>-->
+                <!--                     <field name="maintenance_open_count"/>-->
+                <!--                     <field name="maintenance_team_id"/>-->
+                <!--                     <field name="technician_user_id"/>-->
+                <!--                 </xpath>-->
                 <!--                <xpath expr="//notebook" position="after">-->
                 <!--                    <div class="oe_chatter">-->
                 <!--                        <field name="message_follower_ids"/>-->
@@ -33,10 +33,15 @@
                 <!--                        <field name="message_ids"/>-->
                 <!--                    </div>-->
                 <!--                </xpath>-->
+                <xpath expr="//div/button[5]" position="after">
+<!--                    <button name="725" type="action" class="oe_stat_button" context="{'search_default_active': True, 'default_company_id': company_id, 'default_maintenance_team_id': maintenance_team_id}" icon="fa-wrench">-->
+                    <field string="Maintenance" name="maintenance_open_count" widget="statinfo"/>
+<!--                </button>-->
+                </xpath>
             </field>
         </record>
 
-
+        <!--show the kanban view in maintenance|equipment-->
         <record id="mrp_workcenter_kanban_inherit" model="ir.ui.view">
             <field name="name">mrp.workcenter.kanban.inherit</field>
             <field name="model">mrp.workcenter</field>

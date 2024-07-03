@@ -30,19 +30,7 @@ class MrpWorkcenter1(models.Model):
     #             'mail.activity.mixin',
     #             ]  # add a chatter
 
-    equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment', copy=True)
-    # TypeError: Many2many fields MrpWorkcenter.alternative_workcenter_ids and mrp.workcenter.alternative_workcenter_ids use the same table and columns
-    #  change relation to avoid the above error
-    # ValueError: The _name attribute MrpWorkcenter is not valid.
-    # alternative_workcenter_ids = fields.Many2many(
-    #     'mrp.workcenter',
-    #     'mrp_alternative_rel',
-    #     # 'workcenter_id',
-    #     # 'alternative_workcenter_id',
-    #     domain="[('id', '!=', id), '|', ('company_id', '=', company_id), ('company_id', '=', False)]",
-    #     string="Alternative Workcenters", check_company=True,
-    #     help="Alternative workcenters that can be substituted to this one in order to dispatch production"
-    # )
+    equipment_ids = fields.Many2many('maintenance.equipment', 'workcenter_id', string='Equipment', copy=True)
 
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     maintenance_ids = fields.One2many('maintenance.request', 'workcenter_id', string='Maintenance', store=True)
