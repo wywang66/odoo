@@ -65,6 +65,25 @@
         </field>
     </record>
 
+    <!--inherit maintenance request form    -->
+    <record id="maintenance_hr_equipment_request_view_form_inherit" model="ir.ui.view">
+        <field name="name">maintenance.hr.equipment.request.view.form.inherit</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='equipment_id']" position="before">
+                <field name="maintenance_for"/>
+                <field name="workcenter_id"/>
+            </xpath>
+            <xpath expr="//field[@name='equipment_id']" position="attributes">
+                <attribute name="invisible">maintenance_for != 'equipment'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='workcenter_id']" position="attributes">
+                <attribute name="invisible">maintenance_for != 'workcenter'</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <!--add Work center and Machine and Tool under Equipment menu -->
     <menuitem id="menu_equipment_workcenter"
               name="Work Center"

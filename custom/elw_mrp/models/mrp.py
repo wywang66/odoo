@@ -65,7 +65,3 @@ class MrpWorkcenter1(models.Model):
             record.maintenance_open_count = len(record.maintenance_ids.filtered(lambda mr: not mr.stage_id.done and not mr.archive))
 
 
-class MaintenanceRequest(models.Model):
-    _inherit = 'maintenance.request'
-
-    workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
