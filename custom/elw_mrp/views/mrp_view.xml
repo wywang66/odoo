@@ -19,13 +19,13 @@
                         </field>
                     </page>
                 </xpath>
-                <!--                 <xpath expr="//field[@name='company_id']" position="after">-->
+<!--                                 <xpath expr="//field[@name='company_id']" position="after">-->
                 <!--                     <field name="maintenance_ids"/>-->
                 <!--                     <field name="maintenance_count"/>-->
-                <!--                     <field name="maintenance_open_count"/>-->
+<!--                                     <field name="maintenance_open_count"/>-->
                 <!--                     <field name="maintenance_team_id"/>-->
                 <!--                     <field name="technician_user_id"/>-->
-                <!--                 </xpath>-->
+<!--                                 </xpath>-->
                 <!--                <xpath expr="//notebook" position="after">-->
                 <!--                    <div class="oe_chatter">-->
                 <!--                        <field name="message_follower_ids"/>-->
@@ -34,9 +34,13 @@
                 <!--                    </div>-->
                 <!--                </xpath>-->
                 <xpath expr="//div/button[5]" position="after">
-<!--                    <button name="725" type="action" class="oe_stat_button" context="{'search_default_active': True, 'default_company_id': company_id, 'default_maintenance_team_id': maintenance_team_id}" icon="fa-wrench">-->
-                    <field string="Maintenance" name="maintenance_open_count" widget="statinfo"/>
-<!--                </button>-->
+                    <field name="maintenance_team_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <button name="maintenance.hr_equipment_request_action" type="action" class="oe_stat_button"
+                            context="{'search_default_active': True, 'default_company_id': company_id, 'search_default_workcenter': 'workcenter', 'default_maintenance_team_id': maintenance_team_id}"
+                            icon="fa-wrench">
+                        <field string="Maintenance" name="maintenance_open_count" widget="statinfo"/>
+                    </button>
                 </xpath>
             </field>
         </record>

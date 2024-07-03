@@ -84,6 +84,36 @@
         </field>
     </record>
 
+    <!--add workcenter in kanban view -->
+    <record id="maintenance_hr_equipment_request_view_kanban_inherit" model="ir.ui.view">
+        <field name="name">maintenance.hr.equipment.request.view.kanban.inherit</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//span[hasclass('oe_grey')]" position="after">
+                <field name="maintenance_for" invisible="1"/>
+                <span class="oe_grey" t-if="record.maintenance_for.raw_value == 'workcenter' and record.workcenter_id.raw_value"><field name="workcenter_id"/><br/></span>
+            </xpath>
+        </field>
+    </record>
+
+    <!--add workcenter in search view -->
+    <record id="maintenance_hr_equipment_request_view_search_inherit" model="ir.ui.view">
+        <field name="name">maintenance.hr.equipment.request.view.search.inherit</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='stage_id']" position="after">
+                <field name="maintenance_for"/>
+            </xpath>
+            <xpath expr="//filter[@name='high_priority']" position="after">
+                <separator/>
+                <filter string="Work-Center" name="workcenter" domain="[('maintenance_for', '=', 'workcenter')]"/>
+            </xpath>
+        </field>
+    </record>
+
+
     <!--add Work center and Machine and Tool under Equipment menu -->
     <menuitem id="menu_equipment_workcenter"
               name="Work Center"
