@@ -69,7 +69,7 @@
     <menuitem id="menu_equipment_workcenter"
               name="Work Center"
               parent="maintenance.menu_equipment_form"
-              action="maintenance.hr_equipment_action"
+              action="elw_mrp.mrp_equipment_workcenter_kanban_action"
               groups="base.group_user"
               sequence="1"/>
 

@@ -1,7 +1,8 @@
 <odoo>
     <data>
 
-        <!-- stock.lot tree-->
+        <!-- work center form view-->
+        <!-- add chatter in work center form view -->
         <record id="mrp_mrp_workcenter_view_form_inherit" model="ir.ui.view">
             <field name="name">mrp.mrp_workcenter.view.form.inherit</field>
             <field name="model">mrp.workcenter</field>
@@ -12,48 +13,56 @@
                         <field name="equipment_ids" context="{'default_workcenter_id': id}">
                             <tree string="equipment data" editable="bottom">
                                 <field name="equipment_id"/>
-<!--                                <field name="technician_user_id"/>-->
-<!--                                <field name="category_id"/>-->
+                                <!--                                <field name="technician_user_id"/>-->
+                                <!--                                <field name="category_id"/>-->
                             </tree>
                         </field>
                     </page>
                 </xpath>
-
+                <!--                <xpath expr="//notebook" position="after">-->
+                <!--                    <div class="oe_chatter">-->
+                <!--                        <field name="message_follower_ids"/>-->
+                <!--                        <field name="activity_ids"/>-->
+                <!--                        <field name="message_ids"/>-->
+                <!--                    </div>-->
+                <!--                </xpath>-->
             </field>
         </record>
 
-         <record id="mrp_workcenter_kanban_inherit" model="ir.ui.view">
-        <field name="name">mrp.workcenter.kanban.inherit</field>
-        <field name="model">mrp.workcenter</field>
-        <field name="inherit_id" ref="mrp.mrp_workcenter_view_kanban"/>
-        <field name="arch" type="xml">
-            <xpath expr="//div[@t-attf-class='oe_kanban_content oe_kanban_global_click']" position="inside">
-                <field name="maintenance_open_count" invisible="1"/>
-<!--                <field name="activity_ids" invisible="1"/>-->
-                <div class="o_kanban_record_bottom">
-                    <div class="oe_kanban_bottom_left">
-                        <div class="badge text-bg-danger" t-if="!selection_mode and record.maintenance_open_count.raw_value">
-                            <t t-out="record.maintenance_open_count.raw_value"/> Request
-                        </div>
-                    </div>
-                    <div class="oe_kanban_bottom_right">
-                        <div class="o_kanban_inline_block" t-if="!selection_mode">
-<!--                            <field name="activity_ids" widget="kanban_activity"/>-->
-                        </div>
-                        <field name="technician_user_id" widget="many2one_avatar_user"/>
-                    </div>
-                </div>
-                <div class="oe_clear"/>
-            </xpath>
-        </field>
-    </record>
 
-<!--    <record id="equipment_workcenter_kanban_action" model="ir.actions.act_window">-->
-<!--            <field name="name">Work Center</field>-->
-<!--            <field name="res_model">mrp.workcenter</field>-->
-<!--            <field name="view_mode">kanban,form</field>-->
-<!--            <field name="view_id" ref="view_mrp_workcenter_basic_kanban"/>-->
-<!--        </record>-->
+        <record id="mrp_workcenter_kanban_inherit" model="ir.ui.view">
+            <field name="name">mrp.workcenter.kanban.inherit</field>
+            <field name="model">mrp.workcenter</field>
+            <field name="inherit_id" ref="mrp.mrp_workcenter_view_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@t-attf-class='oe_kanban_content oe_kanban_global_click']" position="inside">
+                    <field name="maintenance_open_count" invisible="1"/>
+                    <!--                <field name="activity_ids" invisible="1"/>-->
+                    <div class="o_kanban_record_bottom">
+                        <div class="oe_kanban_bottom_left">
+                            <div class="badge text-bg-danger" t-if="!selection_mode and record.maintenance_open_count.raw_value">
+                                <t t-out="record.maintenance_open_count.raw_value"/>
+                                Request
+                            </div>
+                        </div>
+                        <div class="oe_kanban_bottom_right">
+                            <div class="o_kanban_inline_block" t-if="!selection_mode">
+                                <!--                            <field name="activity_ids" widget="kanban_activity"/>-->
+                            </div>
+                            <field name="technician_user_id" widget="many2one_avatar_user"/>
+                        </div>
+                    </div>
+                    <div class="oe_clear"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mrp_equipment_workcenter_kanban_action" model="ir.actions.act_window">
+            <field name="name">Work Center</field>
+            <field name="res_model">mrp.workcenter</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_id" ref="mrp_workcenter_kanban_inherit"/>
+        </record>
     </data>
 </odoo>
   
