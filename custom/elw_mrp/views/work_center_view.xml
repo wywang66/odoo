@@ -1,11 +1,50 @@
 <odoo>
     <data>
-        <!-- add dashboard next to Manufacturing -->
-        <menuitem id="mrp.menu_mrp_dashboard"
+        <!--Maintenance add Work center and Machine and Tool under Equipment menu -->
+        <menuitem id="menu_equipment_workcenter"
+                  name="Work Center"
+                  parent="maintenance.menu_equipment_form"
+                  action="elw_mrp.mrp_equipment_workcenter_kanban_action"
+                  groups="base.group_user"
+                  sequence="1"/>
+
+        <!-- Mrp add dashboard next to Manufacturing -->
+        <menuitem id="menu_mrp_dashboard"
                   name="Dashboard"
                   parent="mrp.menu_mrp_root"
                   action="mrp.mrp_workcenter_kanban_action"
                   sequence="8"/>
+
+        <!-- Mrp add submenu under Planning -->
+        <!-- gantt view is provided in EE so skip it now -->
+<!--        <menuitem id="submenu_mrp_workorder"-->
+<!--                  name="Work Orders"-->
+<!--                  parent="mrp.mrp_planning_menu_root"-->
+<!--                  sequence="2"/>-->
+
+<!--        <menuitem id="sub_submenu_planning_by_production_action"-->
+<!--                  action="mrp.action_mrp_workorder_production"-->
+<!--                  name="Planning by Production"-->
+<!--                  parent="submenu_mrp_workorder"-->
+<!--                  sequence="1"/>-->
+
+<!--        <menuitem id="sub_submenu_planning_by_workcenter_action"-->
+<!--                  action="mrp.action_mrp_workorder_workcenter"-->
+<!--                  name="Planning by Workcenter"-->
+<!--                  parent="submenu_mrp_workorder"-->
+<!--                  sequence="2"/>-->
+
+         <!--show a few fields in mrp.production-->
+        <record id="mrp_mrp_production_tree_view_inherit" model="ir.ui.view">
+            <field name="name">mrp.mrp.production.tree.view.inherit</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_finished']" position="attributes">
+                     <attribute name="optional">show</attribute>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
 
