@@ -1,11 +1,43 @@
 <odoo>
     <data>
         <!-- add dashboard next to Manufacturing -->
-        <menuitem id="mrp.menu_mrp_dashboard"
+        <menuitem id="menu_mrp_dashboard"
                   name="Dashboard"
                   parent="mrp.menu_mrp_root"
                   action="mrp.mrp_workcenter_kanban_action"
                   sequence="8"/>
+
+        <!--add Work center and Machine and Tool under Equipment menu -->
+        <menuitem id="menu_equipment_workcenter"
+                  name="Work Center"
+                  parent="maintenance.menu_equipment_form"
+                  action="elw_mrp.mrp_equipment_workcenter_kanban_action"
+                  groups="base.group_user"
+                  sequence="1"/>
+
+        <!-- add submenu under Planning -->
+        <menuitem id="submenu_mrp_workorder"
+                  name="Work Orders"
+                  parent="mrp.mrp_planning_menu_root"
+                  action="mrp.mrp_workcenter_kanban_action"
+                  sequence="2"/>
+
+        <!--Planning by Production under Work Orders-->
+<!--        <record model="ir.ui.menu" id="menu_work_order_planning_in_manufacturing">-->
+<!--            <field name="groups_id" eval="False"/>-->
+<!--        </record>-->
+
+<!--        <menuitem id="sub_submenu_planning_by_production_action"-->
+<!--                    action="mrp.mrp_workcenter_kanban_action"-->
+<!--                    name="Planning by Production"-->
+<!--                    parent="submenu_mrp_workorder"-->
+<!--                    sequence="1"/>-->
+
+<!--        <menuitem id="sub_submenu_planning_by_workcenter_action"-->
+<!--                    action="product.product_category_action_form"-->
+<!--                    name="Planning by Production"-->
+<!--                    parent="submenu_mrp_workorder"-->
+<!--                    sequence="2" />-->
     </data>
 </odoo>
 
