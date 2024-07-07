@@ -91,7 +91,7 @@
         <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='location']" position="after">
-                <field name="workcenter_id" invisible="not workcenter_id"/>
+                <field name="workcenter_id" />
             </xpath>
         </field>
     </record>

@@ -12,14 +12,24 @@ class MaintenanceRequest(models.Model):
 class MaintenanceEquipment(models.Model):
     _inherit = 'maintenance.equipment'
 
-    workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade', compute='_get_workcenter_id')
+    workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade', compute='_get_workcenter_id', inverse='_inverse_workcenter_id', store=True)
 
     def _get_workcenter_id(self):
         wc_obj_all = self.env['mrp.workcenter'].search([])
         for rec in self:
             rec.workcenter_id = False
             for wc_obj in wc_obj_all:
-                if self in wc_obj.equipment_ids:
+                if rec in wc_obj.equipment_ids:
                     rec.workcenter_id = wc_obj
                     break
 
+    def _inverse_workcenter_id(self):
+        for rec in self:
+            if rec.workcenter_id:
+                if rec not in rec.workcenter_id.equipment_ids:
+                    rec.workcenter_id.equipment_ids = [(4, rec.id)]
+                else:
+                    wc_obj_all = self.env['mrp.workcenter'].search([('equipment_ids', 'in', rec.id)])
+                    for wc_obj in wc_obj_all:
+                        if rec in wc_obj.equipment_ids:
+                            wc_obj.equipment_ids = [(3, rec.id)]
