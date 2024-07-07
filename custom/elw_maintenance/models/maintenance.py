@@ -7,3 +7,9 @@ class MaintenanceRequest(models.Model):
 
     maintenance_for = fields.Selection([('equipment', 'Equipment'), ('workcenter', 'Work Center')], string='For', store=True)
     workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
+
+
+class MaintenanceEquipment(models.Model):
+    _inherit = 'maintenance.equipment'
+
+    workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
