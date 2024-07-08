@@ -25,6 +25,7 @@ odoo/addons/base/maintenance
 /db.conf
 /dev
 /venv
+/logs
 # generated for windows installer?
 install/win32/*.bat
 install/win32/meta.py
