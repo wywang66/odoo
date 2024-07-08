@@ -19,7 +19,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['mrp', 'elw_maintenance'],
+    'depends': ['mrp'],
 
     # always loaded
     'data': [
@@ -27,6 +27,7 @@ Long description of module's purpose
         # 'security/ir.model.access.csv',
         'views/mrp_view.xml',
         'views/work_center_view.xml',
+        'views/maintenance_view_inherit.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
