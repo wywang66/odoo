@@ -5,8 +5,8 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class MrpWorkcenter(models.Model):
-    _inherit = 'mrp.workcenter'
-    # _inherit = ['mail.thread', 'mail.activity.mixin',]  # add a chatter
+    _name = 'mrp.workcenter'
+    _inherit = ['mrp.workcenter', 'mail.thread', 'mail.activity.mixin']
 
     equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment', store=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
