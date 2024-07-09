@@ -1,13 +1,20 @@
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.exceptions import UserError, ValidationError
-
+import json
 
 class MaintenanceRequest(models.Model):
     _inherit = 'maintenance.request'
 
     maintenance_for = fields.Selection([('equipment', 'Equipment'), ('workcenter', 'Work Center')], string='For', store=True)
     workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
+    workcenter_equipment_id_domain = fields.Char(compute="_compute_workcenter_equipment_id_domain", store=True)
 
+    # below is to add a dynamic domain on product_id
+    @api.depends('workcenter_id')
+    def _compute_workcenter_equipment_id_domain(self):
+        for rec in self:
+            data_obj = self.env['mrp.workcenter'].browse(rec.workcenter_id.id)
+            rec.workcenter_equipment_id_domain = json.dumps([('id', 'in', data_obj.equipment_ids.ids)])
 
 class MaintenanceEquipment(models.Model):
     _inherit = 'maintenance.equipment'

@@ -9,9 +9,10 @@
             <xpath expr="//field[@name='equipment_id']" position="before">
                 <field name="maintenance_for"/>
                 <field name="workcenter_id"/>
+                <field name="workcenter_equipment_id_domain" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='equipment_id']" position="attributes">
-                <attribute name="invisible">maintenance_for != 'equipment'</attribute>
+                <attribute name="domain">workcenter_equipment_id_domain</attribute>
             </xpath>
             <xpath expr="//field[@name='workcenter_id']" position="attributes">
                 <attribute name="invisible">maintenance_for != 'workcenter'</attribute>
