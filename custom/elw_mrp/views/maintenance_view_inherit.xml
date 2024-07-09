@@ -8,14 +8,19 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='equipment_id']" position="before">
                 <field name="maintenance_for"/>
-                <field name="workcenter_id"/>
+                <field name="workcenter_id" invisible="maintenance_for == 'equipment'" required="maintenance_for == 'workcenter'"/>
                 <field name="workcenter_equipment_id_domain" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='equipment_id']" position="attributes">
                 <attribute name="domain">workcenter_equipment_id_domain</attribute>
+                <attribute name="required">maintenance_for == 'equipment'</attribute>
             </xpath>
-            <xpath expr="//field[@name='workcenter_id']" position="attributes">
-                <attribute name="invisible">maintenance_for != 'workcenter'</attribute>
+            <xpath expr="//field[@name='priority']" position="before">
+                <label for="block_workcenter" invisible="maintenance_for == 'equipment'"/>
+                <div class="d-inline-flex" invisible="maintenance_for == 'equipment'">
+                    <field name="block_workcenter" nolabel="1" class="ms-0" style="width: fit-content;"/>
+                </div>
+<!--                <field name="recurring_leaves_count" invisible="maintenance_for == 'equipment' or not recurring_maintenance or not block_workcenter" groups="base.group_no_one"/>-->
             </xpath>
         </field>
     </record>

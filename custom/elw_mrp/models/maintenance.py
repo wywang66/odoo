@@ -8,6 +8,7 @@ class MaintenanceRequest(models.Model):
     maintenance_for = fields.Selection([('equipment', 'Equipment'), ('workcenter', 'Work Center')], string='For', store=True)
     workcenter_id = fields.Many2one('mrp.workcenter', string='Work Center', ondelete='cascade')
     workcenter_equipment_id_domain = fields.Char(compute="_compute_workcenter_equipment_id_domain", store=True)
+    block_workcenter = fields.Boolean(string='Block Workcenter', store=True, copy=True)
 
     # below is to add a dynamic domain on product_id
     @api.depends('workcenter_id')
