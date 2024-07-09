@@ -23,3 +23,15 @@ class MaintenanceEquipment(models.Model):
         else:
             res = super(MaintenanceEquipment, self).write(vals)
         return res
+
+    def button_see_elw_mrp_workcenter(self):
+        self.ensure_one()
+        return {
+            'name': _('Work Center'),
+            'res_model': 'mrp.workcenter',
+            'res_id': self.workcenter_id.id,  # open the corresponding form
+            # 'domain': [('id', '=', self.workcenter_id)],
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'current',
+        }

@@ -20,13 +20,20 @@
     </record>
 
     <!--inherit maintenance equipment form    -->
-    <record id="maintenance_hr_equipment_view_form_inherit" model="ir.ui.view">
-        <field name="name">maintenance.hr.equipment.view.form.inherit</field>
+    <record id="maintenance_hr_equipment_view_form_inherit_elw_mrp" model="ir.ui.view">
+        <field name="name">maintenance.hr.equipment.view.form.inherit.elw_mrp</field>
         <field name="model">maintenance.equipment</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='location']" position="after">
-                <field name="workcenter_id" />
+                <field name="workcenter_id" context="{'default_company_id':company_id}" groups="mrp.group_mrp_routings"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="button_see_elw_mrp_workcenter" type="object" class="oe_stat_button" icon="fa-cogs" invisible="not workcenter_id" groups="mrp.group_mrp_routings">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Work Center</span>
+                    </div>
+                </button>
             </xpath>
         </field>
     </record>
