@@ -8,25 +8,38 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='equipment_id']" position="before">
                 <field name="maintenance_for"/>
-                <field name="workcenter_id"/>
+                <field name="workcenter_id" invisible="maintenance_for == 'equipment'" required="maintenance_for == 'workcenter'"/>
+                <field name="workcenter_equipment_id_domain" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='equipment_id']" position="attributes">
-                <attribute name="invisible">maintenance_for != 'equipment'</attribute>
+                <attribute name="domain">workcenter_equipment_id_domain</attribute>
+                <attribute name="required">maintenance_for == 'equipment'</attribute>
             </xpath>
-            <xpath expr="//field[@name='workcenter_id']" position="attributes">
-                <attribute name="invisible">maintenance_for != 'workcenter'</attribute>
+            <xpath expr="//field[@name='priority']" position="before">
+                <label for="block_workcenter" invisible="maintenance_for == 'equipment'"/>
+                <div class="d-inline-flex" invisible="maintenance_for == 'equipment'">
+                    <field name="block_workcenter" nolabel="1" class="ms-0" style="width: fit-content;"/>
+                </div>
+<!--                <field name="recurring_leaves_count" invisible="maintenance_for == 'equipment' or not recurring_maintenance or not block_workcenter" groups="base.group_no_one"/>-->
             </xpath>
         </field>
     </record>
 
     <!--inherit maintenance equipment form    -->
-    <record id="maintenance_hr_equipment_view_form_inherit" model="ir.ui.view">
-        <field name="name">maintenance.hr.equipment.view.form.inherit</field>
+    <record id="maintenance_hr_equipment_view_form_inherit_elw_mrp" model="ir.ui.view">
+        <field name="name">maintenance.hr.equipment.view.form.inherit.elw_mrp</field>
         <field name="model">maintenance.equipment</field>
         <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='location']" position="after">
-                <field name="workcenter_id" />
+                <field name="workcenter_id" context="{'default_company_id':company_id}" groups="mrp.group_mrp_routings"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="button_see_elw_mrp_workcenter" type="object" class="oe_stat_button" icon="fa-cogs" invisible="not workcenter_id" groups="mrp.group_mrp_routings">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Work Center</span>
+                    </div>
+                </button>
             </xpath>
         </field>
     </record>
