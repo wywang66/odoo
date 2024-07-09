@@ -8,8 +8,7 @@ class MrpWorkcenter(models.Model):
     _inherit = 'mrp.workcenter'
     # _inherit = ['mail.thread', 'mail.activity.mixin',]  # add a chatter
 
-    equipment_ids = fields.Many2many('maintenance.equipment', string='Equipment', store=True)
-
+    equipment_ids = fields.One2many('maintenance.equipment', 'workcenter_id', string='Equipment', store=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     maintenance_ids = fields.One2many('maintenance.request', 'workcenter_id', string='Maintenance', store=True)
     maintenance_count = fields.Integer(compute='_compute_maintenance_count', string="Maintenance Count", store=True)
