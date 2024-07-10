@@ -18,7 +18,7 @@ class ElwQualityPoint(models.Model):
         return self.env['elw.quality.test.type'].search([('name', '=', 'Pass - Fail')], limit=1).id
 
     name = fields.Char(
-        string='Reference', default='New', copy=False, readonly=True)
+        string='Reference', default='New', copy=False, readonly=True, required=True)
 
     company_id = fields.Many2one(
         'res.company', 'Company', default=lambda self: self.env.company,
@@ -57,9 +57,9 @@ class ElwQualityPoint(models.Model):
     check_ids = fields.One2many('elw.quality.check', 'point_id', string="Check IDS")
     #  measure data are child data and put in parent quality.point model
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
-
+    operation_id = fields.Many2one('mrp.routing.workcenter', string='Step', ondelete='set null', store=True, copy=True)
     # for notebook
-    note = fields.Html('Note')
+    note = fields.Html('Note', store=True, copy=True)
 
     # @api.constrains('product_ids')
     # def _check_if_product_ids_is_single(self):
