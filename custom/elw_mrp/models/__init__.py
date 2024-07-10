@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from . import work_center_view
+from . import mrp_workcenter
 from . import maintenance
+from . import  mrp_routing
 
 
