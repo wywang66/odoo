@@ -1,51 +1,84 @@
 <odoo>
     <data>
-        <!--Maintenance add Work center and Machine and Tool under Equipment menu -->
-        <menuitem id="menu_equipment_workcenter"
-                  name="Work Center"
-                  parent="maintenance.menu_equipment_form"
-                  action="elw_mrp.mrp_equipment_workcenter_kanban_action"
-                  groups="base.group_user"
-                  sequence="1"/>
 
-        <!-- Mrp add dashboard next to Manufacturing -->
-        <menuitem id="menu_mrp_dashboard"
-                  name="Dashboard"
-                  parent="mrp.menu_mrp_root"
-                  action="mrp.mrp_workcenter_kanban_action"
-                  sequence="8"/>
-
-        <!-- Mrp add submenu under Planning -->
-        <!-- gantt view is provided in EE so skip it now -->
-<!--        <menuitem id="submenu_mrp_workorder"-->
-<!--                  name="Work Orders"-->
-<!--                  parent="mrp.mrp_planning_menu_root"-->
-<!--                  sequence="2"/>-->
-
-<!--        <menuitem id="sub_submenu_planning_by_production_action"-->
-<!--                  action="mrp.action_mrp_workorder_production"-->
-<!--                  name="Planning by Production"-->
-<!--                  parent="submenu_mrp_workorder"-->
-<!--                  sequence="1"/>-->
-
-<!--        <menuitem id="sub_submenu_planning_by_workcenter_action"-->
-<!--                  action="mrp.action_mrp_workorder_workcenter"-->
-<!--                  name="Planning by Workcenter"-->
-<!--                  parent="submenu_mrp_workorder"-->
-<!--                  sequence="2"/>-->
-
-         <!--show a few fields in mrp.production-->
-        <record id="mrp_mrp_production_tree_view_inherit" model="ir.ui.view">
-            <field name="name">mrp.mrp.production.tree.view.inherit</field>
-            <field name="model">mrp.production</field>
-            <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <!-- work center form view-->
+        <!-- add chatter in work center form view -->
+        <record id="mrp_mrp_workcenter_view_form_inherit" model="ir.ui.view">
+            <field name="name">mrp.mrp_workcenter.view.form.inherit</field>
+            <field name="model">mrp.workcenter</field>
+            <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='date_finished']" position="attributes">
-                     <attribute name="optional">show</attribute>
+                <xpath expr="//page[@name='capacity']" position="after">
+                    <page string="Equipment" name="equipment">
+                        <field name="equipment_ids" widget="many2many">
+                            <tree string="equipment data" editable="bottom">
+                                <field name="name"/>
+                                <field name="technician_user_id"/>
+                                <field name="category_id"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+<!--                                 <xpath expr="//field[@name='company_id']" position="after">-->
+                <!--                     <field name="maintenance_ids"/>-->
+                <!--                     <field name="maintenance_count"/>-->
+<!--                                     <field name="maintenance_open_count"/>-->
+                <!--                     <field name="maintenance_team_id"/>-->
+                <!--                     <field name="technician_user_id"/>-->
+<!--                                 </xpath>-->
+                <xpath expr="//notebook" position="after">
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </xpath>
+                <xpath expr="//div/button[5]" position="after">
+                    <field name="maintenance_team_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <button name="maintenance.hr_equipment_request_action" type="action" class="oe_stat_button"
+                            context="{'search_default_active': True, 'default_company_id': company_id, 'search_default_workcenter': 'workcenter', 'default_maintenance_team_id': maintenance_team_id}"
+                            icon="fa-wrench">
+                        <field string="Maintenance" name="maintenance_open_count" widget="statinfo"/>
+                    </button>
                 </xpath>
             </field>
         </record>
+
+        <!--show the kanban view in maintenance|equipment-->
+        <record id="mrp_workcenter_kanban_inherit" model="ir.ui.view">
+            <field name="name">mrp.workcenter.kanban.inherit</field>
+            <field name="model">mrp.workcenter</field>
+            <field name="inherit_id" ref="mrp.mrp_workcenter_view_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@t-attf-class='oe_kanban_content oe_kanban_global_click']" position="inside">
+                    <field name="maintenance_open_count" invisible="1"/>
+                    <!--                <field name="activity_ids" invisible="1"/>-->
+                    <div class="o_kanban_record_bottom">
+                        <div class="oe_kanban_bottom_left">
+                            <div class="badge text-bg-danger" t-if="!selection_mode and record.maintenance_open_count.raw_value">
+                                <t t-out="record.maintenance_open_count.raw_value"/>
+                                Request
+                            </div>
+                        </div>
+                        <div class="oe_kanban_bottom_right">
+                            <div class="o_kanban_inline_block" t-if="!selection_mode">
+                                <!--                            <field name="activity_ids" widget="kanban_activity"/>-->
+                            </div>
+                            <field name="technician_user_id" widget="many2one_avatar_user"/>
+                        </div>
+                    </div>
+                    <div class="oe_clear"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mrp_equipment_workcenter_kanban_action" model="ir.actions.act_window">
+            <field name="name">Work Center</field>
+            <field name="res_model">mrp.workcenter</field>
+            <field name="view_mode">kanban,form</field>
+            <field name="view_id" ref="mrp_workcenter_kanban_inherit"/>
+        </record>
     </data>
 </odoo>
-
   
