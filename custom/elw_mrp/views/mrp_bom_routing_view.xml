@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+
+        <!-- mrp.bom form view-->
+        <record id="mrp_bom_form_view_inherit_elw_mrp" model="ir.ui.view">
+            <field name="name">mrp.bom.form.view.inherit.elw.mrp</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[4]//field[@name='allow_operation_dependencies']" position="attributes">
+                    <attribute name="groups">mrp.group_mrp_routings</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- mrp.routing form view-->
+        <record id="mrp_routing_workcenter_tree_view_inherit_elw_mrp" model="ir.ui.view">
+            <field name="name">mrp.routing.workcenter.tree.view.inherit.elw.mrp</field>
+            <field name="model">mrp.routing.workcenter</field>
+            <field name="inherit_id" ref="mrp.mrp_routing_workcenter_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='time_cycle']" position="after">
+                    <field name="quality_point_count"/>
+                    <field name="quality_point_ids" widget="many2many_tags" context="{'default_company_id': company_id} "/>
+<!--                    <field name="quality_point_ids" widget="many2many_tags" groups="mrp.group_mrp_routings" optional="show" options="{'create': [('parent.use_create_lots', '=', True)]}" context="{'default_company_id': company_id, 'default_product_id': product_id, 'active_picking_id': parent.id}" domain="[('product_id','=',product_id)]"/>-->
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

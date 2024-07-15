@@ -8,3 +8,8 @@ class MrpRoutingWorkcenter(models.Model):
     quality_point_count = fields.Integer(string='Instructions')
     quality_point_ids = fields.One2many('elw.quality.point', 'operation_id', string='Quality Point', store=True, copy=True)
 
+
+class MrpBom(models.Model):
+    """ Defines bills of material for a product or a product template """
+    _inherit = 'mrp.bom'
+
