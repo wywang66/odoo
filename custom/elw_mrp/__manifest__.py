@@ -19,16 +19,16 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['mrp', 'elw_quality'],
+    'depends': ['mrp', 'elw_quality', 'elw_maintenance'],
 
     # always loaded
     'data': [
         # 'security/elw_module_security_data.xml',
         # 'security/ir.model.access.csv',
-        'views/mrp_view.xml',
         'views/mrp_workcenter_view.xml',
         'views/maintenance_view.xml',
         'views/mrp_bom_routing_view.xml',
+        'views/mrp_view.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
