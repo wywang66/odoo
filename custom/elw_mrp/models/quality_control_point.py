@@ -5,29 +5,29 @@ import json
 class ElwQualityPoint(models.Model):
     _inherit = 'elw.quality.point'
 
-    # operation_id = fields.Many2one('mrp.routing.workcenter', string='Step', ondelete='set null', store=True, copy=True)
+    operation_id = fields.Many2one('mrp.routing.workcenter', string='Step', ondelete='set null', store=True, copy=True)
     # operation_id = fields.Many2one('mrp.bom', string='Operation', ondelete='set null', store=True, copy=True)
 
-    parent_id = fields.Many2one('mrp.bom', string="Parent")
-    product_id = fields.Many2one('product.product', string="Product")
-    lst_price = fields.Float("Sale Price")
-
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        variant_ids_list = []
-        if self._context.get('template_id'):   # We; will pass this; context from the xml; view.
-            template_id = self.env["product.template"].browse(self._context.get('template_id'))
-            for variant_id in template_id.product_variant_ids:
-                if variant_id.lst_price > 100:
-                    variant_ids_list.append(variant_id.id)
+    # parent_id = fields.Many2one('mrp.bom', string="Parent")
+    # product_id = fields.Many2one('product.product', string="Product")
+    # lst_price = fields.Float("Sale Price")
+    #
+    # @api.onchange('product_id')
+    # def onchange_product_id(self):
+    #     variant_ids_list = []
+    #     if self._context.get('template_id'):   # We; will pass this; context from the xml; view.
+    #         template_id = self.env["product.template"].browse(self._context.get('template_id'))
+    #         for variant_id in template_id.product_variant_ids:
+    #             if variant_id.lst_price > 100:
+    #                 variant_ids_list.append(variant_id.id)
 
     @api.model
     def default_get(self, fields_list):
         defaults = super(ElwQualityPoint, self).default_get(fields_list)
 
-        operation_id = self._context.get('default_operation_id')
-
-        print("Operation ID from context:", operation_id)
+        # operation_id = self._context.get('default_operation_id')
+        #
+        # print("Operation ID from context:", operation_id)
 
         # if operation_id:
         #     operation = self.env['mrp.routing.workcenter'].browse(operation_id)

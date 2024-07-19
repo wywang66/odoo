@@ -57,7 +57,7 @@ class ElwQualityPoint(models.Model):
     check_ids = fields.One2many('elw.quality.check', 'point_id', string="Check IDS")
     #  measure data are child data and put in parent quality.point model
     measure_spec_ids = fields.One2many('elw.quality.measure.spec', 'point_id')
-    operation_id = fields.Many2one('mrp.routing.workcenter', string='Step', ondelete='set null', store=True, copy=True)
+
     # for notebook
     note = fields.Html('Note', store=True, copy=True)
 

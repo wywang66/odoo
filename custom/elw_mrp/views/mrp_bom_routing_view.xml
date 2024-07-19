@@ -10,6 +10,19 @@
                 <xpath expr="//page[4]//field[@name='allow_operation_dependencies']" position="attributes">
                     <attribute name="groups">mrp.group_mrp_routings</attribute>
                 </xpath>
+<!--                <xpath expr="//page[@name='miscellaneous']" position="after">-->
+<!--                    <page name="eval">-->
+<!--                        <field name="quality_point_ids" context="{'default_company_id': company_id} ">-->
+<!--                            <tree>-->
+<!--                                <field name="name"/>-->
+<!--                                <field name="product_ids" widget="many2many_tags"/>-->
+<!--                                <field name="product_id"/>-->
+<!--                                <field name="picking_type_ids" widget="many2many_tags"/>-->
+<!--                                <field name="operation_id"/>-->
+<!--                            </tree>-->
+<!--                        </field>-->
+<!--                    </page>-->
+<!--                </xpath>-->
             </field>
         </record>
 
@@ -21,7 +34,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='time_cycle']" position="after">
                     <field name="quality_point_count"/>
-                    <field name="quality_point_ids" widget="many2many_tags" context="{'default_company_id': company_id} "/>
+                    <button type="object" name="action_mrp_workorder_show_steps" title="Show Instructions" icon="fa-list" />
+<!--                    <field name="quality_point_ids" widget="many2many_tags" context="{'default_company_id': company_id} "/>-->
 <!--                    <field name="quality_point_ids" widget="many2many_tags" groups="mrp.group_mrp_routings" optional="show" options="{'create': [('parent.use_create_lots', '=', True)]}" context="{'default_company_id': company_id, 'default_product_id': product_id, 'active_picking_id': parent.id}" domain="[('product_id','=',product_id)]"/>-->
                 </xpath>
             </field>
