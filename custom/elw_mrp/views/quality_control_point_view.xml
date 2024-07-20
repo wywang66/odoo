@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <!-- elw.quality.point tree view-->
+        <record id="elw_quality_point_tree_view_inherit_elw_mrp" model="ir.ui.view">
+            <field name="name">elw.quality.point.tree.view.inherit.elw.mrp</field>
+            <field name="model">elw.quality.point</field>
+            <field name="inherit_id" ref="elw_quality.elw_quality_point_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='picking_type_ids']" position="after">
+                    <field name="operation_id" optional="show" invisible="not operation_id"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -28,6 +28,7 @@ Long description of module's purpose
         'views/mrp_workcenter_view.xml',
         'views/maintenance_view.xml',
         'views/mrp_bom_routing_view.xml',
+        'views/quality_control_point_view.xml',
         'views/mrp_view.xml',
     ],
     # only loaded in demonstration mode
