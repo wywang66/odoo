@@ -31,29 +31,3 @@ class ElwQualityPoint(models.Model):
             res['picking_type_ids'] = [(6, 0, [stock_type_obj.ids])]
         return res
 
-    # @api.model
-    # def default_get(self, fields_list):
-    #     defaults = super(ElwQualityPoint, self).default_get(fields_list)
-
-        # operation_id = self._context.get('default_operation_id')
-        #
-        # print("Operation ID from context:", operation_id)
-
-        # if operation_id:
-        #     operation = self.env['mrp.routing.workcenter'].browse(operation_id)
-        #     if operation and operation.bom_id:
-        #         # Set product_ids based on the product variant of the BoM
-        #         defaults['product_ids'] = [(6, 0, [operation.bom_id.product_tmpl_id.product_variant_id.id])]
-        #
-        #         # Set picking_type_ids to 'Manufacturing' (assuming it's a specific picking type)
-        #         manufacturing_picking_type = self.env.ref('stock.picking_type_manufacturing')
-        #         if manufacturing_picking_type:
-        #             defaults['picking_type_ids'] = [(6, 0, [manufacturing_picking_type.id])]
-        #         else:
-        #             print("Manufacturing picking type not found.")
-        #     else:
-        #         print("No BoM found for the operation.")
-        # else:
-        #     print("No operation_id in context.")
-
-    # return defaults
