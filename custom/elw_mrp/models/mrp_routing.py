@@ -17,7 +17,7 @@ class MrpRoutingWorkcenter(models.Model):
         #       self.bom_id.product_tmpl_id.product_variant_id)
 
         return {
-            'name': _('Quality Control Point'),
+            'name': _('Steps'),
             'res_model': 'elw.quality.point',
             'domain': [('id', '=', self.quality_point_ids.ids)],
             'type': 'ir.actions.act_window',
