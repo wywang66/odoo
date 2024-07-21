@@ -5,8 +5,14 @@ from odoo.exceptions import ValidationError
 class MrpRoutingWorkcenter(models.Model):
     _inherit = 'mrp.routing.workcenter'
 
-    quality_point_count = fields.Integer(string='Instructions')
+    quality_point_count = fields.Integer(string='Instructions', compute="_compute_quality_point_count")
     quality_point_ids = fields.One2many('elw.quality.point', 'operation_id', string='Quality Point', store=True, copy=True)
+
+    @api.depends('quality_point_ids')
+    def _compute_quality_point_count(self):
+        for rec in self:
+            rec.quality_point_count = self.env['elw.quality.point'].search_count(
+                [('operation_id', '=', rec.id)])
 
     def action_mrp_workorder_show_steps(self):
         self.ensure_one()
