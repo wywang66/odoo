@@ -24,14 +24,23 @@ class MrpRoutingWorkcenter(models.Model):
 
         # use action to fix the no list view display after creating a new record in elw.quality.point
         action = self.env["ir.actions.actions"]._for_xml_id("elw_mrp.elw_quality_control_point_action_window_mrp")
-        action['domain'] = [('id', 'in', self.quality_point_ids.ids)]
-        # below is for elw.quality.point
+        action['domain'] = [('operation_id', '=', self.id)]
+        # below setting is for elw.quality.point
         action['context'] = {
             'default_product_id': self.bom_id.product_tmpl_id.product_variant_id.id,
             'default_operation_id': self.id,
         }
         # print('action_context', self, self.id, self.quality_point_ids) # action_context mrp.routing.workcenter(1,) 1 elw.quality.point(4, 2, 1)
         return action
+
+        # return {
+        #     'type': 'ir.actions.act_window',
+        #     'name': 'Steps',
+        #     'res_model': 'elw.quality.point',
+        #     'domain': [('operation_id', '=', self.id)],
+        #     'view_mode': 'tree,form',
+        #     'target': 'current',
+        # }
 
 
 class MrpBom(models.Model):

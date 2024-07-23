@@ -25,6 +25,42 @@
             </field>
         </record>
 
+        <record id="elw_quality_point_form_view_inherit_elw_mrp" model="ir.ui.view">
+            <field name="name">elw.quality.point.form.view.inherit.elw.mrp</field>
+            <field name="model">elw.quality.point</field>
+            <field name="inherit_id" ref="elw_quality.elw_quality_point_form_view"/>
+            <field name="arch" type="xml">
+                <data>
+<!--                    <field name="test_type_id" position="after">-->
+<!--                        <field name="component_ids" invisible="1"/>-->
+<!--                        <field name="bom_product_ids" invisible="1"/>-->
+<!--                        <field name="component_id"-->
+<!--                               invisible="not is_workorder_step or not operation_id or test_type not in ('register_byproducts', 'register_consumed_materials')"-->
+<!--                               required="test_type in ('register_byproducts', 'register_consumed_materials')"-->
+<!--                               domain="[('id', 'in', component_ids), '|', ('company_id', '=', company_id), ('company_id', '=', False)]"/>-->
+<!--                        <field name="test_report_type" widget="selection" invisible="test_type != 'print_label'"/>-->
+<!--                    </field>-->
+                    <field name="picking_type_ids" position="after">
+                        <field string="Work Order Operation" name="operation_id" invisible="not is_workorder_step" groups="mrp.group_mrp_routings"
+                               options="{'no_create': True}"/>
+                        <field name="is_workorder_step" invisible="0"/>
+                    </field>
+                    <field name="user_id" position="after">
+                        <field name="operation_id" invisible="0"/>
+<!--                        <field name="source_document" widget="radio" invisible="not operation_id"/>-->
+<!--                        <field name="worksheet_page" invisible="not is_workorder_step or not operation_id or source_document == 'step'"/>-->
+                    </field>
+                    <field name="product_category_ids" position="attributes">
+                        <attribute name="invisible">is_workorder_step and operation_id</attribute>
+                    </field>
+<!--                    <xpath expr="//field[@name='note']" position="after">-->
+<!--                        <field name="worksheet_document" help="Upload your PDF file." widget="pdf_viewer" invisible="source_document == 'operation'"/>-->
+<!--                        <field name="worksheet_url" placeholder="Google Slide Link" widget="embed_viewer" invisible="source_document == 'operation'"/>-->
+<!--                    </xpath>-->
+                </data>
+            </field>
+        </record>
+
         <record model="ir.actions.act_window" id="elw_quality.elw_quality_control_point_action_window">
             <field name="context">{'search_default_quality_points': 1}</field>
         </record>

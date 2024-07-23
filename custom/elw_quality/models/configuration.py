@@ -113,6 +113,7 @@ class QualityPointTestType(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char(string='Name')
     technical_name = fields.Char(string="Technical Name", compute="_compute_test_type")
+    allow_registration = fields.Boolean(string='Allow Registration', copy = True)
 
     def _compute_test_type(self):
         if self.name == 'Instructions':
