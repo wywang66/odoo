@@ -16,20 +16,22 @@ class MrpRoutingWorkcenter(models.Model):
 
     def action_mrp_workorder_show_steps(self):
         self.ensure_one()
-        # print('context', obj._context, obj._context.get('product_tmpl_id'))
+        # print('context routing', self.env.context, self.env.context.get('default_bom_id'))
         # {'params': {'id': 3, 'cids': 1, 'menu_id': 354, 'action': 543, 'model': 'mrp.bom', 'view_type': 'form'}, 'lang': 'en_US', 'tz': 'Asia/Singapore', 'uid': 2, 'allowed_company_ids': [1],
         # 'bom_id_invisible': True, 'default_bom_id': 3, 'tree_view_ref': 'mrp.mrp_routing_workcenter_bom_tree_view'} None
         # print("", self, self.id, self.bom_id, self.bom_id.operation_ids, self.bom_id.picking_type_id, self.bom_id.product_id, self.bom_id.product_tmpl_id,
         #       self.bom_id.product_tmpl_id.product_variant_id)
 
-        return {
-            'name': _('Steps'),
-            'res_model': 'elw.quality.point',
-            'domain': [('id', '=', self.quality_point_ids.ids)],
-            'type': 'ir.actions.act_window',
-            'view_mode': 'tree,form',
-            'target': 'current',
+        # use action to fix the no list view display after creating a new record in elw.quality.point
+        action = self.env["ir.actions.actions"]._for_xml_id("elw_mrp.elw_quality_control_point_action_window_mrp")
+        action['domain'] = [('id', 'in', self.quality_point_ids.ids)]
+        # below is for elw.quality.point
+        action['context'] = {
+            'default_product_id': self.bom_id.product_tmpl_id.product_variant_id.id,
+            'default_operation_id': self.id,
         }
+        # print('action_context', self, self.id, self.quality_point_ids) # action_context mrp.routing.workcenter(1,) 1 elw.quality.point(4, 2, 1)
+        return action
 
 
 class MrpBom(models.Model):

@@ -28,5 +28,11 @@
         <record model="ir.actions.act_window" id="elw_quality.elw_quality_control_point_action_window">
             <field name="context">{'search_default_quality_points': 1}</field>
         </record>
+
+        <record model="ir.actions.act_window" id="elw_quality_control_point_action_window_mrp">
+            <field name="name">Steps</field>
+            <field name="res_model">elw.quality.point</field>
+            <field name="view_mode">tree,form</field>
+        </record>
     </data>
 </odoo>

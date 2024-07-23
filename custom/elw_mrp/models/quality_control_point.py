@@ -10,6 +10,10 @@ class ElwQualityPoint(models.Model):
                                    store=True, required=True, compute="_get_product_from_category", readonly=False,
                                    help="Quality Point will apply to every selected Products.")
     operation_id = fields.Many2one('mrp.routing.workcenter', string='Manu Step', ondelete='set null', store=True, copy=True)
+    # bom_id = fields.Many2one('mrp.bom', string='Bill of Material', compute='_compute_bom_id')
+    # bom_active = fields.Boolean(string='Related Bill of Material Active')
+    # bom_product_ids = fields.One2many('product.product', string='Bom Product', compute='_compute_bom_product_ids')
+
 
     @api.model
     def default_get(self, fields_list):
