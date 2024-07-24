@@ -1,7 +1,6 @@
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.exceptions import UserError, ValidationError
 
-
 class ElwQualityPoint(models.Model):
     _inherit = 'elw.quality.point'
 
@@ -18,8 +17,8 @@ class ElwQualityPoint(models.Model):
     is_workorder_step = fields.Boolean(string='Is Workorder Step', compute="_compute_is_wordorder_step", default=False)
     test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type',
                                    default=_default_test_type_id, ondelete='cascade', store=True, tracking=True,
-                                   # domain="[('allow_registration', '=', True)]",
                                    help="Defines the type of the quality control point.")
+    test_type_id_domain = fields.Char(compute="_compute_test_type_id_domain", store=True)
     # test_report_type = fields.Selection(store=True, copy=True)
     # source_document = fields.Selection(string='Step Document', store=True, copy=True)
     worksheet_page = fields.Integer(string='Worksheet Page', store=True, copy=True)
@@ -33,6 +32,25 @@ class ElwQualityPoint(models.Model):
     def _compute_is_wordorder_step(self):
         for rec in self:
             rec.is_workorder_step = True if rec.operation_id.quality_point_count else False
+
+    @api.depends('operation_id')
+    def _compute_test_type_id_domain(self):
+        for rec in self:
+            context = self.env.context
+            domain = []
+            if context.get('active_model') == 'mrp.routing.workcenter':
+                domain = [('name', 'in', [
+                    'Instructions', 'Take a Picture', 'Register Production',
+                    'Register Consumed Materials', 'Pass - Fail', 'Measure',
+                    'Print Label'
+                ])]
+            else:
+                domain = [('name', 'in', [
+                    'Instructions', 'Take a Picture', 'Register Production',
+                    'Pass - Fail', 'Measure',
+                ])]
+            rec.test_type_id_domain = domain
+            # print("product_range", rec.test_type_id_domain) #[('name', 'in', ['Instructions', 'Take a Picture', 'Register Production', 'Register Consumed Materials', 'Pass - Fail', 'Measure', 'Print Label'])] this format works too
 
     @api.model
     def default_get(self, fields_list):

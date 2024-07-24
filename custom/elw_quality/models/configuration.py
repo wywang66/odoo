@@ -112,17 +112,33 @@ class QualityPointTestType(models.Model):
 
     active = fields.Boolean(default=True)
     name = fields.Char(string='Name')
-    technical_name = fields.Char(string="Technical Name", compute="_compute_test_type")
-    allow_registration = fields.Boolean(string='Allow Registration', copy = True)
+    technical_name = fields.Char(string="Technical Name", compute="_compute_test_type", store=True)
 
+    # The database did not contain records with the name values Register Consumed Materials and
+    # print label.Therefore, the conditions in _compute_test_type were never met for these values.
+    @api.depends('name')
     def _compute_test_type(self):
-        if self.name == 'Instructions':
-            self.technical_name = 'instructions'
-        elif self.name == 'Take a Picture':
-            self.technical_name = 'picture'
-        elif self.name == 'Register Production':
-            self.technical_name = 'register_production'
-        elif self.name == 'Pass - Fail':
-            self.technical_name = 'passfail'
-        elif self.name == 'Measure':
-            self.technical_name = 'measure'
+        for rec in self:
+            if rec.name == 'Instructions':
+                rec.technical_name = 'instructions'
+            elif rec.name == 'Take a Picture':
+                rec.technical_name = 'picture'
+            elif rec.name == 'Register Production':
+                rec.technical_name = 'register_production'
+            elif rec.name == 'Register Consumed Materials':
+                rec.technical_name = 'register_consumed_materials'
+            elif rec.name == 'Pass - Fail':
+                rec.technical_name = 'passfail'
+            elif rec.name == 'Measure':
+                rec.technical_name = 'measure'
+            elif rec.name == 'Print Label':
+                rec.technical_name = 'print_label'
+            # somehow two test_type below are not created in db. recreate them if they are not in db
+            mrp_test_types = [
+                {'name': 'Register Consumed Materials', 'technical_name': 'register_consumed_materials'},
+                {'name': 'Print Label', 'technical_name': 'print_label'}
+            ]
+            for test_type in mrp_test_types:
+                if not self.search([('name', '=', test_type['name'])]):
+                    self.create(test_type)
+

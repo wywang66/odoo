@@ -22,7 +22,7 @@ class MrpRoutingWorkcenter(models.Model):
         # print("", self, self.id, self.bom_id, self.bom_id.operation_ids, self.bom_id.picking_type_id, self.bom_id.product_id, self.bom_id.product_tmpl_id,
         #       self.bom_id.product_tmpl_id.product_variant_id)
 
-        # use action to fix the no list view display after creating a new record in elw.quality.point
+        # use correct domain to fix the no list view display after creating a new record in elw.quality.point. wrong domain[('id', '=', self.quality_point_ids)]
         action = self.env["ir.actions.actions"]._for_xml_id("elw_mrp.elw_quality_control_point_action_window_mrp")
         action['domain'] = [('operation_id', '=', self.id)]
         # below setting is for elw.quality.point
