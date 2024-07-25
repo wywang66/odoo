@@ -36,6 +36,8 @@
                     </xpath>
                     <field name="test_type_id" position="after">
                         <field name="test_type_id_domain" invisible="1"/>
+                        <field name="component_id_domain" invisible="1"/>
+                        <field name="component_id" invisible="test_type_id != 6 or not operation_id or not is_workorder_step" domain="component_id_domain"/>
                     </field>
                     <field name="picking_type_ids" position="after">
                         <field string="Work Order Operation" name="operation_id" invisible="not is_workorder_step" groups="mrp.group_mrp_routings"

@@ -1,5 +1,7 @@
 from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.exceptions import UserError, ValidationError
+import json
+
 
 class ElwQualityPoint(models.Model):
     _inherit = 'elw.quality.point'
@@ -12,9 +14,10 @@ class ElwQualityPoint(models.Model):
                                    store=True, required=True, compute="_get_product_from_category", readonly=False,
                                    help="Quality Point will apply to every selected Products.")
     operation_id = fields.Many2one('mrp.routing.workcenter', string='Manu Step', ondelete='set null', store=True, copy=True)
-    # component_id = fields.Many2one('product.product', string='Product To Register', ondelete='set null', store=True, copy=True)
+    component_id = fields.Many2one('product.product', string='Product To Register', ondelete='set null', store=True, copy=True)
+    component_id_domain = fields.Char(compute="_compute_component_id_domain", store=True)
     # component_ids = fields.One2many('product.product', string='Component', )
-    is_workorder_step = fields.Boolean(string='Is Workorder Step', compute="_compute_is_wordorder_step", default=False)
+    is_workorder_step = fields.Boolean(string='Is Workorder Step', default=False)
     test_type_id = fields.Many2one('elw.quality.test.type', required=True, string='Test Type',
                                    default=_default_test_type_id, ondelete='cascade', store=True, tracking=True,
                                    help="Defines the type of the quality control point.")
@@ -24,14 +27,22 @@ class ElwQualityPoint(models.Model):
     worksheet_page = fields.Integer(string='Worksheet Page', store=True, copy=True)
     worksheet_document = fields.Binary(string='Image/PDF', store=True, copy=True)
     worksheet_url = fields.Char(string='Google doc URL', store=True, copy=True)
-    # bom_id = fields.Many2one('mrp.bom', string='Bill of Material', compute='_compute_bom_id')
+    bom_id = fields.Many2one('mrp.bom', string='Bill of Material', compute='_compute_bom_id')
     # bom_active = fields.Boolean(string='Related Bill of Material Active')
     # bom_product_id = fields.Many2one('product.product', string='Bom Product', related='bom_id.product_tmpl_id.product_variant_id')
 
-    @api.depends('operation_id.quality_point_count')
-    def _compute_is_wordorder_step(self):
+    @api.onchange('operation_id')
+    def onchange_is_wordorder_step(self):
+        self.is_workorder_step = True if self.operation_id.quality_point_count else False
+
+    @api.depends('operation_id','test_type_id')
+    def _compute_component_id_domain(self):
         for rec in self:
-            rec.is_workorder_step = True if rec.operation_id.quality_point_count else False
+            if rec.test_type_id.id == 6:
+                rec.component_id_domain = json.dumps([('id', 'in', rec.operation_id.bom_id.bom_line_ids.product_id.ids)])
+            else:
+                rec.component_id_domain = []
+
 
     @api.depends('operation_id')
     def _compute_test_type_id_domain(self):
