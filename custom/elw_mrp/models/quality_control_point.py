@@ -23,8 +23,9 @@ class ElwQualityPoint(models.Model):
                                    help="Defines the type of the quality control point.")
     test_type_id_domain = fields.Char(compute="_compute_test_type_id_domain", store=True)
     test_report_type = fields.Selection([('pdf', 'PDF'), ('zpl', 'ZPL')], store=True, copy=True, required=True, default='pdf')
-    # source_document = fields.Selection(string='Step Document', store=True, copy=True)
-    worksheet_page = fields.Integer(string='Worksheet Page', store=True, copy=True)
+    source_document = fields.Selection([('operation', 'Specific page of operation sheet'), ('step', 'Custom')], string='Step Document', store=True, copy=True,
+                                       default='operation')
+    worksheet_page = fields.Integer(string='Worksheet Page', store=True, copy=True, default=1)
     worksheet_document = fields.Binary(string='Image/PDF', store=True, copy=True)
     worksheet_url = fields.Char(string='Google doc URL', store=True, copy=True)
     bom_id = fields.Many2one('mrp.bom', string='Bill of Material', compute='_compute_bom_id')

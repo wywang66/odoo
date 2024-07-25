@@ -41,22 +41,19 @@
                         <field name="test_report_type" invisible="test_type_id != 7 or not operation_id or not is_workorder_step"/>
                     </field>
                     <field name="picking_type_ids" position="after">
-                        <field string="Work Order Operation" name="operation_id" invisible="not is_workorder_step" groups="mrp.group_mrp_routings"
+                        <field string="Work Order Operation" name="operation_id" invisible="not is_workorder_step"
                                options="{'no_create': True}"/>
                         <field name="is_workorder_step" invisible="1"/>
-                    </field>
-                    <field name="user_id" position="after">
-                        <field name="operation_id" invisible="0"/>
-<!--                        <field name="source_document" widget="radio" invisible="not operation_id"/>-->
-<!--                        <field name="worksheet_page" invisible="not is_workorder_step or not operation_id or source_document == 'step'"/>-->
+                        <field name="source_document" widget="radio" invisible="not operation_id"/>
+                        <field name="worksheet_page" invisible="not is_workorder_step or not operation_id or source_document == 'step'"/>
                     </field>
                     <field name="product_category_ids" position="attributes">
                         <attribute name="invisible">is_workorder_step and operation_id</attribute>
                     </field>
-<!--                    <xpath expr="//field[@name='note']" position="after">-->
-<!--                        <field name="worksheet_document" help="Upload your PDF file." widget="pdf_viewer" invisible="source_document == 'operation'"/>-->
-<!--                        <field name="worksheet_url" placeholder="Google Slide Link" widget="embed_viewer" invisible="source_document == 'operation'"/>-->
-<!--                    </xpath>-->
+                    <xpath expr="//field[@name='note']" position="after">
+                        <field name="worksheet_document" help="Upload your PDF file." widget="pdf_viewer" invisible="source_document == 'operation'"/>
+                        <field name="worksheet_url" placeholder="Google Slide Link" widget="embed_viewer" invisible="source_document == 'operation'"/>
+                    </xpath>
                 </data>
             </field>
         </record>
