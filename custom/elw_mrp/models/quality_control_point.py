@@ -13,7 +13,7 @@ class ElwQualityPoint(models.Model):
                                    domain="[('type','in',('product','consu')), '|',('company_id','=', False),('company_id','=', company_id)]",
                                    store=True, required=True, compute="_get_product_from_category", readonly=False,
                                    help="Quality Point will apply to every selected Products.")
-    operation_id = fields.Many2one('mrp.routing.workcenter', string='Manu Step', ondelete='set null', store=True, copy=True)
+    operation_id = fields.Many2one('mrp.routing.workcenter', string='Manufacturing Step', ondelete='set null', store=True, copy=True)
     component_id = fields.Many2one('product.product', string='Product To Register', ondelete='set null', store=True, copy=True)
     component_id_domain = fields.Char(compute="_compute_component_id_domain", store=True)
     # component_ids = fields.One2many('product.product', string='Component', )
@@ -22,7 +22,7 @@ class ElwQualityPoint(models.Model):
                                    default=_default_test_type_id, ondelete='cascade', store=True, tracking=True,
                                    help="Defines the type of the quality control point.")
     test_type_id_domain = fields.Char(compute="_compute_test_type_id_domain", store=True)
-    # test_report_type = fields.Selection(store=True, copy=True)
+    test_report_type = fields.Selection([('pdf', 'PDF'), ('zpl', 'ZPL')], store=True, copy=True, required=True, default='pdf')
     # source_document = fields.Selection(string='Step Document', store=True, copy=True)
     worksheet_page = fields.Integer(string='Worksheet Page', store=True, copy=True)
     worksheet_document = fields.Binary(string='Image/PDF', store=True, copy=True)

@@ -94,7 +94,7 @@ class QualityMeasureData(models.Model):
     active = fields.Boolean(default=True)
     name = fields.Char('Sequence', readonly=True)
     spec_id = fields.Many2one('elw.quality.measure.spec', string="Measure Spec Ref#", ondelete='cascade')
-    measure_name = fields.Char('Measure Name', related="spec_id.measure_name", translate=True, tracking=True, store=True)
+    measure_name = fields.Char('Measure Name', related="spec_id.measure_name", tracking=True, store=True)
     target_value = fields.Float(string="Target Value", related="spec_id.target_value",)
     measured_value = fields.Float(string="Measured Value", tracking=True, store=True)
     target_value_unit = fields.Char(string="Unit", related="spec_id.target_value_unit", tracking=True, store=True)
